@@ -1,0 +1,15 @@
+// Source code is decompiled from a .class file using FernFlower decompiler (from Intellij IDEA).
+package com.sidoca;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class SidocaApplication {
+   public SidocaApplication() {
+   }
+
+   public static void main(String[] args) {
+      SpringApplication.run(SidocaApplication.class, args);
+   }
+}
