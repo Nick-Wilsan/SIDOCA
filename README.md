@@ -52,5 +52,5 @@ SIDOCA is a comprehensive web-based donation platform designed to bridge the gap
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-username/sidoca.git
+   git clone https://github.com/Nick-Wilsan/sidoca.git
    cd sidoca
