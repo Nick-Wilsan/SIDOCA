@@ -16,7 +16,7 @@ public class AkunModel extends BaseModel{
     public Akun getByUsername(String username) {
         String query = "SELECT * FROM akun WHERE username = ?";
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+                PreparedStatement stmt = conn.prepareStatement(query)) {
 
             // Bind parameter (setara dengan bind_param("s", $username))
             stmt.setString(1, username);
@@ -40,4 +40,29 @@ public class AkunModel extends BaseModel{
         }
         return null;
     }
+
+    // Mencegah SQL Injection
+    public boolean saveAkun(Akun akun) {
+    // Query dengan placeholder (?)
+    String query = "INSERT INTO akun (nama, username, email, password, role) VALUES (?, ?, ?, ?, ?)";
+    try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query)) {
+
+        // --- PENCEGAHAN SQL INJECTION DENGAN BINDING PARAMETER ---
+        // Data pengguna diikat sebagai parameter (bukan digabungkan ke string query)
+        stmt.setString(1, akun.getNama());
+        stmt.setString(2, akun.getUsername());
+        stmt.setString(3, akun.getEmail());
+        stmt.setString(4, akun.getPassword()); // Asumsi sudah di-hash di service/controller
+        stmt.setString(5, akun.getRole());
+
+        int rowsInserted = stmt.executeUpdate();
+        return rowsInserted > 0;
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+        // Anda mungkin ingin menambahkan logger di sini
+        return false;
+    }
+}
 }
