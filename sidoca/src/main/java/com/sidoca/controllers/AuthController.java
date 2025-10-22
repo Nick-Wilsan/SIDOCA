@@ -41,10 +41,6 @@ public class AuthController {
         akun.setNama(akun.getUsername().trim()); 
         akun.setRole(akun.getRole().trim());
 
-        // 1. Cek duplikasi username/email.
-        // 2. Gunakan BCrypt (atau sejenisnya) untuk MENGHATCH PASSWORD di sini.
-        // akun.setPassword(passwordEncoder.encode(akun.getPassword()));
-
         // Mencegah SQL Injection
         boolean success = akunModel.saveAkun(akun);
 
