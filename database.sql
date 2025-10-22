@@ -110,3 +110,7 @@ CREATE TABLE Leaderboard (
     FOREIGN KEY (id_donatur) REFERENCES Donatur(id_donatur)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+-- tambahkan alter di tabel akun
+ALTER TABLE akun
+ADD COLUMN no_hp VARCHAR(15) NULL AFTER email;
