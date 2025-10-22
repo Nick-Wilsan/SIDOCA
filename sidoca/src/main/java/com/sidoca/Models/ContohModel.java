@@ -16,7 +16,7 @@ public class ContohModel extends BaseModel {
     public Akun ContohgetByUsername(String username) {
         String query = "SELECT * FROM akun WHERE username = ?";
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+                PreparedStatement stmt = conn.prepareStatement(query)) {
 
             // Bind parameter (setara dengan bind_param("s", $username))
             stmt.setString(1, username);
