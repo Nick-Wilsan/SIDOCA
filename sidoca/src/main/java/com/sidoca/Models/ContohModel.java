@@ -1,7 +1,7 @@
 package com.sidoca.Models;
 
 // untuk mengambil class User.java
-import com.sidoca.Models.DataBaseClass.User;
+import com.sidoca.Models.DataBaseClass.Akun;
 
 import org.springframework.stereotype.Component;
 import java.sql.Connection;
@@ -13,8 +13,8 @@ import java.sql.SQLException;
 @Component
 public class ContohModel extends BaseModel {
 
-    public User ContohgetByUsername(String username) {
-        String query = "SELECT * FROM user WHERE username = ?";
+    public Akun ContohgetByUsername(String username) {
+        String query = "SELECT * FROM akun WHERE username = ?";
         try (Connection conn = getConnection();
                 PreparedStatement stmt = conn.prepareStatement(query)) {
 
@@ -25,12 +25,12 @@ public class ContohModel extends BaseModel {
 
             // Jika data ditemukan, buat objek User
             if (rs.next()) {
-                User user = new User();
-                user.setId(rs.getInt("id"));
-                user.setUsername(rs.getString("username"));
-                user.setEmail(rs.getString("email"));
-                user.setPassword(rs.getString("password"));
-                return user;
+                Akun akun = new Akun();
+                akun.setId_akun(rs.getInt("id"));
+                akun.setUsername(rs.getString("username"));
+                akun.setEmail(rs.getString("email"));
+                akun.setPassword(rs.getString("password"));
+                return akun;
             }
 
         } catch (SQLException e) {
