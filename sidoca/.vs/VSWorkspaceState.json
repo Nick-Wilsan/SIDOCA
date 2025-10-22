@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\main",
+    "\\src\\main\\java",
+    "\\src\\main\\java\\com",
+    "\\src\\main\\java\\com\\sidoca",
+    "\\src\\main\\java\\com\\sidoca\\controllers",
+    "\\src\\main\\resources",
+    "\\src\\main\\resources\\static",
+    "\\src\\main\\resources\\templates"
+  ],
+  "SelectedNode": "\\src\\main\\java\\com\\sidoca\\SidocaApplication.java",
+  "PreviewInSolutionExplorer": false
+}
