@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 // Untuk mengembalikan halaman
 @Controller
 // Menuju localhost:8000
-@RequestMapping("")
+@RequestMapping("/login")
 public class HomeController {
     
     @GetMapping

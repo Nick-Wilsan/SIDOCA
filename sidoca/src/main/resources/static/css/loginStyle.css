@@ -1,0 +1,125 @@
+.div1 { grid-area: 1 / 1 / 2 / 6; }
+.div2 { grid-area: 4 / 1 / 6 / 6; }
+.div3 { grid-area: 2 / 1 / 4 / 6; }
+
+body {
+    font-family: Lato, sans-serif;
+}
+
+.parent-2 {
+display: grid;
+grid-template-columns: repeat(5, 1fr);
+grid-template-rows: repeat(5, 1fr);
+grid-column-gap: 0px;
+grid-row-gap: 0px;
+}
+
+.div1-1 { grid-area: 1 / 1 / 6 / 4; }
+.div1-2 { grid-area: 1 / 4 / 6 / 6; }
+
+.navbar {
+    padding: 2%;
+    background-color: #3A5A40;
+}
+
+.container-fluid {
+    padding-left: 3%;
+    align-items: center;
+}
+
+.navbar-brand {
+    padding: 0;
+}
+
+.parent {
+display: grid;
+grid-template-columns: repeat(5, 1fr);
+grid-template-rows: repeat(5, 1fr);
+grid-column-gap: 0px;
+grid-row-gap: 50px;
+}
+
+.div2 {
+    background-color: #3A5A40;
+}
+
+.div3 {
+    align-items: center;
+    border: 2px solid #E5E8Eb;
+    border-radius: 5px;
+    margin-left: 7%;
+    margin-right: 7%;   
+    margin-bottom: 5%;
+    margin-top: -6%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 5%;
+    padding-bottom: 5%;
+}
+
+.div1-1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    vertical-align: middle;
+}
+
+.div1-2 {
+    padding-left: 10%;
+}
+
+.div1-2 h1{
+    color: #3A5A40;
+    font-weight: bold;
+    font-size: 4vw;
+}
+
+.div1-2 h6{
+    color: #818B83;
+    font-size: 1.2vw;
+}
+
+.box-form {
+    margin-top: 5%;
+}
+
+input {
+    width: 70%;
+    padding: 1.5% 0% 1.5% 2%;
+    border-radius: 10px;
+    margin-top: 1.5%;
+    margin-bottom: 2.5%;
+    border-color: #3A5A40;
+    box-shadow: 1px 1px 2px #3A5A40, 0 0 20px #F4694C30, 0 0 2px #3A5A40;
+}
+
+.signIn-button {
+    border-radius: 10px;
+    border: none;
+    padding-top: 1.5%;
+    padding-bottom: 1.5%;
+    width: 70%;;
+    margin-top: 1.5%;
+    background-color: #3A5A40;
+    color: #F9FAFB;
+    text-align: center;
+    cursor: pointer;
+}
+
+.register-button {
+    border-radius: 10px;
+    padding-top: 1.5%;
+    padding-bottom: 1.5%;
+    width: 70%;;    
+    margin-top: 1.5%;
+    background-color: white;
+    color: black;
+    text-align: center;
+    cursor: pointer;
+}
+
+.forgot-password {
+    padding-left: 45%;
+    padding-top: 3%;
+}
