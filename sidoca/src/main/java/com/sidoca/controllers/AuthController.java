@@ -43,6 +43,12 @@ public class AuthController extends BaseController{
         return "register";
     }
 
+    @GetMapping("/footer")
+    public String Footer() {
+        return "footer";
+    }
+    
+
     @GetMapping("/dashboard")
     public ModelAndView dashboard() {
         // (2) Validasi URL: Jika belum login, redirect ke halaman login
