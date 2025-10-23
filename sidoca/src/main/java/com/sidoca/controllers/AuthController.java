@@ -1,8 +1,5 @@
 package com.sidoca.controllers;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,10 +10,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.sidoca.Models.AkunModel;
 
-import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.servlet.http.HttpSession;
 
-import com.sidoca.Models.ContohModel;
 import com.sidoca.Models.DataBaseClass.Akun;
 
 import ch.qos.logback.core.model.Model;
