@@ -50,6 +50,13 @@ public class AuthController {
         } else {
             ra.addFlashAttribute("error", "Registrasi gagal, coba lagi.");
             return "redirect:/register";
+
+
+
+
+
+
+            
         }
     }
 }
