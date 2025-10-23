@@ -136,6 +136,7 @@ INSERT INTO Akun (nama, username, email, no_hp, password, role) VALUES
 INSERT INTO Akun (nama, username, email, no_hp, password, role) VALUES
 ('Metteu AK Saragih', 'metteu', 'metteusaragih@gmail.com', '082384294702', PASSWORD('metteu123'), 'donatur');
 
+-- Insert sampai akun admin dulu
 
 -- Mengisi Tabel Admin (id_akun = 1)
 INSERT INTO Admin (id_akun, level_akses) VALUES
