@@ -1,35 +1,52 @@
 package com.sidoca.controllers;
 
-import com.sidoca.Models.AkunModel;
-import com.sidoca.Models.DataBaseClass.Akun;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.sidoca.Models.AkunModel;
+
+// import org.springframework.beans.factory.annotation.Autowired;
+
+// import org.springframework.web.bind.annotation.RequestParam;
+
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
-public class AuthController {
+public class AuthController extends BaseController{
+    private final HttpSession session;
 
     @Autowired
     private AkunModel akunModel;
 
+    // ngambil session
+    public AuthController(HttpSession session) {
+        this.session = session;
+    }
+
     @GetMapping("/")
-    public String loginPage(Model model) {
-        // Objek Akun kosong diperlukan agar form login (jika menggunakan th:object) tidak error
-        model.addAttribute("akun", new Akun());
+    public String Login() {
         return "login";
     }
 
     @GetMapping("/register")
-    public String registerPage(Model model) {
-        // Objek Akun kosong untuk diikat dengan form register (th:object)
-        model.addAttribute("akunBaru", new Akun());
+    public String Register() {
         return "register";
     }
 
+    @GetMapping("/dashboardZaqy")
+    public ModelAndView index() {
+        // Sama seperti session_start + redirect di PHP
+        if (session.getAttribute("user") == null) {
+            return new ModelAndView("redirect:/login");
+        }
+        return new ModelAndView("redirect:/login");
+    }
     @GetMapping("/footer")
     public String footerPage(Model model) {
         return "footer";
@@ -56,5 +73,10 @@ public class AuthController {
             ra.addFlashAttribute("error", "Registrasi gagal, coba lagi.");
             return "redirect:/register";            
         }
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("judul", "Halaman dashboard");
+
+        return loadView("dashboard", data);
     }
 }
