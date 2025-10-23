@@ -116,23 +116,27 @@ ALTER TABLE akun
 ADD COLUMN no_hp VARCHAR(15) NULL AFTER email;
 
 
--- 1. Akun Admin
+-- 1. Akun Admin 1
 INSERT INTO Akun (nama, username, email, no_hp, password, role) VALUES
 ('Nick Wilsan', 'nickadmin', 'wilsannick55@gmail.com', '081249730818', PASSWORD('nick123'), 'admin');
 
--- 2. Akun Organisasi 1
+-- 2. Akun Admin 2
+INSERT INTO Akun (nama, username, email, no_hp, password, role) VALUES
+('Muhammad Zaqy', 'zaqyadmin', 'zaqy@gmail.com', '0812567489', PASSWORD('zaqy123'), 'admin');
+
+-- 3. Akun Organisasi 1
 INSERT INTO Akun (nama, username, email, no_hp, password, role) VALUES
 ('Yayasan Peduli Anak', 'ypa_official', 'ypa@gmail.com', '081281803794', PASSWORD('ypa123'), 'organisasi');
 
--- 3. Akun Organisasi 2
+-- 4. Akun Organisasi 2
 INSERT INTO Akun (nama, username, email, no_hp, password, role) VALUES
 ('Panti Jompo Kasih', 'pjk_official', 'pjk@gmail.com', '082200764422', PASSWORD('pjk123'), 'organisasi');
 
--- 4. Akun Donatur 1
+-- 5. Akun Donatur 1
 INSERT INTO Akun (nama, username, email, no_hp, password, role) VALUES
 ('Ihsan Ramadhan', 'ihsan', 'ihsan.rmd@gmail.com', '082284670022', PASSWORD('ihsan123'), 'donatur');
 
--- 5. Akun Donatur 2
+-- 6. Akun Donatur 2
 INSERT INTO Akun (nama, username, email, no_hp, password, role) VALUES
 ('Metteu AK Saragih', 'metteu', 'metteusaragih@gmail.com', '082384294702', PASSWORD('metteu123'), 'donatur');
 
