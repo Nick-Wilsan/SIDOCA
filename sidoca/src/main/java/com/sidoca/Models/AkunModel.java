@@ -41,10 +41,42 @@ public class AkunModel extends BaseModel{
         return null;
     }
 
+    public Akun findUserForLogin(String identifier, String password) {
+        // Query untuk mencari berdasarkan username ATAU email, dan membandingkan password
+        // dengan hash yang disimpan di DB
+        String query = "SELECT * FROM akun WHERE (username = ? OR email = ?) AND password = PASSWORD(?)";
+        try (Connection conn = getConnection();
+                PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            // Bind parameter
+            stmt.setString(1, identifier); // untuk username
+            stmt.setString(2, identifier); // untuk email
+            stmt.setString(3, password);   // untuk password mentah
+
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                Akun akun = new Akun();
+                akun.setId_akun(rs.getInt("id_akun"));
+                akun.setNama(rs.getString("nama"));
+                akun.setUsername(rs.getString("username"));
+                akun.setEmail(rs.getString("email"));
+                akun.setPassword(rs.getString("password"));
+                akun.setRole(rs.getString("role"));
+                akun.setNo_HP(rs.getString("no_hp")); 
+                return akun;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     // Mencegah SQL Injection
     public boolean saveAkun(Akun akun) {
     // Query dengan placeholder (?)
-    String query = "INSERT INTO akun (nama, username, email, password, role) VALUES (?, ?, ?, ?, ?)";
+    String query = "INSERT INTO akun (nama, username, email, password, role) VALUES (?, ?, ?, ?, PASSWORD(?), ?)";
     try (Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(query)) {
 
@@ -64,5 +96,5 @@ public class AkunModel extends BaseModel{
         // Anda mungkin ingin menambahkan logger di sini
         return false;
     }
-}
+    }
 }

@@ -5,16 +5,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.sidoca.Models.AkunModel;
-
 import jakarta.servlet.http.HttpSession;
-
 import com.sidoca.Models.DataBaseClass.Akun;
-
-import ch.qos.logback.core.model.Model;
 
 @Controller
 public class AuthController extends BaseController{
@@ -30,25 +27,68 @@ public class AuthController extends BaseController{
 
     @GetMapping("/")
     public String Login() {
+        // Jika sudah login, redirect ke dashboard
+        if (session.getAttribute("user") != null) {
+            return "redirect:/dashboard";
+        }
         return "login";
     }
 
     @GetMapping("/register")
     public String Register() {
+        // Jika sudah login, redirect ke dashboard
+        if (session.getAttribute("user") != null) {
+            return "redirect:/dashboard";
+        }
         return "register";
     }
 
-    @GetMapping("/dashboardZaqy")
-    public ModelAndView index() {
-        // Sama seperti session_start + redirect di PHP
+    @GetMapping("/dashboard")
+    public ModelAndView dashboard() {
+        // (2) Validasi URL: Jika belum login, redirect ke halaman login
         if (session.getAttribute("user") == null) {
-            return new ModelAndView("redirect:/login");
+            return new ModelAndView("redirect:/");
         }
-        return new ModelAndView("redirect:/login");
+
+        // Tampilkan halaman dashboard jika sudah login
+        Akun user = (Akun) session.getAttribute("user");
+        return loadView("dashboard", java.util.Map.of(
+            "judul", "Dashboard Pengguna",
+            "nama", user.getNama(),
+            "role", user.getRole()
+        ));
     }
-    @GetMapping("/footer")
-    public String footerPage(Model model) {
-        return "teslogin";
+
+    @PostMapping("/login")
+    public String loginUser(@RequestParam("username") String identifier, // Mengambil input username/email
+                            @RequestParam("password") String password,
+                            RedirectAttributes ra) {
+
+        // 1. Ambil data dan lakukan pengecekan
+        Akun akun = akunModel.findUserForLogin(identifier, password);
+
+        if (akun != null) {
+            // 3. Login berhasil: Simpan objek Akun ke dalam session
+            session.setAttribute("user", akun);
+            ra.addFlashAttribute("success", "Login berhasil! Selamat datang, " + akun.getNama() + ".");
+            // Redirect ke halaman dashboard
+            return "redirect:/dashboard";
+        } else {
+            // Login gagal
+            ra.addFlashAttribute("error", "Username/Email atau Password salah.");
+            // Redirect kembali ke halaman login
+            return "redirect:/";
+        }
+    }
+    
+    // --- (4) Proses Logout ---
+    @GetMapping("/logout")
+    public String logout(HttpSession session, RedirectAttributes ra) {
+        // Hapus semua data sesi
+        session.invalidate();
+        ra.addFlashAttribute("success", "Anda telah berhasil logout.");
+        // Redirect kembali ke halaman login (/)
+        return "redirect:/";
     }
 
     // POST: Memproses data Registrasi

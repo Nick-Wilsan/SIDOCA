@@ -26,18 +26,18 @@ public class ContohController extends BaseController{
     }
 
     // cek session
-    @GetMapping("/dashboard")
-    public ModelAndView index() {
-        // Sama seperti session_start + redirect di PHP
-        if (session.getAttribute("user") == null) {
-            return new ModelAndView("redirect:/login");
-        }
+    // @GetMapping("/dashboard")
+    // public ModelAndView index() {
+    //     // Sama seperti session_start + redirect di PHP
+    //     if (session.getAttribute("user") == null) {
+    //         return new ModelAndView("redirect:/login");
+    //     }
 
-        Map<String, Object> data = new HashMap<>();
-        data.put("judul", "Halaman dashboard");
+    //     Map<String, Object> data = new HashMap<>();
+    //     data.put("judul", "Halaman dashboard");
 
-        return loadView("dashboard", data);
-    }
+    //     return loadView("dashboard", data);
+    // }
 
 
     @Autowired
