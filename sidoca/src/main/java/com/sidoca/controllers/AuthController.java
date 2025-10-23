@@ -45,6 +45,34 @@ public class AuthController extends BaseController{
         if (session.getAttribute("user") == null) {
             return new ModelAndView("redirect:/login");
         }
+        return new ModelAndView("redirect:/login");
+    }
+    @GetMapping("/footer")
+    public String footerPage(Model model) {
+        return "teslogin";
+    }
+
+    // POST: Memproses data Registrasi
+    @PostMapping("/register")
+    public String registerUser(@ModelAttribute("akunBaru") Akun akun, RedirectAttributes ra) {
+        
+        // Mencegah XXS
+        akun.setUsername(akun.getUsername().trim());
+        akun.setEmail(akun.getEmail().trim());
+        // Jika form tidak mengirim 'nama', gunakan 'username' sebagai nama sementara
+        akun.setNama(akun.getUsername().trim()); 
+        akun.setRole(akun.getRole().trim());
+
+        // Mencegah SQL Injection
+        boolean success = akunModel.saveAkun(akun);
+
+        if (success) {
+            ra.addFlashAttribute("success", "Registrasi berhasil! Silakan masuk.");
+            return "redirect:/";
+        } else {
+            ra.addFlashAttribute("error", "Registrasi gagal, coba lagi.");
+            return "redirect:/register";            
+        }
 
         Map<String, Object> data = new HashMap<>();
         data.put("judul", "Halaman dashboard");
