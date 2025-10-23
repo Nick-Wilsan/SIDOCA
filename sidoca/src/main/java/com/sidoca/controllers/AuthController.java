@@ -31,7 +31,7 @@ public class AuthController extends BaseController{
         if (session.getAttribute("user") != null) {
             return "redirect:/dashboard";
         }
-        return "login";
+        return "index";
     }
 
     @GetMapping("/register")
