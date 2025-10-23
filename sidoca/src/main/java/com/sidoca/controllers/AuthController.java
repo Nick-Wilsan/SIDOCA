@@ -30,6 +30,11 @@ public class AuthController {
         return "register";
     }
 
+    @GetMapping("/footer")
+    public String footerPage(Model model) {
+        return "teslogin";
+    }
+
     // POST: Memproses data Registrasi
     @PostMapping("/register")
     public String registerUser(@ModelAttribute("akunBaru") Akun akun, RedirectAttributes ra) {
@@ -49,14 +54,7 @@ public class AuthController {
             return "redirect:/";
         } else {
             ra.addFlashAttribute("error", "Registrasi gagal, coba lagi.");
-            return "redirect:/register";
-
-
-
-
-
-
-            
+            return "redirect:/register";            
         }
     }
 }
