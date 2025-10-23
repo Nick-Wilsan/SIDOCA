@@ -32,7 +32,7 @@ public class AuthController {
 
     @GetMapping("/footer")
     public String footerPage(Model model) {
-        return "teslogin";
+        return "footer";
     }
 
     // POST: Memproses data Registrasi
