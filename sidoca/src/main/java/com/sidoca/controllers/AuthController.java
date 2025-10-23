@@ -27,7 +27,6 @@ public class AuthController extends BaseController{
 
     @GetMapping("/")
     public String Login() {
-        // Jika sudah login, redirect ke dashboard
         if (session.getAttribute("user") != null) {
             return "redirect:/dashboard";
         }
@@ -36,7 +35,6 @@ public class AuthController extends BaseController{
 
     @GetMapping("/register")
     public String Register() {
-        // Jika sudah login, redirect ke dashboard
         if (session.getAttribute("user") != null) {
             return "redirect:/dashboard";
         }
@@ -48,15 +46,47 @@ public class AuthController extends BaseController{
         return "footer";
     }
     
+    @GetMapping("/header")
+    public String Header() {
+        return "headerDonatur";
+    }
+
+    @GetMapping("/daftarKampanye")
+    public String DaftarKampanye() {
+        return "daftarKampanye";
+    }
+
+    @GetMapping("/laporanPenggunaanDana")
+    public String LaporanPenggunaanDana() {
+        return "laporanPenggunaanDana";
+    }
+
+    @GetMapping("/riwayatDonasi")
+    public String RiwayatDonasi() {
+        return "riwayatDonasi";
+    }
+
+    @GetMapping("/leaderboard")
+    public String Leaderboard() {
+        return "leaderboard";
+    }
+
+    @GetMapping("/aboutUs")
+    public String AboutUs() {
+        return "aboutUs";
+    }
+
+    @GetMapping("/profil")
+    public String Profil() {
+        return "profil";
+    }
 
     @GetMapping("/dashboard")
     public ModelAndView dashboard() {
-        // (2) Validasi URL: Jika belum login, redirect ke halaman login
         if (session.getAttribute("user") == null) {
             return new ModelAndView("redirect:/");
         }
 
-        // Tampilkan halaman dashboard jika sudah login
         Akun user = (Akun) session.getAttribute("user");
         return loadView("dashboard", java.util.Map.of(
             "judul", "Dashboard Pengguna",
