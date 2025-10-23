@@ -76,7 +76,7 @@ public class AkunModel extends BaseModel{
     // Mencegah SQL Injection
     public boolean saveAkun(Akun akun) {
     // Query dengan placeholder (?)
-    String query = "INSERT INTO akun (nama, username, email, password, role) VALUES (?, ?, ?, ?, PASSWORD(?), ?)";
+    String query = "INSERT INTO akun (nama, username, email, password, role) VALUES (?, ?, ?, PASSWORD(?), ?)";
     try (Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(query)) {
 

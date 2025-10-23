@@ -1,0 +1,42 @@
+        .hero-banner {
+            position: relative;
+            border-radius: 1rem;
+            overflow: hidden;
+            color: white;
+            margin-top: 1.5rem;
+            max-width: 80%;
+            margin: 20px auto;
+
+        }
+        .hero-banner .hero-image {
+            width: 100%;
+            object-fit: cover;
+            filter: brightness(0.5);
+        }
+        .hero-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 80%;
+        }
+        
+        /* CSS untuk layout body dan footer */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f8f9fa; /* Latar belakang halaman yang sedikit abu-abu */
+        }
+        .main-content {
+            flex: 1;
+        }
+        /* Override posisi footer.html */
+        .div2 {
+            position: relative; 
+            width: 100%;
+            left: 0;
+            bottom: 0;
+            margin-top: 5rem; /* Beri jarak dari konten di atasnya */
+        }
