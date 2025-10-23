@@ -1,48 +1,33 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" th:href="@{css/footerStyle.css}" />
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
-        <title>SIDOCA</title>
-    </head>
-    <body>
-        <div class="div2" th:fragment="bawah">
-            <div class="parent-footer">
-                <div class="div2-1">
-                    <h6>SIDOCA.COM</h6>
-                    <p>
-                        Sistem informasi yang memfasilitasi kegiatan donasi dan amal secara transparan dan efisien. Sistem ini menghubungkan tiga stakeholder utama: Admin sebagai pengelola platform, Organisasi Charity sebagai penerima dan
-                        pengelola donasi, serta Donatur sebagai pemberi donasi.
-                    </p>
-                </div>
-
-                <div class="div2-2">
-                    <h6>Bantuan</h6>
-                    <p><a href="/pusat-bantuan">Pusat Bantuan</a></p>
-                    <p><a href="/faq">FAQ</a></p>
-                    <p><a href="/hubungi-kami">Hubungi Kami</a></p>
-                </div>
-
-                <div class="div2-3">
-                    <h6>Tentang</h6>
-                    <p><a href="/tentang-kami">Tentang Kami</a></p>
-                    <p><a href="/layanan">Layanan</a></p>
-                    <p><a href="/kebijakan-privasi">Kebijakan Privasi</a></p>
-                    <p><a href="blog">Blog</a></p>
-                </div>
-
-                <div class="div2-4">
-                    <a href="https://www.facebook.com" target="_blank"><i class="bi bi-facebook"></i></a>
-                    <a href="https://www.instagram.com" target="_blank"><i class="bi bi-instagram"></i></a>
-                    <a href="https://www.youtube.com" target="_blank"><i class="bi bi-youtube"></i></a>
-                </div>
-
-                <div class="div2-5">
-                    <p>© SIDOCA 2025. All Rights Reserved.</p>
-                </div>
-            </div>
+<div th:fragment="app-footer">
+    <div class="parent-footer">
+        <div class="div2-1">
+            <h6>SIDOCA.COM</h6>
+            <p>Sistem informasi yang memfasilitasi kegiatan donasi dan amal secara transparan dan efisien. Sistem ini menghubungkan tiga stakeholder utama: Admin sebagai pengelola platform, Organisasi Charity sebagai penerima dan pengelola donasi, serta Donatur sebagai pemberi donasi.</p>
         </div>
-    </body>
-</html>
+
+        <div class="div2-2">
+            <h6>Bantuan</h6>
+            <p><a href="/pusat-bantuan">Pusat Bantuan</a></p>
+            <p><a href="/faq">FAQ</a></p>
+            <p><a href="/hubungi-kami">Hubungi Kami</a></p>
+        </div>
+
+        <div class="div2-3">
+            <h6>Tentang</h6>
+            <p><a href="/tentang-kami">Tentang Kami</a></p>
+            <p><a href="/layanan">Layanan</a></p>
+            <p><a href="/kebijakan-privasi">Kebijakan Privasi</a></p>
+            <p><a href="blog">Blog</a></p>
+        </div>
+
+        <div class="div2-4">
+            <a href="https://www.facebook.com" target="_blank"><i class="bi bi-facebook"></i></a>
+            <a href="https://www.instagram.com" target="_blank"><i class="bi bi-instagram"></i></a>
+            <a href="https://www.youtube.com" target="_blank"><i class="bi bi-youtube"></i></a>
+        </div>
+
+        <div class="div2-5">
+            <p>© SIDOCA 2025. All Rights Reserved.</p>
+        </div>
+    </div>
+</div>
