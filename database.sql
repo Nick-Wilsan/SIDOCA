@@ -40,11 +40,12 @@ CREATE TABLE Kampanye (
     deskripsi_kampanye TEXT,
     target_dana DECIMAL(15,2) NOT NULL,
     batas_waktu DATE,
-    status_kampanye ENUM('aktif', 'nonaktif', 'selesai') DEFAULT 'aktif',
+    -- UBAH BARIS DI BAWAH INI
+    status_kampanye ENUM('aktif', 'nonaktif', 'selesai', 'menunggu') DEFAULT 'menunggu',
     gambar_kampanye VARCHAR(255),
     FOREIGN KEY (id_akun) REFERENCES Akun(id_akun)
         ON DELETE CASCADE ON UPDATE CASCADE
-);
+    );
 
 CREATE TABLE Donasi (
     id_donasi INT PRIMARY KEY AUTO_INCREMENT,
