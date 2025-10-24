@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Hubungi Kami - SIDOCA</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+        <link rel="stylesheet" th:href="@{/css/faqStyle.css}" />
+        <link rel="stylesheet" th:href="@{/css/headerStyleDonatur.css}" />
+        <link rel="stylesheet" th:href="@{/css/footerStyle.css}" />
+        <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}" />
+    </head>
+    <body>
+        <header th:replace="~{headerFooter :: navbarFooter}"></header>
+
+        <main class="container mt-5 mb-5">
+    <main class="faq-page-container">
+        <h1>FREQUENTLY ASKED QUESTIONS</h1>
+
+        <details class="faq-category">
+            <summary class="faq-category-title">
+                <span>FREQUENTLY ASKED QUESTIONS DONATUR</span>
+                <span class="icon"></span>
+            </summary>
+            <div class="faq-list">
+                <details class="faq-item">
+                    <summary>
+                        <span>Bagaimana cara saya Melakukan donasi?</span>
+                        <span class="icon"></span>
+                    </summary>
+                    <div class="faq-answer">
+                        <p>Anda dapat memilih kampanye yang ingin didukung di halaman “Daftar Kampanye”, lalu klik tombol Donasi Sekarang. Setelah itu, isi nominal donasi dan pilih metode pembayaran yang tersedia.</p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>
+                        <span>Apa saja metode pembayaran yang tersedia?</span>
+                        <span class="icon"></span>
+                    </summary>
+                    <div class="faq-answer">
+                        <p>Kami menerima pembayaran melalui transfer bank serta QRIS. Semua transaksi diproses secara aman melalui sistem pembayaran terverifikasi.</p>
+                    </div>
+                </details>
+                
+                <details class="faq-item">
+                    <summary>
+                        <span>Bagaimana cara saya Melakukan donasi?</span>
+                        <span class="icon"></span>
+                    </summary>
+                    <div class="faq-answer">
+                        <p>Ya, tentu bisa. Saat mengisi formulir donasi, aktifkan opsi “Donasi Anonim” agar nama Anda tidak ditampilkan di publik.</p>
+                    </div>
+                </details>
+            </div>
+        </details>
+
+        <details class="faq-item">
+                    <summary>
+                        <span> Bagaimana saya tahu bahwa kampanye tersebut benar-benar valid?</span>
+                        <span class="icon"></span>
+                    </summary>
+                    <div class="faq-answer">
+                        <p>Semua kampanye telah melalui proses verifikasi identitas dan dokumen oleh tim SIDOCA sebelum ditampilkan di platform.</p>
+                    </div>
+                </details>
+            </div>
+        </details>
+
+          <details class="faq-item">
+                    <summary>
+                        <span>Bagaimana cara melihat laporan penggunaan dana?</span>
+                        <span class="icon"></span>
+                    </summary>
+                    <div class="faq-answer">
+                        <p>Anda dapat melihat laporan penggunaan dana di halaman “Laporan Penggunaan Dana”. Setiap kampanye wajib mengunggah laporan keuangan dan dokumentasi penyaluran dana.</p>
+                    </div>
+                </details>
+            </div>
+        </details>
+
+        <details class="faq-item">
+                    <summary>
+                        <span>Apakah riwayat donasi saya tersimpan di platform? </span>
+                        <span class="icon"></span>
+                    </summary>
+                    <div class="faq-answer">
+                        <p>Anda dapat melihat riwayat donasi Anda di halaman “Riwayat Donasi”.</p>
+                    </div>
+                </details>
+            </div>
+        </details>
+
+        <details class="faq-category">
+            <summary class="faq-category-title">
+                <span>FREQUENTLY ASKED QUESTIONS ORGANISASI</span>
+                <span class="icon"></span>
+            </summary>
+            <div class="faq-list">
+                <details class="faq-item">
+                    <summary>
+                        <span>Bagaimana cara mendaftarkan organisasi saya di platform?</span>
+                        <span class="icon"></span>
+                    </summary>
+                    <div class="faq-answer">
+                        <p>Silakan klik tombol "Daftar" di halaman utama, pilih "Daftar sebagai Organisasi", dan isi formulir yang disediakan.</p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>
+                        <span>Bagaimana cara mencairkan dana hasil donasi?</span>
+                        <span class="icon"></span>
+                    </summary>
+                    <div class="faq-answer">
+                        <p>Masuk ke dashboard organisasi Anda, pilih menu "Keuangan", dan ajukan penarikan dana.</p>
+                    </div>
+                </details>
+            </div>
+        </details>
+
+
+        <details class="faq-item">
+                    <summary>
+                        <span>Kapan dana donasi bisa dicairkan?</span>
+                        <span class="icon"></span>
+                    </summary>
+                    <div class="faq-answer">
+                        <p>Biasanya dalam waktu 2–5 hari kerja setelah permohonan pencairan disetujui oleh tim verifikasi.</p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>
+                        <span>Apakah organisasi wajib membuat laporan penggunaan dana?</span>
+                        <span class="icon"></span>
+                    </summary>
+                    <div class="faq-answer">
+                        <p>Ya. Setiap organisasi wajib mengunggah laporan penggunaan dana (berupa rincian biaya, foto dokumentasi, dan testimoni penerima) agar donatur bisa memantau transparansi.</p>
+                    </div>
+                </details>
+            </div>
+        </details>
+
+
+        <details class="faq-item">
+                    <summary>
+                        <span>Siapa yang bisa saya hubungi jika terjadi kendala?</span>
+                        <span class="icon"></span>
+                    </summary>
+                    <div class="faq-answer">
+                        <p>Silakan hubungi tim dukungan kami melalui menu Pusat Bantuan atau email ke kontak yang tertera di pusat bantuan.</p>
+                    </div>
+                </details>
+            </div>
+        </details>
+
+    </main>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.js"></script>
+
+        <footer>
+            <div th:replace="~{footer :: footer}"></div>
+        </footer>
+    </body>
+</html>   
