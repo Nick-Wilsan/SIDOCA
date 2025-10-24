@@ -7,6 +7,7 @@ CREATE TABLE Akun (
     role ENUM('admin', 'donatur', 'organisasi') NOT NULL
 );
 
+
 CREATE TABLE Admin (
     id_admin INT PRIMARY KEY AUTO_INCREMENT,
     id_akun INT NOT NULL,
