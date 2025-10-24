@@ -129,6 +129,9 @@ CREATE TABLE Kampanye_Gambar (
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+ALTER TABLE Kampanye
+ADD COLUMN alasan_penolakan TEXT NULL DEFAULT NULL AFTER status_kampanye;
+
 -- 1. Akun Admin 1
 INSERT INTO Akun (nama, username, email, no_hp, password, role) VALUES
 ('Nick Wilsan', 'nickadmin', 'wilsannick55@gmail.com', '081249730818', PASSWORD('nick123'), 'admin');
