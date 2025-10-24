@@ -1,0 +1,86 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.verification-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.main-title {
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: #3a5a40; /* Warna hijau SIDOCA */
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: #6c757d;
+    margin-bottom: 2.5rem;
+}
+
+.campaign-list {
+    background-color: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    overflow: hidden;
+}
+
+.list-header, .list-item {
+    display: grid;
+    grid-template-columns: 2fr 2fr 1fr;
+    align-items: center;
+    padding: 1rem 1.5rem;
+}
+
+.list-header {
+    font-weight: 600;
+    color: #495057;
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+.list-item {
+    border-bottom: 1px solid #e9ecef;
+}
+
+.list-item:last-child {
+    border-bottom: none;
+}
+
+.item-data {
+    color: #212529;
+}
+
+.list-item .btn-primary {
+    background-color: #3A5A40; /* Menyesuaikan warna tombol dengan tema */
+    border-color: #3A5A40;
+    padding: 0.375rem 1.25rem;
+    font-weight: 500;
+}
+
+.list-item .btn-primary:hover {
+    background-color: #2e4a33;
+    border-color: #2e4a33;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #3a5a40;
+    border-color: #3a5a40;
+}
+
+.pagination .page-link {
+    color: #3a5a40;
+}
+
+.pagination .page-link:hover {
+    background-color: #e9ecef;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #6c757d;
+}
