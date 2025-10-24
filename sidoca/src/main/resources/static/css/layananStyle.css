@@ -1,0 +1,189 @@
+/* -- Reset & Basic Setup -- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #FFFFFF;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* PERBAIKAN: 
+  CSS Hero ini disesuaikan dengan HTML Anda, 
+  yang menggunakan <img> dan class="hero-section".
+*/
+.hero-section {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    line-height: 0; /* Mencegah spasi putih di bawah gambar */
+}
+
+.hero-image {
+    width: 100%;
+    height: auto; /* Tinggi otomatis menjaga rasio aspek */
+    display: block; /* Menghilangkan spasi ekstra */
+    object-fit: cover;
+}
+/* -- Akhir Perbaikan Hero -- */
+
+
+/* Kode di bawah ini sudah benar dan sesuai 
+  dengan HTML Anda untuk bagian Fitur dan CTA.
+*/
+
+/* -- 2. Features Section -- */
+.features-section {
+    max-width: 1100px;
+    margin: 50px auto;
+    padding: 0 20px;
+}
+
+.features-intro {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.features-intro h2 {
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: #335546;
+    margin-bottom: 10px;
+}
+
+.features-intro p {
+    font-size: 1.1rem;
+    color: #555;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.features-grid-container {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); 
+    overflow: hidden;
+}
+
+.features-row {
+    display: flex;
+    width: 100%;
+    border-top: 1px solid #EEE;
+}
+
+.features-row:first-child {
+    border-top: none;
+}
+
+.feature-item {
+    flex: 1; /* Setiap item mengambil 1/3 ruang */
+    padding: 30px;
+    border-right: 1px solid #EEE;
+}
+
+.feature-item:last-child {
+    border-right: none;
+}
+
+.feature-icon {
+    /* Ganti width/height dengan font-size untuk ikon */
+    font-size: 40px; 
+    
+    /* Atur warna ikon agar sama dengan judul (hijau tua) */
+    color: #335546; 
+    
+    margin-bottom: 15px;
+    
+    /* Opsi untuk memastikan perataan ikon */
+    display: inline-block;
+    width: 48px;
+    text-align: center;
+
+}
+
+.feature-item h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #335546; /* Hijau tua */
+    margin-bottom: 8px;
+}
+
+.feature-item p {
+    font-size: 0.95rem;
+    color: #555;
+}
+
+/* -- 3. CTA Section -- */
+.cta-section {
+    background-color: #f8f9fa; /* Latar belakang abu-abu muda */
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.cta-section h2 {
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.cta-section p {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 30px;
+}
+
+.cta-buttons .cta-btn {
+    display: inline-block;
+    padding: 12px 28px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1rem;
+    margin: 0 10px;
+    transition: transform 0.2s ease;
+}
+
+.cta-buttons .cta-btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    background-color: #2574A9; /* Biru dari gambar */
+    color: white;
+}
+
+.btn-secondary {
+    background-color: #F39C12; /* Oranye dari gambar */
+    color: white;
+}
+
+/* -- Responsive -- */
+@media (max-width: 768px) {
+    .features-row {
+        flex-direction: column; /* Tumpuk fitur-fitur di HP */
+    }
+    
+    .feature-item {
+        border-right: none; /* Hapus garis kanan */
+        border-bottom: 1px solid #EEE; /* Tambah garis bawah */
+    }
+
+    .feature-item:last-child {
+        border-bottom: none; /* Hapus garis bawah di item terakhir */
+    }
+    
+    .features-row {
+        border-top: none; /* Hapus garis atas baris */
+    }
+    
+    .features-row:last-child {
+        margin-top: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+}
