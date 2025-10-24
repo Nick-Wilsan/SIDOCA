@@ -168,15 +168,112 @@ public class KampanyeModel extends BaseModel {
     }
 
     public void tambahKomentar(int idKampanye, int idDonatur, String isiKomentar) {
-    String query = "INSERT INTO Komentar (id_kampanye, id_donatur, isi_komentar, tanggal_komentar) VALUES (?, ?, ?, NOW())";
-    try (Connection conn = getConnection();
-        PreparedStatement stmt = conn.prepareStatement(query)) {
-        stmt.setInt(1, idKampanye);
-        stmt.setInt(2, idDonatur); // Menggunakan id_donatur
-        stmt.setString(3, isiKomentar);
-        stmt.executeUpdate();
-    } catch (SQLException e) {
-        e.printStackTrace();
+        String query = "INSERT INTO Komentar (id_kampanye, id_donatur, isi_komentar, tanggal_komentar) VALUES (?, ?, ?, NOW())";
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, idKampanye);
+            stmt.setInt(2, idDonatur); // Menggunakan id_donatur
+            stmt.setString(3, isiKomentar);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
-}
+
+    public List<KampanyeAktifDTO> getKampanyeAktif(String keyword, String urutkan) {
+        List<KampanyeAktifDTO> kampanyeList = new ArrayList<>();
+        // Query dasar untuk mengambil data kampanye yang aktif
+        StringBuilder queryBuilder = new StringBuilder(
+            "SELECT " +
+            "k.id_kampanye, k.judul_kampanye, o.nama_organisasi, k.target_dana, k.batas_waktu, " +
+            // Subquery untuk mengambil satu URL gambar pertama
+            "(SELECT url_gambar FROM Kampanye_Gambar WHERE id_kampanye = k.id_kampanye LIMIT 1) as url_gambar, " +
+            // Subquery untuk menghitung total donasi yang berhasil
+            "COALESCE((SELECT SUM(d.nominal_donasi) FROM Donasi d WHERE d.id_kampanye = k.id_kampanye AND d.status_pembayaran = 'berhasil'), 0) as dana_terkumpul " +
+            "FROM Kampanye k " +
+            "JOIN Akun a ON k.id_akun = a.id_akun " +
+            "JOIN Organisasi o ON a.id_akun = o.id_akun " +
+            "WHERE k.status_kampanye = 'aktif'"
+        );
+
+        // Menambahkan filter pencarian jika ada keyword
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            queryBuilder.append(" AND (k.judul_kampanye LIKE ? OR o.nama_organisasi LIKE ?)");
+        }
+
+        // Menentukan kriteria pengurutan
+        String orderByClause = " ORDER BY k.id_kampanye DESC"; // Default: terbaru
+        if ("mendesak".equals(urutkan)) {
+            orderByClause = " ORDER BY k.batas_waktu ASC";
+        } else if ("paling_sedikit".equals(urutkan)) {
+            // Urutkan berdasarkan persentase dana terkumpul yang paling sedikit
+            orderByClause = " ORDER BY (dana_terkumpul / k.target_dana) ASC";
+        }
+        queryBuilder.append(orderByClause);
+
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(queryBuilder.toString())) {
+
+            // Set parameter untuk keyword jika ada
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                String keywordParam = "%" + keyword + "%";
+                stmt.setString(1, keywordParam);
+                stmt.setString(2, keywordParam);
+            }
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                KampanyeAktifDTO dto = new KampanyeAktifDTO();
+                dto.setId_kampanye(rs.getInt("id_kampanye"));
+                dto.setJudul_kampanye(rs.getString("judul_kampanye"));
+                dto.setNama_organisasi(rs.getString("nama_organisasi"));
+                dto.setTarget_dana(rs.getBigDecimal("target_dana"));
+                dto.setDana_terkumpul(rs.getBigDecimal("dana_terkumpul"));
+                dto.setBatas_waktu(rs.getDate("batas_waktu"));
+                dto.setUrl_gambar(rs.getString("url_gambar"));
+
+                // Menghitung sisa hari
+                Date batasWaktu = rs.getDate("batas_waktu");
+                if (batasWaktu != null) {
+                    long sisaHari = ChronoUnit.DAYS.between(LocalDate.now(), batasWaktu.toLocalDate());
+                    dto.setSisa_hari(sisaHari > 0 ? sisaHari : 0);
+                } else {
+                    dto.setSisa_hari(0);
+                }
+
+                // Menghitung persentase dana terkumpul
+                BigDecimal target = dto.getTarget_dana();
+                BigDecimal terkumpul = dto.getDana_terkumpul();
+                if (target != null && target.compareTo(BigDecimal.ZERO) > 0) {
+                    BigDecimal persentase = terkumpul.multiply(new BigDecimal(100)).divide(target, 0, RoundingMode.HALF_UP);
+                    dto.setPersentase_terkumpul(persentase.intValue());
+                } else {
+                    dto.setPersentase_terkumpul(0);
+                }
+
+                kampanyeList.add(dto);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // Sebaiknya gunakan logger di aplikasi production
+        }
+
+        return kampanyeList;
+    }
+
+    public boolean updateStatusKampanye(int idKampanye, String newStatus, String alasan) {
+        String query = "UPDATE Kampanye SET status_kampanye = ?, alasan_penolakan = ? WHERE id_kampanye = ?";
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, newStatus);
+            stmt.setString(2, alasan); // Bisa null jika disetujui
+            stmt.setInt(3, idKampanye);
+            int rowsUpdated = stmt.executeUpdate();
+            return rowsUpdated > 0;
+        } catch (SQLException e) {
+            e.printStackTrace(); // Sebaiknya gunakan logger
+            return false;
+        }
+    }
 }  
