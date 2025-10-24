@@ -95,3 +95,9 @@
 .btn-logout:hover {
     background-color: #8db59d;
 }
+
+@media (max-width: 991.98px) {
+    .navbar-nav {
+        text-align: center;
+    }
+}
