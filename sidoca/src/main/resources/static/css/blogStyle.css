@@ -1,0 +1,171 @@
+/* -- Reset & Basic Setup -- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #FFFFFF; /* Latar belakang putih */
+    color: #333;
+}
+
+/* -- Header / Navbar -- */
+.navbar {
+    background-color: #335546;
+    padding: 10px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-weight: bold;
+    color: white;
+    font-size: 1.2rem;
+}
+
+/* -- Hero Section -- */
+.hero-section {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+     line-height: 0; 
+}
+
+/* Gambar Hero */
+.hero-image {
+    width: 100%; 
+    height: auto; 
+    display: block; 
+    object-fit: cover;
+}
+
+/* -- Article Section -- */
+.article-section {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.article-grid {
+    display: grid;
+    /* 3 kolom di desktop */
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+/* -- Article Card -- */
+.card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+}
+
+.card img {
+    width: 100%;
+    height: 200px; 
+    object-fit: cover; 
+    display: block;
+}
+
+.card-content {
+    padding: 20px;
+}
+
+.card-category {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #335546; 
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.card-content h2 {
+    font-size: 1.3rem;
+    margin: 10px 0;
+    color: #333;
+    line-height: 1.3;
+}
+
+.card-excerpt {
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 15px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card-meta {
+    font-size: 0.85rem;
+    color: #777;
+    margin-bottom: 20px;
+}
+
+.card-button {
+    display: inline-block;
+    background-color: #FFA500; 
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+.card-button:hover {
+    background-color: #E69500;
+}
+
+.no-articles {
+    text-align: center;
+    padding: 100px 20px;
+    background-color: #FAFAFA;
+    border-radius: 8px;
+    border: 1px dashed #DDD;
+}
+
+.no-articles p {
+    font-size: 1.2rem;
+    color: #777;
+    font-weight: 500;
+}
+
+/* -- Responsive Grid -- */
+@media (max-width: 900px) {
+    .article-grid {
+        /* 2 kolom di tablet */
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .article-grid {
+        /* 1 kolom di HP */
+        grid-template-columns: 1fr;
+    }
+    .hero-content h1 {
+        font-size: 2.2rem;
+    }
+    .hero-content p {
+        font-size: 1rem;
+    }
+}
