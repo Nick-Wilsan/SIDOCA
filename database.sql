@@ -144,10 +144,6 @@ INSERT INTO Akun (nama, username, email, no_hp, password, role) VALUES
 
 -- Insert sampai akun admin dulu
 
--- Mengisi Tabel Admin (id_akun = 1)
-INSERT INTO Admin (id_akun, level_akses) VALUES
-(1, 'Super Admin');
-
 -- Mengisi Tabel Organisasi (id_akun = 2 dan 3)
 INSERT INTO Organisasi (id_akun, nama_organisasi, deskripsi_organisasi) VALUES
 (2, 'Yayasan Peduli Anak Sejahtera', 'Fokus pada pendidikan dan kesehatan anak yatim.'),
