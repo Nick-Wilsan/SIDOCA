@@ -1,0 +1,228 @@
+/* -- Reset & Basic Setup -- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #FFFFFF;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* -- 1. Hero Section -- */
+.hero-section {
+    width: 100%;
+    line-height: 0; /* Menghilangkan spasi putih */
+}
+
+.hero-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+}
+
+/* -- 2. Impact Section -- */
+.impact-section {
+    max-width: 800px; /* Section ini lebih sempit */
+    margin: 50px auto;
+    padding: 0 20px;
+    text-align: center;
+}
+
+.impact-section h2 {
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: #335546;
+    margin-bottom: 15px;
+}
+
+.impact-section > p { /* Paragraf utama */
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 30px;
+}
+
+.vision-mission {
+    text-align: center;
+    border-top: 1px solid #EEE;
+    padding-top: 20px;
+}
+
+.vision-mission h3 {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #333;
+    margin-top: 15px;
+}
+
+.vision-mission p {
+    font-size: 1rem;
+    color: #555;
+}
+
+/* -- 3. Pillar Section -- */
+.pillar-section {
+    padding: 50px 20px;
+    background-color: #f8f9fa; /* Latar belakang abu-abu muda */
+}
+
+.pillar-section h2 {
+    text-align: center;
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: #335546;
+    margin-bottom: 40px;
+}
+
+.pillar-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    gap: 20px;
+}
+
+.pillar-item {
+    flex: 1;
+    background-color: #FFFFFF;
+    padding: 20px;
+    border: 1px solid #EEE;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.pillar-item .feature-icon {
+    font-size: 2rem; /* Ukuran ikon */
+    color: #335546; /* Warna ikon hijau */
+    margin-bottom: 10px;
+}
+
+.pillar-item h4 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.pillar-item p {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+/* -- 4. Timeline Section -- */
+.timeline-section {
+    padding: 50px 20px;
+}
+
+.timeline-section h2 {
+    text-align: center;
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: #335546;
+    margin-bottom: 40px;
+}
+
+.timeline {
+    position: relative;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Garis vertikal timeline */
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 5px;
+    bottom: 5px;
+    width: 3px;
+    background-color: #E0E0E0;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 25px;
+    padding-left: 30px;
+}
+
+.timeline-dot {
+    position: absolute;
+    left: 0;
+    top: 5px; 
+    width: 15px;
+    height: 15px;
+    background-color: #2574A9; /* Warna biru dari desain */
+    border-radius: 50%;
+    border: 2px solid #FFF;
+}
+
+.timeline-content strong {
+    font-size: 1.1rem;
+    color: #333;
+}
+
+/* -- 5. Team Section -- */
+.team-section {
+    padding: 50px 20px;
+    background-color: #f8f9fa; /* Latar belakang abu-abu muda */
+}
+
+.team-section h2 {
+    text-align: center;
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: #335546;
+    margin-bottom: 40px;
+}
+
+.team-grid {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+}
+
+.team-member {
+    text-align: center;
+}
+
+.team-photo-placeholder {
+    width: 100%;
+    aspect-ratio: 1 / 1; /* Membuat kotak bujur sangkar */
+    background-color: #CCCCCC;
+    border-radius: 8px; /* Kotak rounded */
+    margin-bottom: 15px;
+}
+
+.team-member h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+}
+
+
+
+/* -- Responsive -- */
+@media (max-width: 900px) {
+    .team-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2x2 grid */
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-content h1 {
+        font-size: 2.2rem;
+    }
+    .pillar-container {
+        flex-direction: column; /* Tumpuk pilar di HP */
+    }
+}
+
+@media (max-width: 480px) {
+    .team-grid {
+        grid-template-columns: 1fr; /* 1 kolom */
+    }
+}
