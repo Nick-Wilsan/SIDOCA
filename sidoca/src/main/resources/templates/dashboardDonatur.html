@@ -11,7 +11,7 @@
     </head>
 
     <body>
-        <header th:replace="~{headerDonatur :: navbarDonatur}"></header>
+        <header th:replace="~{header :: navbarDonatur}"></header>
 
         <div class="container main-content">
             <div th:if="${success}" class="alert alert-success alert-dismissible fade show mt-3" role="alert">
@@ -34,8 +34,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- <div th:insert="~{footer :: bawah}"></div> -->
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     </body>

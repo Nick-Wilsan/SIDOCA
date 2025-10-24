@@ -152,6 +152,35 @@ public class AuthController extends BaseController{
         } 
         return "kelolaAkun";
     }
+    
+    @GetMapping("/pusatBantuan")
+    public String PusatBantuan() {
+        return "pusatBantuan";
+
+    @GetMapping("/faq")
+    public String FAQ() {
+        return "faq";
+    }
+
+    @GetMapping("/hubungiKami")
+    public String hubungiKami() {
+        return "hubungiKami";
+    }
+
+    @GetMapping("/layanan")
+    public String Layanan() {
+        return "layanan";
+    }
+
+    @GetMapping("/kebijakanPrivasi")
+    public String KebijakanPrivasi() {
+        return "kebijakanPrivasi";
+    }
+
+    @GetMapping("/blog")
+    public String Blog() {
+        return "blog";
+    }
 
     @GetMapping("/dashboard")
     public String dashboard() {
