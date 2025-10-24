@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Kebijakan Privasi - SIDOCA</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+        <link rel="stylesheet" th:href="@{/css/pusatBantuanStyle.css}" />
+        <link rel="stylesheet" th:href="@{/css/headerStyleDonatur.css}" />
+        <link rel="stylesheet" th:href="@{/css/footerStyle.css}" />
+        <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}" />
+    </head>
+    <body>
+        <header th:replace="~{headerFooter :: navbarFooter}"></header>
+
+        <main class="container mt-5 mb-5">
+            <h1 class="text-center fw-bold mb-4 text-green"><u>PUSAT BANTUAN</u></h1>
+
+  <!-- MAIN CONTENT -->
+    <div class="card mx-auto shadow-sm help-card">
+      <div class="card-body text-start p-4">
+        <p class="mb-3">sidoca@gmail.com</p>
+        <p class="mb-3">+62 823 8429 4702</p>
+        <p>Jalan Kebaikan, Kota Malang</p>
+      </div>
+    </div>
+  </main>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.js"></script>
+
+        <footer>
+            <div th:replace="~{footer :: footer}"></div>
+        </footer>
+    </body>
+</html>   
