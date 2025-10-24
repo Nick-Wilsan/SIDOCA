@@ -1,0 +1,105 @@
+:root {
+    --sidoca-green: #3a5a40;
+    --sidoca-orange: #fcac4b;
+    --sidoca-light-gray: #f8f9fa;
+}
+
+body {
+    background-color: var(--sidoca-light-gray);
+}
+
+.hero-section {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../images/image.png");
+    background-size: cover;
+    background-position: center;
+    color: white;
+}
+
+.hero-title {
+    font-weight: 700;
+}
+
+.hero-subtitle {
+    font-size: 1.1rem;
+    color: #e9ecef;
+}
+
+.campaign-card {
+    border: none;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.campaign-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.sisa-hari-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #333;
+    padding: 0.25rem 0.6rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.card-title {
+    font-weight: 600;
+    color: #212529;
+    /* Truncate long titles */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 48px; /* Adjust based on font size and line height */
+}
+
+.organizer {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.progress-bar {
+    background-color: var(--sidoca-green);
+}
+
+.dana-info {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+.dana-angka {
+    font-size: 0.95rem;
+    color: #212529;
+}
+
+.btn-donasi {
+    background-color: var(--sidoca-orange);
+    color: white;
+    font-weight: bold;
+    border: none;
+}
+
+.btn-donasi:hover {
+    background-color: #e89c3a;
+    color: white;
+}
+
+.btn-lihat-semua {
+    background-color: var(--sidoca-green);
+    color: white;
+    font-weight: bold;
+    padding: 0.75rem 2rem;
+}
+
+.btn-lihat-semua:hover {
+    background-color: #2e4a33;
+    color: white;
+}

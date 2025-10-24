@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title th:text="${judul}">Detail Kampanye</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+        <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}" />
+        <link rel="stylesheet" th:href="@{/css/headerStyleDonatur.css}" />
+        <link rel="stylesheet" th:href="@{/css/footerStyle.css}" />
+        <link rel="stylesheet" th:href="@{/css/lihatDetailKampanyeStyle.css}" />
+    </head>
+    <body>
+        <header th:replace="~{headerDonatur :: navbarDonatur}"></header>
+
+        <main class="container my-5">
+            <div class="row">
+                <div class="col-12 col-lg-8">
+                    <div class="main-image-wrapper mb-4">
+                        <img th:src="${kampanye.url_gambar_kampanye != null and !#lists.isEmpty(kampanye.url_gambar_kampanye) ? kampanye.url_gambar_kampanye[0] : '/images/image.png'}" class="img-fluid rounded" alt="Gambar Kampanye Utama" />
+                    </div>
+
+                    <h1 class="campaign-title mb-2" th:text="${kampanye.judul_kampanye}">Bantuan Korban Bencana Alam</h1>
+                    <p class="organizer-info mb-4">
+                        <i class="bi bi-person-check-fill"></i>
+                        <span th:text="${kampanye.nama_organisasi}">Organisasi Harapan Bangsa</span>
+                    </p>
+
+                    <div class="campaign-description mb-5">
+                        <h4 class="mb-3">Deskripsi Kampanye</h4>
+                        <div th:utext="${kampanye.deskripsi_kampanye}">
+                            <p>
+                                Pandemi Covid-19 bukan hanya meninggalkan luka bagi orang dewasa, tetapi juga meninggalkan beban berat bagi anak-anak yang kehilangan orang tua dan mata pencarian keluarga. Saat ini, semakin banyak anak yatim dan anak dari keluarga kurang mampu yang terdampak pandemi COVID-19 membutuhkan bantuan makanan, tempat tinggal layak, dan pendidikan yang memadai.
+                            </p>
+                            <p>
+                                Melalui kampanye ini, Yayasan Amal Indonesia bersama dengan Care To Rise mengajak kita semua untuk ikut berpartisipasi dalam mendukung 400 anak yatim dan anak-anak dari keluarga kurang mampu yang terdampak pandemi COVID-19. Setiap rupiah yang Anda donasikan berarti besar sekali bagi mereka, mulai dari menyediakan kebutuhan pokok sehari-hari, biaya pendidikan, hingga dukungan psikososial.
+                            </p>
+                            <p>Tujuan utama dari kampanye ini adalah:</p>
+                            <ul>
+                                <li>
+                                    <i class="bi bi-check-circle-fill text-success me-2"></i>Membantu kebutuhan dasar seperti pakaian, tempat tinggal layak, dan bantuan logistik harian.
+                                </li>
+                                <li>
+                                    <i class="bi bi-check-circle-fill text-success me-2"></i>Mendukung pendidikan anak-anak mencakup biaya sekolah, seragam, alat tulis, serta perlengkapan belajar lainnya.
+                                </li>
+                                <li>
+                                    <i class="bi bi-check-circle-fill text-success me-2"></i>Menyediakan pendampingan psikososial, agar anak-anak mendapatkan dukungan emosional dan sosial untuk pulih dari trauma pandemi.
+                                </li>
+                            </ul>
+                            <p>
+                                Dengan berpartisipasi dalam kampanye ini, Anda bukan hanya memberi bantuan materi, tetapi juga menyalurkan kembali semangat dan harapan kepada mereka yang sangat membutuhkannya. Setiap donasi Anda menjadi bagian dari pencerahan masa depan. Semoga setiap donasi adalah langkah kecil menuju masa depan yang lebih cerah bagi mereka.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="campaign-gallery mb-5">
+                        <h4 class="mb-3">Gambar Kampanye</h4>
+                        <div class="row g-3">
+                            <div class="col-4" th:each="gambarUrl : ${kampanye.url_gambar_kampanye}">
+                                <img th:src="${gambarUrl}" class="img-fluid rounded gallery-img" alt="Gambar Kampanye" />
+                            </div>
+                            <div class="col-4" th:if="${#lists.isEmpty(kampanye.url_gambar_kampanye)}">
+                                <img th:src="@{/images/image.png}" class="img-fluid rounded gallery-img" alt="Tidak ada gambar" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="comment-section mb-5" id="komentarSection">
+                        <h4 class="mb-4">Dukungan dan Komentar</h4>
+
+                        <div class="card mb-3 comment-card" th:each="komentar : ${kampanye.daftar_komentar}">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="bi bi-person-circle fs-4 me-2"></i>
+                                    <div>
+                                        <p class="mb-0 fw-bold" th:text="${komentar.nama_pengirim}">Nick Wilsan</p>
+                                        <small class="text-muted" th:text="${#dates.format(komentar.tanggal_komentar, 'dd MMMM yyyy HH:mm')}">23 April 2024</small>
+                                    </div>
+                                </div>
+                                <p th:text="${komentar.isi_komentar}">Semoga teman teman yang terkena bencana selalu dalam lindungan tuhan.</p>
+                            </div>
+                        </div>
+
+                        <div th:if="${#lists.isEmpty(kampanye.daftar_komentar)}" class="alert alert-info text-center">
+                            Belum ada komentar untuk kampanye ini. Jadilah yang pertama berkomentar!
+                        </div>
+
+                        <div class="card comment-form-card mt-4">
+                            <div class="card-body">
+                                <form th:action="@{/kampanye/{id}/komentar(id=${kampanye.id_kampanye})}" method="post">
+                                    <div class="d-flex align-items-start mb-3">
+                                        <i class="bi bi-person-circle fs-3 me-3"></i>
+                                        <div class="flex-grow-1">
+                                            <p class="mb-1 fw-bold" th:text="${namaUserLogin}">Nama Pengguna</p>
+                                            <textarea class="form-control" name="isiKomentar" rows="3" placeholder="Masukan harapan/dukungan/komentar pada kampanye ini" required></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-end">
+                                        <button type="submit" class="btn btn-primary-custom">Kirim</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-4">
+                    <div class="sidebar sticky-top pt-lg-0">
+                        <div class="card p-4 mb-4 shadow-sm donation-summary-card">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-muted">Terkumpul</span>
+                                <span class="text-muted">Target</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4 class="mb-0 fw-bold text-success" th:text="'Rp ' + ${#numbers.formatDecimal(kampanye.dana_terkumpul, 0, 'POINT', 0, 'COMMA')}">Rp 50.000.000</h4>
+                                <p class="mb-0 text-muted" th:text="'Rp ' + ${#numbers.formatDecimal(kampanye.target_dana, 0, 'POINT', 0, 'COMMA')}">Rp 100.000.000</p>
+                            </div>
+                            <div class="progress mb-2" style="height: 12px">
+                                <div class="progress-bar" role="progressbar" th:style="'width:' + ${kampanye.persentase_terkumpul} + '%'" th:aria-valuenow="${kampanye.persentase_terkumpul}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <small class="text-muted mb-4 d-block">Donasi terkumpul <span th:text="${kampanye.persentase_terkumpul}">50</span>% dari target <span th:text="'Rp ' + ${#numbers.formatDecimal(kampanye.target_dana, 0, 'POINT', 0, 'COMMA')}">Rp 100.000.000</span></small>
+
+                            <div class="alert alert-info text-center p-2 mb-4">
+                                <span th:text="${kampanye.sisa_hari} + ' Hari'">10 Hari</span> lagi untuk menggalang donasi
+                            </div>
+
+                            <a href="#" class="btn btn-primary-custom w-100 btn-lg">Donasi Sekarang</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer th:replace="~{footer :: footer}"></footer>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>

@@ -1,0 +1,127 @@
+:root {
+    --sidoca-green: #3a5a40;
+    --sidoca-orange: #fcac4b;
+    --sidoca-light-gray: #f8f9fa;
+    --sidoca-dark-gray: #343a40;
+}
+
+body {
+    background-color: var(--sidoca-light-gray);
+    color: var(--sidoca-dark-gray);
+}
+
+.main-image-wrapper {
+    max-height: 450px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.main-image-wrapper img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    object-position: center;
+}
+
+.campaign-title {
+    font-weight: 700;
+    color: var(--sidoca-dark-gray);
+    margin-bottom: 0.5rem;
+}
+
+.organizer-info {
+    font-size: 1.1rem;
+    color: #6c757d;
+}
+
+.organizer-info i {
+    color: var(--sidoca-green);
+    margin-right: 5px;
+}
+
+.campaign-description h4 {
+    color: var(--sidoca-dark-gray);
+    font-weight: 600;
+}
+
+.campaign-description p,
+.campaign-description li {
+    line-height: 1.8;
+    color: #495057;
+}
+
+.campaign-description ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.campaign-description ul li {
+    margin-bottom: 10px;
+}
+
+.campaign-gallery h4 {
+    color: var(--sidoca-dark-gray);
+    font-weight: 600;
+}
+
+.gallery-img {
+    height: 120px;
+    object-fit: cover;
+    object-position: center;
+    border: 1px solid #dee2e6;
+    padding: 3px;
+}
+
+.sidebar {
+    top: 20px; /* Jarak dari atas */
+}
+
+.donation-summary-card {
+    border: none;
+    background-color: white;
+    border-radius: 0.5rem;
+}
+
+.donation-summary-card h4 {
+    color: var(--sidoca-green);
+}
+
+.progress {
+    background-color: #e9ecef;
+}
+
+.progress-bar {
+    background-color: var(--sidoca-green);
+}
+
+.btn-primary-custom {
+    background-color: var(--sidoca-orange);
+    border-color: var(--sidoca-orange);
+    color: white;
+    font-weight: bold;
+}
+
+.btn-primary-custom:hover {
+    background-color: #e89c3a;
+    border-color: #e89c3a;
+    color: white;
+}
+
+/* Komentar */
+.comment-section h4 {
+    color: var(--sidoca-dark-gray);
+    font-weight: 600;
+}
+
+.comment-card {
+    border: none;
+    border-left: 5px solid var(--sidoca-green);
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.comment-form-card {
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}

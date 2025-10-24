@@ -23,10 +23,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.Date;
 import org.springframework.util.StringUtils;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import com.sidoca.Models.DTO.KampanyeVerifikasiDTO;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +31,10 @@ import java.util.HashMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import com.sidoca.Models.DTO.KampanyeDetailDTO;
+import com.sidoca.Models.AkunModel;
+import com.sidoca.Models.DTO.KampanyeAktifDTO;
+import com.sidoca.Models.DonaturModel;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class AuthController extends BaseController{
@@ -47,6 +48,9 @@ public class AuthController extends BaseController{
 
     @Autowired
     private KampanyeGambarModel kampanyeGambarModel;
+
+    @Autowired
+    private DonaturModel donaturModel;
 
     // ngambil session
     public AuthController(HttpSession session) {
@@ -67,14 +71,6 @@ public class AuthController extends BaseController{
             return "redirect:/dashboard";
         }
         return "register";
-    }
-
-    @GetMapping("/daftarKampanye")
-    public String DaftarKampanye() {
-        if (session.getAttribute("user") == null) {
-            return "redirect:/";
-        } 
-        return "daftarKampanye";
     }
     
     @GetMapping("/laporanPenggunaanDana")
@@ -468,5 +464,86 @@ public class AuthController extends BaseController{
         }
 
         return "redirect:/verifikasiKampanye";
+    }
+
+    @GetMapping("/daftarKampanye")
+    public ModelAndView daftarKampanye(@RequestParam(name = "keyword", required = false) String keyword,
+                                        @RequestParam(name = "urutkan", required = false) String urutkan) {
+        if (session.getAttribute("user") == null) {
+            return new ModelAndView("redirect:/");
+        }
+
+        // Panggil method baru dari KampanyeModel
+        List<KampanyeAktifDTO> daftarKampanye = kampanyeModel.getKampanyeAktif(keyword, urutkan);
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("judul", "Daftar Kampanye");
+        data.put("kampanyeList", daftarKampanye);
+        data.put("keyword", keyword); // Kirim kembali keyword untuk ditampilkan di search bar
+        data.put("urutkan", urutkan); // Kirim kembali pilihan urutan
+
+        return loadView("daftarKampanye", data);
+    }
+
+    @GetMapping("/kampanye/{id}")
+    public ModelAndView lihatDetailKampanye(@PathVariable("id") int idKampanye) {
+        if (session.getAttribute("user") == null) {
+            return new ModelAndView("redirect:/");
+        }
+
+        KampanyeDetailDTO detailKampanye = kampanyeModel.getDetailKampanyeById(idKampanye);
+
+        if (detailKampanye == null) {
+            return new ModelAndView("redirect:/daftarKampanye?error=notfound");
+        }
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("judul", "Detail Kampanye");
+        data.put("kampanye", detailKampanye);
+
+        // --- PERBAIKAN UTAMA ---
+        // Gunakan kelas 'Akun' yang benar
+        Akun loggedInUser = (Akun) session.getAttribute("user");
+        if (loggedInUser != null) {
+            data.put("namaUserLogin", loggedInUser.getNama()); // Gunakan getter 'getNama()'
+        } else {
+            data.put("namaUserLogin", "Anonim");
+        }
+
+        return loadView("lihatDetailKampanye", data);
+    }
+
+    @PostMapping("/kampanye/{id}/komentar")
+    public ModelAndView tambahKomentar(@PathVariable("id") int idKampanye,
+                                        @RequestParam("isiKomentar") String isiKomentar,
+                                        RedirectAttributes ra) {
+
+        // --- PERBAIKAN UTAMA ---
+        // Gunakan kelas 'Akun' yang benar
+        Akun loggedInUser = (Akun) session.getAttribute("user");
+
+        if (loggedInUser == null) {
+            return new ModelAndView("redirect:/");
+        }
+
+        // Hanya donatur yang bisa berkomentar
+        if (!"donatur".equals(loggedInUser.getRole())) {
+            ra.addFlashAttribute("error", "Hanya donatur yang dapat memberikan komentar.");
+            return new ModelAndView("redirect:/kampanye/" + idKampanye);
+        }
+
+        // Ambil id_donatur berdasarkan id_akun
+        Integer idDonatur = donaturModel.getDonaturIdByAkunId(loggedInUser.getId_akun()); // Gunakan getter 'getId_akun()'
+
+        if (idDonatur == null) {
+            ra.addFlashAttribute("error", "Gagal mengirim komentar. Data donatur tidak ditemukan.");
+            return new ModelAndView("redirect:/kampanye/" + idKampanye);
+        }
+
+        if (isiKomentar != null && !isiKomentar.trim().isEmpty()) {
+            kampanyeModel.tambahKomentar(idKampanye, idDonatur, isiKomentar);
+        }
+
+        return new ModelAndView("redirect:/kampanye/" + idKampanye + "#komentarSection");
     }
 }
