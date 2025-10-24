@@ -1,0 +1,32 @@
+/* === Warna dasar SIDOCA === */
+:root {
+    --green: #214a2e;
+    --light-green: #edf5f0;
+}
+
+/* Judul utama */
+.text-green {
+    color: var(--green);
+}
+
+/* Konten utama */
+main {
+    max-width: 800px;
+    line-height: 1.7;
+}
+
+ul {
+    margin-left: 1.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    main {
+        padding: 0 1rem;
+    }
+
+    .footer .container {
+        flex-direction: column;
+        text-align: center;
+    }
+}

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Kebijakan Privasi - SIDOCA</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+        <link rel="stylesheet" th:href="@{/css/kebijakanPrivasiStyle.css}" />
+        <link rel="stylesheet" th:href="@{/css/headerStyleDonatur.css}" />
+        <link rel="stylesheet" th:href="@{/css/footerStyle.css}" />
+        <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}" />
+    </head>
+    <body>
+        <header th:replace="~{headerFooter :: navbarFooter}"></header>
+
+        <main class="container mt-5 mb-5">
+            <h1 class="text-center fw-bold mb-4 text-green"><u>KEBIJAKAN PRIVASI</u></h1>
+
+            <p class="lead">
+                Platform kami, DonasiYuk, berkomitmen untuk melindungi privasi Anda. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, mengungkapkan, dan menjaga informasi Anda saat Anda mengunjungi platform kami.
+                Harap baca kebijakan privasi ini dengan cermat. Jika Anda tidak setuju dengan ketentuan kebijakan privasi ini, mohon untuk tidak mengakses situs ini.
+            </p>
+
+            <section class="mt-5">
+                <h4 class="text-green fw-bold"><u>Bagaimana kami menggunakan informasi Anda</u></h4>
+                <p>
+                    Memiliki informasi yang akurat tentang Anda memungkinkan kami untuk memberikan Anda pengalaman yang lancar, efisien, dan disesuaikan. Secara khusus, kami dapat menggunakan informasi yang dikumpulkan tentang Anda untuk:
+                </p>
+                <ul>
+                    <li>Mengelola donasi dan kampanye.</li>
+                    <li>Meningkatkan efisiensi dan pengoperasian Situs.</li>
+                    <li>Memantau dan menganalisis penggunaan dan tren untuk meningkatkan pengalaman Anda dengan Situs.</li>
+                    <li>Memberi tahu Anda tentang pembaruan pada Situs.</li>
+                </ul>
+            </section>
+
+            <section class="mt-4">
+                <h4 class="text-green fw-bold"><u>Berbagi dan Pengungkapan Data</u></h4>
+                <p>Kami tidak akan membagikan informasi Anda dengan pihak ketiga kecuali dalam situasi tertentu, seperti:</p>
+                <ul>
+                    <li><b>Dengan Penyedia Layanan Kami:</b> Kami dapat membagikan informasi dengan vendor atau penyedia layanan yang bekerja atas nama kami.</li>
+                    <li><b>Kewajiban Hukum:</b> Jika kami diwajibkan mengungkapkan informasi berdasarkan hukum atau peraturan.</li>
+                </ul>
+            </section>
+
+            <section class="mt-4">
+                <h4 class="text-green fw-bold"><u>Keamanan Data</u></h4>
+                <p>
+                    Kami mengambil tindakan keamanan administratif, teknis, dan fisik untuk membantu melindungi informasi pribadi Anda. Meskipun kami berupaya melindungi informasi Anda, tidak ada tindakan keamanan yang sempurna atau bebas
+                    dari sabotase.
+                </p>
+            </section>
+
+            <section class="mt-4">
+                <h4 class="text-green fw-bold"><u>Hak Hak Anda</u></h4>
+                <p>Anda memiliki hak untuk mengakses, memperbaiki, atau meminta penghapusan atas data pribadi Anda. Anda dapat mengirimkan permintaan tersebut kapan saja dengan menghubungi kami melalui informasi kontak di bawah.</p>
+            </section>
+
+            <section class="mt-4">
+                <h4 class="text-green fw-bold"><u>Penggunaan Cookie</u></h4>
+                <p>Kami menggunakan cookie untuk membantu menyesuaikan pengalaman Anda di Situs. Anda dapat menonaktifkan cookie melalui pengaturan browser Anda, namun hal ini dapat memengaruhi fungsi dan kinerja situs.</p>
+            </section>
+
+            <section class="mt-4">
+                <h4 class="text-green fw-bold"><u>Perubahan pada Kebijakan Ini</u></h4>
+                <p>
+                    Kami berhak memperbarui atau mengubah Kebijakan Privasi ini kapan saja. Perubahan akan diberlakukan segera setelah pembaruan dilakukan di Situs kami. Kami mendorong Anda untuk meninjau kebijakan ini secara berkala agar
+                    tetap mengetahui pembaruannya.
+                </p>
+            </section>
+
+            <section class="mt-4 mb-5">
+                <h4 class="text-green fw-bold"><u>Kontak Kami</u></h4>
+                <p><i class="bi bi-envelope-fill"></i> sidoca@gmail.com</p>
+                <p><i class="bi bi-telephone-fill"></i> +62 823 8429 4702</p>
+            </section>
+        </main>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.js"></script>
+
+        <footer>
+            <div th:replace="~{footer :: footer}"></div>
+        </footer>
+    </body>
+</html>
