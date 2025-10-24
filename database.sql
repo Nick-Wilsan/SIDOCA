@@ -117,6 +117,17 @@ CREATE TABLE Leaderboard (
 ALTER TABLE akun
 ADD COLUMN no_hp VARCHAR(15) NULL AFTER email;
 
+-- HAPUS KOLOM GAMBAR KAMPANYE LAMA DARI TABEL KAMPANYE
+ALTER TABLE Kampanye DROP COLUMN gambar_kampanye;
+
+-- BUAT TABEL BARU UNTUK MENYIMPAN GAMBAR KAMPANYE
+CREATE TABLE Kampanye_Gambar (
+    id_gambar INT PRIMARY KEY AUTO_INCREMENT,
+    id_kampanye INT NOT NULL,
+    url_gambar VARCHAR(255) NOT NULL,
+    FOREIGN KEY (id_kampanye) REFERENCES Kampanye(id_kampanye)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
 
 -- 1. Akun Admin 1
 INSERT INTO Akun (nama, username, email, no_hp, password, role) VALUES
