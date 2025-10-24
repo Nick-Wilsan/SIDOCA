@@ -1,0 +1,41 @@
+        .hero-banner {
+            position: relative;
+            border-radius: 1rem;
+            overflow: hidden;
+            color: white;
+            margin-top: 1.5rem;
+            max-width: 80%;
+            margin: 20px auto;
+
+        }
+        .hero-banner .hero-image {
+            width: 100%;
+            object-fit: cover;
+            filter: brightness(0.5);
+        }
+        .hero-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 80%;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f8f9fa; 
+        }
+        .main-content {
+            flex: 1;
+        }
+        
+        .div2 {
+            position: relative; 
+            width: 100%;
+            left: 0;
+            bottom: 0;
+            margin-top: 5rem;
+        }
