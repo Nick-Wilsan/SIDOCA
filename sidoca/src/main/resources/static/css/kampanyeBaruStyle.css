@@ -1,0 +1,44 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.form-container {
+    max-width: 700px;
+    background-color: #ffffff;
+    padding: 2.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.title-green {
+    color: #3a5a40; /* Warna hijau dari style Anda */
+}
+
+.upload-area {
+    border: 2px dashed #ced4da;
+    border-radius: 0.375rem;
+    padding: 2rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.upload-area:hover {
+    background-color: #f1f3f5;
+}
+
+.upload-text {
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+.btn-buat-kampanye {
+    background-color: #3a5a40;
+    color: white;
+    font-weight: bold;
+    padding: 0.75rem;
+}
+
+.btn-buat-kampanye:hover {
+    background-color: #2e4a33;
+    color: white;
+}
