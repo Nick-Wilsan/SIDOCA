@@ -10,8 +10,20 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.sidoca.Models.AkunModel;
+import com.sidoca.Models.KampanyeGambarModel;
+
 import jakarta.servlet.http.HttpSession;
 import com.sidoca.Models.DataBaseClass.Akun;
+
+import com.sidoca.Models.KampanyeModel;
+import com.sidoca.Models.DataBaseClass.Kampanye;
+import com.sidoca.Models.DataBaseClass.KampanyeGambar;
+
+import org.springframework.web.multipart.MultipartFile;
+import java.io.File;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.sql.Date;
 
 @Controller
 public class AuthController extends BaseController{
@@ -19,6 +31,12 @@ public class AuthController extends BaseController{
 
     @Autowired
     private AkunModel akunModel;
+
+    @Autowired
+    private KampanyeModel kampanyeModel;
+
+    @Autowired
+    private KampanyeGambarModel kampanyeGambarModel;
 
     // ngambil session
     public AuthController(HttpSession session) {
@@ -332,10 +350,67 @@ public class AuthController extends BaseController{
             ra.addFlashAttribute("error", "Registrasi gagal, coba lagi.");
             return "redirect:/register";            
         }
+    }
 
-        // Map<String, Object> data = new HashMap<>();
-        // data.put("judul", "Halaman dashboard");
+    @PostMapping("/buat-kampanye")
+    public String buatKampanye(@RequestParam("judulKampanye") String judul,
+                            @RequestParam("deskripsiKampanye") String deskripsi,
+                            @RequestParam("targetDana") BigDecimal targetDana,
+                            @RequestParam("batasWaktu") Date batasWaktu,
+                            @RequestParam("fileUpload") MultipartFile[] files, // Ubah menjadi array
+                            HttpSession session,
+                            RedirectAttributes ra) {
 
-        // return loadView("dashboard", data);
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/";
+        }
+
+        // Membuat objek Kampanye
+        Kampanye kampanye = new Kampanye();
+        kampanye.setId_akun(user.getId_akun());
+        kampanye.setJudul_kampanye(judul);
+        kampanye.setDeskripsi_kampanye(deskripsi);
+        kampanye.setTarget_dana(targetDana);
+        kampanye.setBatas_waktu(batasWaktu);
+        kampanye.setStatus_kampanye("menunggu"); // Status awal
+
+        // Simpan data kampanye dan dapatkan ID-nya
+        int kampanyeId = kampanyeModel.saveKampanye(kampanye);
+
+        if (kampanyeId == -1) {
+            ra.addFlashAttribute("error", "Gagal membuat kampanye.");
+            return "redirect:/kampanyeBaru";
+        }
+
+        // Proses dan simpan setiap file yang diunggah
+        for (MultipartFile file : files) {
+            if (!file.isEmpty()) {
+                try {
+                    String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+                    String uploadDir = "src/main/resources/static/images/campaigns/";
+                    File directory = new File(uploadDir);
+                    if (!directory.exists()) {
+                        directory.mkdirs();
+                    }
+
+                    File dest = new File(uploadDir + fileName);
+                    file.transferTo(dest);
+
+                    // Simpan URL gambar ke tabel Kampanye_Gambar
+                    KampanyeGambar gambar = new KampanyeGambar();
+                    gambar.setId_kampanye(kampanyeId);
+                    gambar.setUrl_gambar("/images/campaigns/" + fileName);
+                    kampanyeGambarModel.saveGambar(gambar);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    ra.addFlashAttribute("error", "Gagal mengunggah salah satu file gambar.");
+                    // Lanjutkan loop jika satu file gagal
+                }
+            }
+        }
+        ra.addFlashAttribute("success", "Kampanye berhasil dibuat dan menunggu persetujuan.");
+        return "redirect:/dashboardOrganisasi";
     }
 }
