@@ -135,9 +135,6 @@ public class AuthController extends BaseController{
     
     @GetMapping("/aboutUs")
     public String AboutUs() {
-        if (session.getAttribute("user") == null) {
-            return "redirect:/";
-        } 
         return "aboutUs";
     }
 
