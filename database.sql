@@ -153,9 +153,9 @@ INSERT INTO Akun (nama, username, email, no_hp, password, role) VALUES
 INSERT INTO Akun (nama, username, email, no_hp, password, role) VALUES
 ('Metteu AK Saragih', 'metteu', 'metteusaragih@gmail.com', '082384294702', PASSWORD('metteu123'), 'donatur');
 
--- Insert sampai akun admin dulu
-
 -- Mengisi Tabel Organisasi (id_akun = 2 dan 3)
 INSERT INTO Organisasi (id_akun, nama_organisasi, deskripsi_organisasi) VALUES
 (3, 'Yayasan Peduli Anak Sejahtera', 'Fokus pada pendidikan dan kesehatan anak yatim.'),
 (4, 'Panti Jompo Kasih Ibu', 'Menyediakan tempat tinggal dan perawatan bagi lansia.');
+
+-- Input Semua
