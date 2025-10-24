@@ -1,5 +1,4 @@
 package com.sidoca.controllers;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,22 +7,33 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.sidoca.Models.AkunModel;
 import com.sidoca.Models.KampanyeGambarModel;
-
 import jakarta.servlet.http.HttpSession;
 import com.sidoca.Models.DataBaseClass.Akun;
-
 import com.sidoca.Models.KampanyeModel;
 import com.sidoca.Models.DataBaseClass.Kampanye;
 import com.sidoca.Models.DataBaseClass.KampanyeGambar;
-
 import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.Date;
+import org.springframework.util.StringUtils;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import com.sidoca.Models.DTO.KampanyeVerifikasiDTO;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import com.sidoca.Models.DTO.KampanyeDetailDTO;
 
 @Controller
 public class AuthController extends BaseController{
@@ -129,14 +139,6 @@ public class AuthController extends BaseController{
             return "redirect:/";
         } 
         return "aboutUs";
-    }
-
-    @GetMapping("/verifikasiKampanye")
-    public String VerifikasiKampanye() {
-        if (session.getAttribute("user") == null) {
-            return "redirect:/";
-        } 
-        return "verifikasiKampanye";
     }
 
     @GetMapping("/verifikasiPenggunaanDana")
@@ -387,22 +389,22 @@ public class AuthController extends BaseController{
         for (MultipartFile file : files) {
             if (!file.isEmpty()) {
                 try {
-                    String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-                    String uploadDir = "src/main/resources/static/images/campaigns/";
-                    File directory = new File(uploadDir);
-                    if (!directory.exists()) {
-                        directory.mkdirs();
+                    String fileName = StringUtils.cleanPath(System.currentTimeMillis() + "_" + file.getOriginalFilename());
+                    Path uploadPath = Paths.get("src/main/resources/static/images/campaigns/");
+                
+                    if (!Files.exists(uploadPath)) {
+                        Files.createDirectories(uploadPath);
                     }
-
-                    File dest = new File(uploadDir + fileName);
-                    file.transferTo(dest);
-
+                
+                    Path filePath = uploadPath.resolve(fileName);
+                    Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+                
                     // Simpan URL gambar ke tabel Kampanye_Gambar
                     KampanyeGambar gambar = new KampanyeGambar();
                     gambar.setId_kampanye(kampanyeId);
                     gambar.setUrl_gambar("/images/campaigns/" + fileName);
                     kampanyeGambarModel.saveGambar(gambar);
-
+                
                 } catch (IOException e) {
                     e.printStackTrace();
                     ra.addFlashAttribute("error", "Gagal mengunggah salah satu file gambar.");
@@ -412,5 +414,62 @@ public class AuthController extends BaseController{
         }
         ra.addFlashAttribute("success", "Kampanye berhasil dibuat dan menunggu persetujuan.");
         return "redirect:/dashboardOrganisasi";
+    }
+
+    @GetMapping("/verifikasiKampanye")
+    public ModelAndView VerifikasiKampanye() { // Ubah tipe return menjadi ModelAndView
+        if (session.getAttribute("user") == null) {
+            return new ModelAndView("redirect:/");
+        } 
+
+        // Ambil daftar kampanye dari model
+        List<KampanyeVerifikasiDTO> daftarKampanye = kampanyeModel.getKampanyeMenungguVerifikasi();
+
+        // Siapkan data untuk dikirim ke view
+        Map<String, Object> data = new HashMap<>();
+        data.put("judul", "Verifikasi Kampanye");
+        data.put("kampanyeList", daftarKampanye);
+
+        // Kirim data ke view "verifikasiKampanye"
+        return loadView("verifikasiKampanye", data);
+    }
+
+    @GetMapping("/verifikasiKampanye/detail/{id}")
+    public ModelAndView verifikasiDetailKampanye(@PathVariable("id") int id) {
+        if (session.getAttribute("user") == null) {
+            return new ModelAndView("redirect:/");
+        }
+
+        KampanyeDetailDTO detail = kampanyeModel.getDetailKampanyeById(id);
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("judul", "Detail Verifikasi");
+        data.put("kampanyeDetail", detail);
+
+        return loadView("verifikasiDetailKampanye", data);
+    }
+
+    @PostMapping("/verifikasi-kampanye/proses")
+    public String prosesVerifikasiKampanye(@RequestParam("id_kampanye") int idKampanye,
+                                            @RequestParam("action") String action,
+                                            @RequestParam(name = "alasan", required = false) String alasan, // Ambil parameter 'alasan'
+                                            RedirectAttributes ra) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/";
+        }
+
+        String newStatus = action.equals("setuju") ? "aktif" : "ditolak";
+
+        // Panggil method model yang sudah diperbarui dengan parameter alasan
+        boolean success = kampanyeModel.updateStatusKampanye(idKampanye, newStatus, alasan);
+
+        if (success) {
+            String message = "Kampanye berhasil di" + (action.equals("setuju") ? "setujui." : "tolak.");
+            ra.addFlashAttribute("success", message);
+        } else {
+            ra.addFlashAttribute("error", "Gagal memperbarui status kampanye.");
+        }
+
+        return "redirect:/verifikasiKampanye";
     }
 }
