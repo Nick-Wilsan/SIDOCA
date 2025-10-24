@@ -179,4 +179,4 @@ public class KampanyeModel extends BaseModel {
         e.printStackTrace();
     }
 }
-}  
+}
