@@ -40,11 +40,12 @@ CREATE TABLE Kampanye (
     deskripsi_kampanye TEXT,
     target_dana DECIMAL(15,2) NOT NULL,
     batas_waktu DATE,
-    status_kampanye ENUM('aktif', 'nonaktif', 'selesai') DEFAULT 'aktif',
+    -- UBAH BARIS DI BAWAH INI
+    status_kampanye ENUM('aktif', 'nonaktif', 'selesai', 'menunggu') DEFAULT 'menunggu',
     gambar_kampanye VARCHAR(255),
     FOREIGN KEY (id_akun) REFERENCES Akun(id_akun)
         ON DELETE CASCADE ON UPDATE CASCADE
-);
+    );
 
 CREATE TABLE Donasi (
     id_donasi INT PRIMARY KEY AUTO_INCREMENT,
@@ -116,6 +117,17 @@ CREATE TABLE Leaderboard (
 ALTER TABLE akun
 ADD COLUMN no_hp VARCHAR(15) NULL AFTER email;
 
+-- HAPUS KOLOM GAMBAR KAMPANYE LAMA DARI TABEL KAMPANYE
+ALTER TABLE Kampanye DROP COLUMN gambar_kampanye;
+
+-- BUAT TABEL BARU UNTUK MENYIMPAN GAMBAR KAMPANYE
+CREATE TABLE Kampanye_Gambar (
+    id_gambar INT PRIMARY KEY AUTO_INCREMENT,
+    id_kampanye INT NOT NULL,
+    url_gambar VARCHAR(255) NOT NULL,
+    FOREIGN KEY (id_kampanye) REFERENCES Kampanye(id_kampanye)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
 
 -- 1. Akun Admin 1
 INSERT INTO Akun (nama, username, email, no_hp, password, role) VALUES
@@ -142,10 +154,6 @@ INSERT INTO Akun (nama, username, email, no_hp, password, role) VALUES
 ('Metteu AK Saragih', 'metteu', 'metteusaragih@gmail.com', '082384294702', PASSWORD('metteu123'), 'donatur');
 
 -- Insert sampai akun admin dulu
-
--- Mengisi Tabel Admin (id_akun = 1)
-INSERT INTO Admin (id_akun, level_akses) VALUES
-(1, 'Super Admin');
 
 -- Mengisi Tabel Organisasi (id_akun = 2 dan 3)
 INSERT INTO Organisasi (id_akun, nama_organisasi, deskripsi_organisasi) VALUES
