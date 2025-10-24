@@ -157,10 +157,5 @@ INSERT INTO Akun (nama, username, email, no_hp, password, role) VALUES
 
 -- Mengisi Tabel Organisasi (id_akun = 2 dan 3)
 INSERT INTO Organisasi (id_akun, nama_organisasi, deskripsi_organisasi) VALUES
-(2, 'Yayasan Peduli Anak Sejahtera', 'Fokus pada pendidikan dan kesehatan anak yatim.'),
-(3, 'Panti Jompo Kasih Ibu', 'Menyediakan tempat tinggal dan perawatan bagi lansia.');
-
--- Mengisi Tabel Donatur (id_akun = 4 dan 5)
-INSERT INTO Donatur (id_akun, total_donasi) VALUES
-(4, 0.00), -- Donatur 1
-(5, 0.00); -- Donatur 2
+(3, 'Yayasan Peduli Anak Sejahtera', 'Fokus pada pendidikan dan kesehatan anak yatim.'),
+(4, 'Panti Jompo Kasih Ibu', 'Menyediakan tempat tinggal dan perawatan bagi lansia.');
