@@ -156,6 +156,7 @@ public class AuthController extends BaseController{
     @GetMapping("/pusatBantuan")
     public String PusatBantuan() {
         return "pusatBantuan";
+    }
 
     @GetMapping("/faq")
     public String FAQ() {
