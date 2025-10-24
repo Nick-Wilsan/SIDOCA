@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <title th:text="${judul}">SIDOCA</title>
+        <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}" />
+        <link rel="stylesheet" th:href="@{/css/dashboardStyleOrganisasi.css}" />
+        <link rel="stylesheet" th:href="@{/css/headerStyleOrganisasi.css}" />
+        </head>
+    <body>
+        <!-- <header th:replace="~{header :: navbarOrganisasi}"></header> -->
+        <div class="container">
+            <h1>Selamat Datang di Dashboard Organisasi, <span th:text="${nama}">[Nama]</span>!</h1>
+            <a th:href="@{/logout}" class="btn btn-logout"> Logout </a>
+            </div>
+    </body>
+</html>

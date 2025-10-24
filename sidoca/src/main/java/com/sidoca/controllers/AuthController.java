@@ -82,17 +82,51 @@ public class AuthController extends BaseController{
     }
 
     @GetMapping("/dashboard")
-    public ModelAndView dashboard() {
+    public String dashboard() {
         if (session.getAttribute("user") == null) {
-            return new ModelAndView("redirect:/");
+            return "redirect:/";
         }
 
         Akun user = (Akun) session.getAttribute("user");
-        return loadView("dashboard", java.util.Map.of(
-            "judul", "Dashboard Pengguna",
-            "nama", user.getNama(),
-            "role", user.getRole()
-        ));
+        String role = user.getRole();
+
+        switch (role) {
+            case "donatur":
+                return "redirect:/dashboardDonatur";
+            case "organisasi":
+                return "redirect:/dashboardOrganisasi";
+            case "admin":
+                return "redirect:/dashboardAdmin";
+            default:
+                return "redirect:/";
+        }
+    }
+
+    @GetMapping("/dashboardDonatur")
+    public ModelAndView dashboardDonatur() {
+        if (session.getAttribute("user") == null) {
+            return new ModelAndView("redirect:/");
+        }
+        Akun user = (Akun) session.getAttribute("user");
+        return loadView("dashboardDonatur", java.util.Map.of("Judul", "Dashboard Donatur", "nama", user.getNama()));
+    }
+    
+    @GetMapping("/dashboardOrganisasi")
+    public ModelAndView dashboardOrganisasi() {
+        if (session.getAttribute("user") == null) {
+            return new ModelAndView("redirect:/");
+        }
+        Akun user = (Akun) session.getAttribute("user");
+        return loadView("dashboardOrganisasi", java.util.Map.of("Judul", "Dashboard Organisasi", "nama", user.getNama()));
+    }
+
+    @GetMapping("/dashboardAdmin")
+    public ModelAndView dashboardAdmin() {
+        if (session.getAttribute("user") == null) {
+            return new ModelAndView("redirect:/");
+        }
+        Akun user = (Akun) session.getAttribute("user");
+        return loadView("dashboardAdmin", java.util.Map.of("Judul", "Dashboard Admin", "nama", user.getNama()));
     }
 
     @PostMapping("/login")
