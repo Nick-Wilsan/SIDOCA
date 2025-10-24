@@ -126,7 +126,7 @@ public class AuthController extends BaseController{
         if (session.getAttribute("user") == null) {
             return "redirect:/";
         } 
-        return "verifkasiPenggunaanDana";
+        return "verifikasiPenggunaanDana";
     }
 
     @GetMapping("/verifikasiPencairanDana")
