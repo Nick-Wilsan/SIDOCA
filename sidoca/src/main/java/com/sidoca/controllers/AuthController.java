@@ -548,7 +548,7 @@ public class AuthController extends BaseController{
             return "redirect:/";
         }
 
-        String newStatus = action.equals("setuju") ? "aktif" : "ditolak";
+        String newStatus = action.equals("setuju") ? "aktif" : "nonaktif";
 
         // Panggil method model yang sudah diperbarui dengan parameter alasan
         boolean success = kampanyeModel.updateStatusKampanye(idKampanye, newStatus, alasan);
