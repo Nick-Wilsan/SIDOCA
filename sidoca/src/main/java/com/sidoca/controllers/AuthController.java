@@ -197,6 +197,71 @@ public class AuthController extends BaseController{
         return loadView("dashboardDonatur", java.util.Map.of("Judul", "Dashboard Donatur", "nama", user.getNama()));
     }
 
+    @GetMapping("/daftarKampanye")
+    public ModelAndView daftarKampanye(@RequestParam(name = "keyword", required = false) String keyword,
+                                        @RequestParam(name = "urutkan", required = false) String urutkan) {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null) {
+            return new ModelAndView("redirect:/");
+        }
+        if (!"donatur".equals(user.getRole())) {
+            return new ModelAndView("redirect:/dashboard");
+        }
+        List<KampanyeAktifDTO> daftarKampanye = kampanyeModel.getKampanyeAktif(keyword, urutkan);
+        Map<String, Object> data = new HashMap<>();
+        data.put("judul", "Daftar Kampanye");
+        data.put("kampanyeList", daftarKampanye);
+        data.put("keyword", keyword);
+        data.put("urutkan", urutkan);
+
+        return loadView("daftarKampanye", data);
+    }
+
+    @GetMapping("/kampanye/{id}")
+    public ModelAndView lihatDetailKampanye(@PathVariable("id") int idKampanye) {
+        if (session.getAttribute("user") == null) {
+            return new ModelAndView("redirect:/");
+        }
+        KampanyeDetailDTO detailKampanye = kampanyeModel.getDetailKampanyeById(idKampanye);
+        if (detailKampanye == null) {
+            return new ModelAndView("redirect:/daftarKampanye?error=notfound");
+        }
+        Map<String, Object> data = new HashMap<>();
+        data.put("judul", "Detail Kampanye");
+        data.put("kampanye", detailKampanye);
+        Akun loggedInUser = (Akun) session.getAttribute("user");
+        if (loggedInUser != null) {
+            data.put("namaUserLogin", loggedInUser.getNama()); 
+        } else {
+            data.put("namaUserLogin", "Anonim");
+        }
+
+        return loadView("lihatDetailKampanye", data);
+    }
+
+    @PostMapping("/kampanye/{id}/komentar")
+    public ModelAndView tambahKomentar(@PathVariable("id") int idKampanye,
+                                        @RequestParam("isiKomentar") String isiKomentar,
+                                        RedirectAttributes ra) {
+        Akun loggedInUser = (Akun) session.getAttribute("user");
+        if (loggedInUser == null) {
+            return new ModelAndView("redirect:/");
+        }
+        if (!"donatur".equals(loggedInUser.getRole())) {
+            ra.addFlashAttribute("error", "Hanya donatur yang dapat memberikan komentar.");
+            return new ModelAndView("redirect:/kampanye/" + idKampanye);
+        }
+        Integer idDonatur = donaturModel.getDonaturIdByAkunId(loggedInUser.getId_akun());
+        if (idDonatur == null) {
+            ra.addFlashAttribute("error", "Gagal mengirim komentar. Data donatur tidak ditemukan.");
+            return new ModelAndView("redirect:/kampanye/" + idKampanye);
+        }
+        if (isiKomentar != null && !isiKomentar.trim().isEmpty()) {
+            kampanyeModel.tambahKomentar(idKampanye, idDonatur, isiKomentar);
+        }
+        return new ModelAndView("redirect:/kampanye/" + idKampanye + "#komentarSection");
+    }
+
     @GetMapping("/laporanPenggunaanDana")
     public ModelAndView LaporanPenggunaanDana() {
         Akun user = (Akun) session.getAttribute("user");
@@ -518,95 +583,6 @@ public class AuthController extends BaseController{
             return new ModelAndView("redirect:/dashboard");
         }
         return loadView("profilAdmin", java.util.Map.of("Judul", "Dashboard Admin", "nama", user.getNama()));
-    }
-
-
-
-    // =================================================================
-    // HALAMAN KAMPANYE (DIAKSES DONATUR DAN ORGANISASI)
-    // =================================================================
-    @GetMapping("/daftarKampanye")
-    public ModelAndView daftarKampanye(@RequestParam(name = "keyword", required = false) String keyword,
-                                        @RequestParam(name = "urutkan", required = false) String urutkan) {
-        Akun user = (Akun) session.getAttribute("user");
-        if (user == null) {
-            return new ModelAndView("redirect:/");
-        }
-        // HANYA DONATUR YANG BISA AKSES
-        if (!"donatur".equals(user.getRole())) {
-            return new ModelAndView("redirect:/dashboard");
-        }
-
-        List<KampanyeAktifDTO> daftarKampanye = kampanyeModel.getKampanyeAktif(keyword, urutkan);
-        Map<String, Object> data = new HashMap<>();
-        data.put("judul", "Daftar Kampanye");
-        data.put("kampanyeList", daftarKampanye);
-        data.put("keyword", keyword);
-        data.put("urutkan", urutkan);
-
-        return loadView("daftarKampanye", data);
-    }
-
-    @GetMapping("/kampanye/{id}")
-    public ModelAndView lihatDetailKampanye(@PathVariable("id") int idKampanye) {
-        if (session.getAttribute("user") == null) {
-            return new ModelAndView("redirect:/");
-        }
-
-        KampanyeDetailDTO detailKampanye = kampanyeModel.getDetailKampanyeById(idKampanye);
-
-        if (detailKampanye == null) {
-            return new ModelAndView("redirect:/daftarKampanye?error=notfound");
-        }
-
-        Map<String, Object> data = new HashMap<>();
-        data.put("judul", "Detail Kampanye");
-        data.put("kampanye", detailKampanye);
-
-        // --- PERBAIKAN UTAMA ---
-        // Gunakan kelas 'Akun' yang benar
-        Akun loggedInUser = (Akun) session.getAttribute("user");
-        if (loggedInUser != null) {
-            data.put("namaUserLogin", loggedInUser.getNama()); // Gunakan getter 'getNama()'
-        } else {
-            data.put("namaUserLogin", "Anonim");
-        }
-
-        return loadView("lihatDetailKampanye", data);
-    }
-
-    @PostMapping("/kampanye/{id}/komentar")
-    public ModelAndView tambahKomentar(@PathVariable("id") int idKampanye,
-                                        @RequestParam("isiKomentar") String isiKomentar,
-                                        RedirectAttributes ra) {
-
-        // --- PERBAIKAN UTAMA ---
-        // Gunakan kelas 'Akun' yang benar
-        Akun loggedInUser = (Akun) session.getAttribute("user");
-
-        if (loggedInUser == null) {
-            return new ModelAndView("redirect:/");
-        }
-
-        // Hanya donatur yang bisa berkomentar
-        if (!"donatur".equals(loggedInUser.getRole())) {
-            ra.addFlashAttribute("error", "Hanya donatur yang dapat memberikan komentar.");
-            return new ModelAndView("redirect:/kampanye/" + idKampanye);
-        }
-
-        // Ambil id_donatur berdasarkan id_akun
-        Integer idDonatur = donaturModel.getDonaturIdByAkunId(loggedInUser.getId_akun()); // Gunakan getter 'getId_akun()'
-
-        if (idDonatur == null) {
-            ra.addFlashAttribute("error", "Gagal mengirim komentar. Data donatur tidak ditemukan.");
-            return new ModelAndView("redirect:/kampanye/" + idKampanye);
-        }
-
-        if (isiKomentar != null && !isiKomentar.trim().isEmpty()) {
-            kampanyeModel.tambahKomentar(idKampanye, idDonatur, isiKomentar);
-        }
-
-        return new ModelAndView("redirect:/kampanye/" + idKampanye + "#komentarSection");
     }
 
 
