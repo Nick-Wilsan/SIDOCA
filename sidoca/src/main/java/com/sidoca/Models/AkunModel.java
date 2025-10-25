@@ -1,8 +1,5 @@
 package com.sidoca.Models;
-
-// untuk mengambil class User.java
-import com.sidoca.Models.DataBaseClass.Akun;
-
+import com.sidoca.Models.DataBaseClass.Akun;    
 import org.springframework.stereotype.Component;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
