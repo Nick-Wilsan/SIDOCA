@@ -82,5 +82,26 @@
         </footer>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const batasWaktuInput = document.getElementById('batasWaktu');
+                const buatKampanyeButton = document.querySelector('.btn-buat-kampanye');
+
+                batasWaktuInput.addEventListener('change', function () {
+                    const selectedDate = new Date(this.value);
+                    const today = new Date();
+
+                    // Mengatur jam, menit, detik, dan milidetik ke 0 untuk perbandingan tanggal saja
+                    today.setHours(0, 0, 0, 0);
+
+                    if (selectedDate < today) {
+                        alert('Batas waktu tidak boleh kurang dari tanggal hari ini.');
+                        buatKampanyeButton.disabled = true;
+                    } else {
+                        buatKampanyeButton.disabled = false;
+                    }
+                });
+            });
+        </script>
     </body>
 </html>

@@ -385,6 +385,11 @@ public class AuthController extends BaseController{
                             HttpSession session,
                             RedirectAttributes ra) {
 
+        if (batasWaktu.before(new java.util.Date())) {
+            ra.addFlashAttribute("error", "Batas waktu tidak boleh kurang dari tanggal hari ini.");
+            return new ModelAndView("redirect:/kampanyeBaru");
+        }
+
         Akun user = (Akun) session.getAttribute("user");
         if (user == null) {
             return new ModelAndView("redirect:/");
