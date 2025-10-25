@@ -625,5 +625,4 @@ public class AuthController extends BaseController{
     public String Blog() {
         return "blog";
     }
-
 }
