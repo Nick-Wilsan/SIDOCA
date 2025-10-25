@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 @Component
 public class AkunModel extends BaseModel{
@@ -74,27 +75,33 @@ public class AkunModel extends BaseModel{
     }
 
     // Mencegah SQL Injection
-    public boolean saveAkun(Akun akun) {
-    // Query dengan placeholder (?)
-    String query = "INSERT INTO akun (nama, username, email, password, role) VALUES (?, ?, ?, PASSWORD(?), ?)";
-    try (Connection conn = getConnection();
-            PreparedStatement stmt = conn.prepareStatement(query)) {
+    public int saveAkun(Akun akun) {
+        // Query dengan placeholder (?) dan request generated keys
+        String query = "INSERT INTO akun (nama, username, email, password, role) VALUES (?, ?, ?, PASSWORD(?), ?)";
+        try (Connection conn = getConnection();
+             // Menambahkan Statement.RETURN_GENERATED_KEYS
+             PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
-        // --- PENCEGAHAN SQL INJECTION DENGAN BINDING PARAMETER ---
-        // Data pengguna diikat sebagai parameter (bukan digabungkan ke string query)
-        stmt.setString(1, akun.getNama());
-        stmt.setString(2, akun.getUsername());
-        stmt.setString(3, akun.getEmail());
-        stmt.setString(4, akun.getPassword()); // Asumsi sudah di-hash di service/controller
-        stmt.setString(5, akun.getRole());
+            stmt.setString(1, akun.getNama());
+            stmt.setString(2, akun.getUsername());
+            stmt.setString(3, akun.getEmail());
+            stmt.setString(4, akun.getPassword()); // Pastikan password sudah di-handle dengan benar
+            stmt.setString(5, akun.getRole());
 
-        int rowsInserted = stmt.executeUpdate();
-        return rowsInserted > 0;
+            int rowsInserted = stmt.executeUpdate();
 
-    } catch (SQLException e) {
-        e.printStackTrace();
-        // Anda mungkin ingin menambahkan logger di sini
-        return false;
-    }
+            if (rowsInserted > 0) {
+                // Ambil generated keys (ID akun baru)
+                ResultSet generatedKeys = stmt.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    return generatedKeys.getInt(1); // Kembalikan ID akun baru
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Anda mungkin ingin menambahkan logger di sini
+        }
+        return -1; // Kembalikan -1 jika gagal
     }
 }

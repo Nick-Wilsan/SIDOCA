@@ -12,6 +12,7 @@ import com.sidoca.Models.KampanyeGambarModel;
 import jakarta.servlet.http.HttpSession;
 import com.sidoca.Models.DataBaseClass.Akun;
 import com.sidoca.Models.KampanyeModel;
+import com.sidoca.Models.OrganisasiModel;
 import com.sidoca.Models.DataBaseClass.Kampanye;
 import com.sidoca.Models.DataBaseClass.KampanyeGambar;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,6 +52,9 @@ public class AuthController extends BaseController{
 
     @Autowired
     private DonaturModel donaturModel;
+    
+    @Autowired
+    private OrganisasiModel organisasiModel;
 
     // ngambil session
     public AuthController(HttpSession session) {
@@ -325,25 +329,57 @@ public class AuthController extends BaseController{
     }
 
     // POST: Memproses data Registrasi
-    @PostMapping("/register")
+@PostMapping("/register")
     public String registerUser(@ModelAttribute("akunBaru") Akun akun, RedirectAttributes ra) {
-        
-        // Mencegah XXS
+
+        // Validasi dasar (bisa ditambahkan validasi lain)
+        if (akun.getUsername() == null || akun.getUsername().trim().isEmpty() ||
+            akun.getEmail() == null || akun.getEmail().trim().isEmpty() ||
+            akun.getPassword() == null || akun.getPassword().isEmpty() ||
+            akun.getRole() == null || akun.getRole().trim().isEmpty() ||
+            akun.getNama() == null || akun.getNama().trim().isEmpty()) {
+            ra.addFlashAttribute("error", "Semua field wajib diisi.");
+            // Kembalikan objek akun agar data yang sudah diisi tidak hilang
+            ra.addFlashAttribute("akunBaru", akun);
+            return "redirect:/register";
+        }
+
+        // Membersihkan input
         akun.setUsername(akun.getUsername().trim());
         akun.setEmail(akun.getEmail().trim());
-        // Jika form tidak mengirim 'nama', gunakan 'username' sebagai nama sementara
-        akun.setNama(akun.getUsername().trim()); 
+        akun.setNama(akun.getNama().trim());
         akun.setRole(akun.getRole().trim());
 
-        // Mencegah SQL Injection
-        boolean success = akunModel.saveAkun(akun);
+        // 1. Simpan Akun dan dapatkan ID nya
+        int idAkunBaru = akunModel.saveAkun(akun);
 
-        if (success) {
-            ra.addFlashAttribute("success", "Registrasi berhasil! Silakan masuk.");
-            return "redirect:/";
+        if (idAkunBaru > 0) { // Cek apakah akun berhasil disimpan (ID > 0)
+            boolean detailSaved = false;
+            // 2. Simpan ke tabel Donatur atau Organisasi berdasarkan role
+            if ("donatur".equals(akun.getRole())) {
+                detailSaved = donaturModel.saveDonatur(idAkunBaru);
+            } else if ("organisasi".equals(akun.getRole())) {
+                // Menggunakan nama akun sebagai nama organisasi default
+                detailSaved = organisasiModel.saveOrganisasi(idAkunBaru, akun.getNama());
+            }
+
+            // 3. Cek hasil penyimpanan detail
+            if (detailSaved) {
+                ra.addFlashAttribute("success", "Registrasi berhasil! Silakan masuk.");
+                return "redirect:/"; // Redirect ke login jika sukses
+            } else {
+                // Jika gagal menyimpan detail (Donatur/Organisasi), sebaiknya ada mekanisme rollback
+                // atau setidaknya berikan pesan error yang jelas.
+                // Untuk simplicity, kita tampilkan error umum.
+                ra.addFlashAttribute("error", "Registrasi Akun berhasil, tetapi gagal menyimpan detail role. Hubungi admin.");
+                 ra.addFlashAttribute("akunBaru", akun); // Kembalikan data form
+                return "redirect:/register";
+            }
         } else {
-            ra.addFlashAttribute("error", "Registrasi gagal, coba lagi.");
-            return "redirect:/register";            
+            // Jika saveAkun mengembalikan -1 (gagal)
+            ra.addFlashAttribute("error", "Registrasi gagal. Username atau Email mungkin sudah terdaftar.");
+            ra.addFlashAttribute("akunBaru", akun); // Kembalikan data form
+            return "redirect:/register";
         }
     }
 

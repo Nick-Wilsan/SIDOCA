@@ -31,4 +31,26 @@ public class DonaturModel extends BaseModel {
         }
         return null; // Mengembalikan null jika donatur tidak ditemukan
     }
+
+    /**
+     * Menyimpan data donatur baru berdasarkan id_akun.
+     * @param idAkun ID akun yang terhubung dengan donatur.
+     * @return boolean true jika berhasil, false jika gagal.
+     */
+    public boolean saveDonatur(int idAkun) {
+        // Query untuk insert ke tabel Donatur
+        String query = "INSERT INTO Donatur (id_akun) VALUES (?)";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, idAkun);
+
+            int rowsInserted = stmt.executeUpdate();
+            return rowsInserted > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
