@@ -33,11 +33,9 @@ import java.util.Map;
 import java.util.Random;
 import java.util.HashMap;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import com.sidoca.Models.DTO.KampanyeDetailDTO;
 import com.sidoca.Models.DTO.KampanyeAktifDTO;
 import com.sidoca.Models.DonaturModel;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class AuthController extends BaseController{
@@ -128,6 +126,8 @@ public class AuthController extends BaseController{
         session.setAttribute("akun_pending_verification", akun);
         session.setAttribute("verification_code", verificationCode);
 
+        session.setAttribute("can_access_verify_email", true);
+
         // Kirim email verifikasi
         emailService.sendVerificationEmail(akun.getEmail(), verificationCode);
 
@@ -137,6 +137,11 @@ public class AuthController extends BaseController{
 
     @GetMapping("/verifikasiEmail")
     public String showVerificationPage(HttpSession session) {
+        // Periksa flag di sini
+        if (session.getAttribute("can_access_verify_email") == null) {
+            return "redirect:/register";
+        }
+
         // Jika tidak ada akun yang menunggu verifikasi, kembalikan ke register
         if (session.getAttribute("akun_pending_verification") == null) {
             return "redirect:/register";
@@ -170,10 +175,12 @@ public class AuthController extends BaseController{
                     // Hapus data dari session setelah berhasil
                     session.removeAttribute("akun_pending_verification");
                     session.removeAttribute("verification_code");
+
+                    session.removeAttribute("can_access_verify_email");
                     return "redirect:/";
                 } else {
                     ra.addFlashAttribute("error", "Registrasi gagal setelah verifikasi. Hubungi admin.");
-                    return "redirect:/register";
+                    return "redirect:/verifikasiEmail";
                 }
             } else {
                 ra.addFlashAttribute("error", "Registrasi gagal. Username atau Email mungkin sudah terdaftar.");
@@ -212,15 +219,23 @@ public class AuthController extends BaseController{
         }
         String verificationCode = String.format("%06d", new Random().nextInt(999999));
         emailService.sendPasswordResetEmail(email, verificationCode);
-        
+
         session.setAttribute("reset_email", email);
         session.setAttribute("reset_code", verificationCode);
-        
+
+        // Tambahkan flag ini
+        session.setAttribute("can_access_verify_reset", true);
+
         return "redirect:/verify-reset-code";
     }
 
     @GetMapping("/verify-reset-code")
     public String verifyResetCodePage(HttpSession session) {
+        // Periksa flag di sini
+        if (session.getAttribute("can_access_verify_reset") == null) {
+            return "redirect:/forgot-password";
+        }
+
         if (session.getAttribute("reset_email") == null) {
             return "redirect:/forgot-password";
         }
@@ -235,7 +250,9 @@ public class AuthController extends BaseController{
         }
         if (sessionCode.equals(code)) {
             session.setAttribute("reset_verified", true);
-            session.removeAttribute("reset_code"); 
+            session.removeAttribute("reset_code");
+            // Hapus flag di sini
+            session.removeAttribute("can_access_verify_reset");
             return "redirect:/reset-password";
         } else {
             ra.addFlashAttribute("error", "Kode verifikasi salah.");
