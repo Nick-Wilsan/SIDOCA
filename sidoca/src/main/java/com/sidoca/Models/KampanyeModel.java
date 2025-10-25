@@ -181,7 +181,6 @@ public class KampanyeModel extends BaseModel {
     }
 
     public List<KampanyeAktifDTO> getKampanyeAktif(String keyword, String urutkan) {
-        updateStatusKampanyeOtomatis();
         List<KampanyeAktifDTO> kampanyeList = new ArrayList<>();
         // Query dasar untuk mengambil data kampanye yang aktif
         StringBuilder queryBuilder = new StringBuilder(
@@ -261,16 +260,6 @@ public class KampanyeModel extends BaseModel {
         }
 
         return kampanyeList;
-    }
-
-    public void updateStatusKampanyeOtomatis() {
-        String query = "UPDATE Kampanye SET status_kampanye = 'nonaktif' WHERE batas_waktu < CURDATE() AND status_kampanye = 'aktif'";
-        try (Connection conn = getConnection();
-            PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace(); // Sebaiknya gunakan logger
-        }
     }
 
     public boolean updateStatusKampanye(int idKampanye, String newStatus, String alasan) {
