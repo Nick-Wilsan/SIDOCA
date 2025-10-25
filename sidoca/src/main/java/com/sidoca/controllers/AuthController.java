@@ -329,7 +329,7 @@ public class AuthController extends BaseController{
     }
 
     // POST: Memproses data Registrasi
-@PostMapping("/register")
+    @PostMapping("/register")
     public String registerUser(@ModelAttribute("akunBaru") Akun akun, RedirectAttributes ra) {
 
         // Validasi dasar (bisa ditambahkan validasi lain)
