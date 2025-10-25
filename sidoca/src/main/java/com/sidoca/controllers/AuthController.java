@@ -14,6 +14,9 @@ import com.sidoca.Models.DataBaseClass.Akun;
 import com.sidoca.Models.KampanyeModel;
 import com.sidoca.Models.DataBaseClass.Kampanye;
 import com.sidoca.Models.DataBaseClass.KampanyeGambar;
+
+import ch.qos.logback.core.model.Model;
+
 import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
@@ -188,7 +191,6 @@ public class AuthController extends BaseController{
         if (user == null) {
         return new ModelAndView("redirect:/");
         }
-        // Khusus Donatur
         if (!"donatur".equals(user.getRole())) {
         return new ModelAndView("redirect:/dashboard");
         }
@@ -196,36 +198,51 @@ public class AuthController extends BaseController{
     }
 
     @GetMapping("/laporanPenggunaanDana")
-    public String LaporanPenggunaanDana() {
-        if (session.getAttribute("user") == null) {
-            return "redirect:/";
-        } 
-        return "laporanPenggunaanDana";
+    public ModelAndView LaporanPenggunaanDana() {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null) {
+        return new ModelAndView("redirect:/");
+        }
+        if (!"donatur".equals(user.getRole())) {
+        return new ModelAndView("redirect:/dashboard");
+        }
+        return loadView("laporanPenggunaanDana", java.util.Map.of("Judul", "Dashboard Donatur", "nama", user.getNama()));
     }
 
     @GetMapping("/riwayatDonasi")
-    public String RiwayatDonasi() {
-        if (session.getAttribute("user") == null) {
-            return "redirect:/";
-        } 
-        return "riwayatDonasi";
+    public ModelAndView RiwayatDonasi() {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null) {
+        return new ModelAndView("redirect:/");
+        }
+        if (!"donatur".equals(user.getRole())) {
+        return new ModelAndView("redirect:/dashboard");
+        }
+        return loadView("riwayatDonasi", java.util.Map.of("Judul", "Dashboard Donatur", "nama", user.getNama()));
     }
     
     @GetMapping("/leaderboard")
-    public String Leaderboard() {
-        if (session.getAttribute("user") == null) {
-            return "redirect:/";
-        } 
-        return "leaderboard";
+    public ModelAndView Leaderboard() {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null) {
+        return new ModelAndView("redirect:/");
+        }
+        if (!"donatur".equals(user.getRole())) {
+        return new ModelAndView("redirect:/dashboard");
+        }
+        return loadView("leaderboard", java.util.Map.of("Judul", "Dashboard Donatur", "nama", user.getNama()));
     }
 
     @GetMapping("/profilDonatur")
     public ModelAndView profilDonatur() {
-        if (session.getAttribute("user") == null) {
-            return new ModelAndView("redirect:/");
-        }
         Akun user = (Akun) session.getAttribute("user");
-        return loadView("profilDonatur", java.util.Map.of("Judul", "profil Donatur", "nama", user.getNama()));
+        if (user == null) {
+        return new ModelAndView("redirect:/");
+        }
+        if (!"donatur".equals(user.getRole())) {
+        return new ModelAndView("redirect:/dashboard");
+        }
+        return loadView("profilDonatur", java.util.Map.of("Judul", "Dashboard Donatur", "nama", user.getNama()));
     }
 
 
@@ -239,7 +256,6 @@ public class AuthController extends BaseController{
         if (user == null) {
             return new ModelAndView("redirect:/");
         }
-        // Khusus Organisasi
         if (!"organisasi".equals(user.getRole())) {
             return new ModelAndView("redirect:/dashboard");
         }
@@ -247,20 +263,19 @@ public class AuthController extends BaseController{
     }
 
     @GetMapping("/kampanyeBaru")
-    public String KampanyeBaru() {
+    public ModelAndView KampanyeBaru() {
         Akun user = (Akun) session.getAttribute("user");
         if (user == null) {
-            return "redirect:/";
-        } 
-        // Khusus Organisasi
-        if (!"organisasi".equals(user.getRole())) {
-            return "redirect:/dashboard";
+            return new ModelAndView("redirect:/");
         }
-        return "kampanyeBaru";
+        if (!"organisasi".equals(user.getRole())) {
+            return new ModelAndView("redirect:/dashboard");
+        }
+        return loadView("kampanyeBaru", java.util.Map.of("Judul", "Dashboard Organisasi", "nama", user.getNama()));
     }
 
     @PostMapping("/buat-kampanye")
-    public String buatKampanye(@RequestParam("judulKampanye") String judul,
+    public ModelAndView buatKampanye(@RequestParam("judulKampanye") String judul,
                             @RequestParam("deskripsiKampanye") String deskripsi,
                             @RequestParam("targetDana") BigDecimal targetDana,
                             @RequestParam("batasWaktu") Date batasWaktu,
@@ -270,9 +285,8 @@ public class AuthController extends BaseController{
 
         Akun user = (Akun) session.getAttribute("user");
         if (user == null) {
-            return "redirect:/";
+            return new ModelAndView("redirect:/");
         }
-
         // Membuat objek Kampanye
         Kampanye kampanye = new Kampanye();
         kampanye.setId_akun(user.getId_akun());
@@ -287,7 +301,7 @@ public class AuthController extends BaseController{
 
         if (kampanyeId == -1) {
             ra.addFlashAttribute("error", "Gagal membuat kampanye.");
-            return "redirect:/kampanyeBaru";
+            return new ModelAndView("redirect:/kampanyeBaru");
         }
 
         // Proses dan simpan setiap file yang diunggah
@@ -318,40 +332,55 @@ public class AuthController extends BaseController{
             }
         }
         ra.addFlashAttribute("success", "Kampanye berhasil dibuat dan menunggu persetujuan.");
-        return "redirect:/dashboardOrganisasi";
+        return new ModelAndView("redirect:/dashboardOrganisasi");
     }
 
     @GetMapping("/pencairanDana")
-    public String PencairanDana() {
-        if (session.getAttribute("user") == null) {
-            return "redirect:/";
-        } 
-        return "pencairanDana";
+    public ModelAndView PencairanDana() {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null) {
+            return new ModelAndView("redirect:/");
+        }
+        if (!"organisasi".equals(user.getRole())) {
+            return new ModelAndView("redirect:/dashboard");
+        }
+        return loadView("pencairanDana", java.util.Map.of("Judul", "Dashboard Organisasi", "nama", user.getNama()));
     }
 
     @GetMapping("/mengajukanLaporanDana")
-    public String MengajukanLaporanDana() {
-        if (session.getAttribute("user") == null) {
-            return "redirect:/";
-        } 
-        return "mengajukanLaporanDana";
+    public ModelAndView MengajukanLaporanDana() {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null) {
+            return new ModelAndView("redirect:/");
+        }
+        if (!"organisasi".equals(user.getRole())) {
+            return new ModelAndView("redirect:/dashboard");
+        }
+        return loadView("mengajukanLaporanDana", java.util.Map.of("Judul", "Dashboard Organisasi", "nama", user.getNama()));
     }
 
     @GetMapping("/statusVerifikasi")
-    public String StatusVerifikasi() {
-        if (session.getAttribute("user") == null) {
-            return "redirect:/";
-        } 
-        return "statusVerfikasi";
+    public ModelAndView StatusVerifikasi() {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null) {
+            return new ModelAndView("redirect:/");
+        }
+        if (!"organisasi".equals(user.getRole())) {
+            return new ModelAndView("redirect:/dashboard");
+        }
+        return loadView("statusVerikasi", java.util.Map.of("Judul", "Dashboard Organisasi", "nama", user.getNama()));
     }
 
     @GetMapping("/profilOrganisasi")
     public ModelAndView profilOrganisasi() {
-        if (session.getAttribute("user") == null) {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null) {
             return new ModelAndView("redirect:/");
         }
-        Akun user = (Akun) session.getAttribute("user");
-        return loadView("profilOrganisasi", java.util.Map.of("Judul", "profil Organisasi", "nama", user.getNama()));
+        if (!"organisasi".equals(user.getRole())) {
+            return new ModelAndView("redirect:/dashboard");
+        }
+        return loadView("profilOrganisasi", java.util.Map.of("Judul", "Dashboard Organisasi", "nama", user.getNama()));
     }
 
 
@@ -365,19 +394,18 @@ public class AuthController extends BaseController{
         if (user == null) {
             return new ModelAndView("redirect:/");
         }
-        // Khusus Admin
         if (!"admin".equals(user.getRole())) {
             return new ModelAndView("redirect:/dashboard");
         }
         return loadView("dashboardAdmin", java.util.Map.of("Judul", "Dashboard Admin", "nama", user.getNama()));
     }
+
     @GetMapping("/verifikasiKampanye")
     public ModelAndView VerifikasiKampanye() {
         Akun user = (Akun) session.getAttribute("user");
         if (user == null) {
             return new ModelAndView("redirect:/");
         }
-        // Khusus Admin
         if (!"admin".equals(user.getRole())) {
             return new ModelAndView("redirect:/dashboard");
         }
@@ -392,8 +420,12 @@ public class AuthController extends BaseController{
 
     @GetMapping("/verifikasiKampanye/detail/{id}")
     public ModelAndView verifikasiDetailKampanye(@PathVariable("id") int id) {
+        Akun user = (Akun) session.getAttribute("user");
         if (session.getAttribute("user") == null) {
             return new ModelAndView("redirect:/");
+        }
+        if (!"admin".equals(user.getRole())) {
+            return new ModelAndView("redirect:/dashboard");
         }
 
         KampanyeDetailDTO detail = kampanyeModel.getDetailKampanyeById(id);
@@ -430,44 +462,62 @@ public class AuthController extends BaseController{
     }
 
     @GetMapping("/verifikasiPenggunaanDana")
-    public String VerifikasiPenggunaanDana() {
-        if (session.getAttribute("user") == null) {
-            return "redirect:/";
-        } 
-        return "verifikasiPenggunaanDana";
+    public ModelAndView VerifikasiPenggunaanDana() {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null) {
+            return new ModelAndView("redirect:/");
+        }
+        if (!"admin".equals(user.getRole())) {
+            return new ModelAndView("redirect:/dashboard");
+        }
+        return loadView("verifikasiPenggunaanDana", java.util.Map.of("Judul", "Dashboard Admin", "nama", user.getNama()));
     }
 
     @GetMapping("/verifikasiPencairanDana")
-    public String VerifikasiPencairanDana() {
-        if (session.getAttribute("user") == null) {
-            return "redirect:/";
-        } 
-        return "verifikasiPencairanDana";
+    public ModelAndView VerifikasiPencairanDana() {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null) {
+            return new ModelAndView("redirect:/");
+        }
+        if (!"admin".equals(user.getRole())) {
+            return new ModelAndView("redirect:/dashboard");
+        }
+        return loadView("verifikasiPencairanDana", java.util.Map.of("Judul", "Dashboard Admin", "nama", user.getNama()));
     }
 
     @GetMapping("/menonaktifkanKampanye")
-    public String MenonaktifkanKampanye() {
-        if (session.getAttribute("user") == null) {
-            return "redirect:/";
-        } 
-        return "menonaktifkanKampanye";
+    public ModelAndView MenonaktifkanKampanye() {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null) {
+            return new ModelAndView("redirect:/");
+        }
+        if (!"admin".equals(user.getRole())) {
+            return new ModelAndView("redirect:/dashboard");
+        }
+        return loadView("menonaktifkanKampanye", java.util.Map.of("Judul", "Dashboard Admin", "nama", user.getNama()));
     }
-
     @GetMapping("/kelolaAkun")
-    public String KelolaAkun() {
-        if (session.getAttribute("user") == null) {
-            return "redirect:/";
-        } 
-        return "kelolaAkun";
+    public ModelAndView KelolaAkun() {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null) {
+            return new ModelAndView("redirect:/");
+        }
+        if (!"admin".equals(user.getRole())) {
+            return new ModelAndView("redirect:/dashboard");
+        }
+        return loadView("kelolaAkun", java.util.Map.of("Judul", "Dashboard Admin", "nama", user.getNama()));
     }
 
     @GetMapping("/profilAdmin")
     public ModelAndView profilAdmin() {
-        if (session.getAttribute("user") == null) {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null) {
             return new ModelAndView("redirect:/");
         }
-        Akun user = (Akun) session.getAttribute("user");
-        return loadView("profilAdmin", java.util.Map.of("Judul", "profil Admin", "nama", user.getNama()));
+        if (!"admin".equals(user.getRole())) {
+            return new ModelAndView("redirect:/dashboard");
+        }
+        return loadView("profilAdmin", java.util.Map.of("Judul", "Dashboard Admin", "nama", user.getNama()));
     }
 
 
