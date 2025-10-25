@@ -392,6 +392,14 @@ public class AuthController extends BaseController{
                             HttpSession session,
                             RedirectAttributes ra) {
 
+<<<<<<< Updated upstream
+=======
+        if (batasWaktu.before(new java.util.Date())) {
+            ra.addFlashAttribute("error", "Batas waktu tidak boleh kurang dari tanggal hari ini.");
+            return new ModelAndView("redirect:/kampanyeBaru");
+        }
+
+>>>>>>> Stashed changes
         Akun user = (Akun) session.getAttribute("user");
         if (user == null) {
             return "redirect:/";
@@ -481,7 +489,7 @@ public class AuthController extends BaseController{
     @PostMapping("/verifikasi-kampanye/proses")
     public String prosesVerifikasiKampanye(@RequestParam("id_kampanye") int idKampanye,
                                             @RequestParam("action") String action,
-                                            @RequestParam(name = "alasan", required = false) String alasan, // Ambil parameter 'alasan'
+                                            @RequestParam(name = "alasan", required = false) String alasan,
                                             RedirectAttributes ra) {
         if (session.getAttribute("user") == null) {
             return "redirect:/";
