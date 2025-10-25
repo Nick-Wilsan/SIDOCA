@@ -39,6 +39,7 @@ import com.sidoca.Models.AkunModel;
 import com.sidoca.Models.DTO.KampanyeAktifDTO;
 import com.sidoca.Models.DonaturModel;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import ch.qos.logback.core.model.Model;
 
 @Controller
 public class AuthController extends BaseController{
@@ -384,11 +385,6 @@ public class AuthController extends BaseController{
                             HttpSession session,
                             RedirectAttributes ra) {
 
-        if (batasWaktu.before(new java.util.Date())) {
-            ra.addFlashAttribute("error", "Batas waktu tidak boleh kurang dari tanggal hari ini.");
-            return new ModelAndView("redirect:/kampanyeBaru");
-        }
-        
         Akun user = (Akun) session.getAttribute("user");
         if (user == null) {
             return new ModelAndView("redirect:/");
