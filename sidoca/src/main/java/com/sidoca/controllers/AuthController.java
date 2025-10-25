@@ -38,6 +38,7 @@ import com.sidoca.Models.AkunModel;
 import com.sidoca.Models.DTO.KampanyeAktifDTO;
 import com.sidoca.Models.DonaturModel;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import ch.qos.logback.core.model.Model;
 
 @Controller
 public class AuthController extends BaseController{
@@ -631,5 +632,3 @@ public class AuthController extends BaseController{
         return "blog";
     }
 }
-
-
