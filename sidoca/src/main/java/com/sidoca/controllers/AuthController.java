@@ -35,11 +35,9 @@ import java.util.HashMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import com.sidoca.Models.DTO.KampanyeDetailDTO;
-import com.sidoca.Models.AkunModel;
 import com.sidoca.Models.DTO.KampanyeAktifDTO;
 import com.sidoca.Models.DonaturModel;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import ch.qos.logback.core.model.Model;
 
 @Controller
 public class AuthController extends BaseController{
