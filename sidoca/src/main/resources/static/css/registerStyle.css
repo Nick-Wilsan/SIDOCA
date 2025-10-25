@@ -38,7 +38,7 @@ grid-row-gap: 0px;
 .parent {
 display: grid;
 grid-template-columns: repeat(5, 1fr);
-grid-template-rows: repeat(5, 1fr);
+grid-template-rows: repeat(3, 1fr);
 grid-column-gap: 0px;
 grid-row-gap: 50px;
 }
@@ -52,8 +52,7 @@ grid-row-gap: 50px;
     border-radius: 5px;
     margin-left: 7%;
     margin-right: 7%;   
-    margin-bottom: 5%;
-    margin-top: -10%;
+    margin-top: -13%;
     display: flex;
     justify-content: center;
     align-items: center;
