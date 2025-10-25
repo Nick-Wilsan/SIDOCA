@@ -631,3 +631,5 @@ public class AuthController extends BaseController{
         return "blog";
     }
 }
+
+
