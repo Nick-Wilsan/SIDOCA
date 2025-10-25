@@ -71,13 +71,48 @@ public class AkunModel extends BaseModel{
         return null;
     }
 
+    public Akun findByEmail(String email) {
+        String query = "SELECT * FROM akun WHERE email = ?";
+        try (Connection conn = getConnection();
+                PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, email);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                Akun akun = new Akun();
+                akun.setId_akun(rs.getInt("id_akun"));
+                akun.setNama(rs.getString("nama"));
+                akun.setUsername(rs.getString("username"));
+                akun.setEmail(rs.getString("email"));
+                akun.setRole(rs.getString("role"));
+                return akun;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean updatePasswordByEmail(String email, String newPassword) {
+        String query = "UPDATE akun SET password = PASSWORD(?) WHERE email = ?";
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, newPassword);
+            stmt.setString(2, email);
+            int rowsUpdated = stmt.executeUpdate();
+            return rowsUpdated > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     // Mencegah SQL Injection
     public int saveAkun(Akun akun) {
         // Query dengan placeholder (?) dan request generated keys
         String query = "INSERT INTO akun (nama, username, email, password, role) VALUES (?, ?, ?, PASSWORD(?), ?)";
         try (Connection conn = getConnection();
              // Menambahkan Statement.RETURN_GENERATED_KEYS
-             PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, akun.getNama());
             stmt.setString(2, akun.getUsername());

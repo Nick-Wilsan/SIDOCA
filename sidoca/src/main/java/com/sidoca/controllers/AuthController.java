@@ -15,9 +15,8 @@ import com.sidoca.Models.KampanyeModel;
 import com.sidoca.Models.OrganisasiModel;
 import com.sidoca.Models.DataBaseClass.Kampanye;
 import com.sidoca.Models.DataBaseClass.KampanyeGambar;
-
+import com.sidoca.services.EmailService;
 import ch.qos.logback.core.model.Model;
-
 import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
@@ -31,15 +30,14 @@ import java.nio.file.Path;
 import com.sidoca.Models.DTO.KampanyeVerifikasiDTO;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.HashMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import com.sidoca.Models.DTO.KampanyeDetailDTO;
-import com.sidoca.Models.AkunModel;
 import com.sidoca.Models.DTO.KampanyeAktifDTO;
 import com.sidoca.Models.DonaturModel;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import ch.qos.logback.core.model.Model;
 
 @Controller
 public class AuthController extends BaseController{
@@ -50,6 +48,9 @@ public class AuthController extends BaseController{
 
     @Autowired
     private KampanyeModel kampanyeModel;
+
+    @Autowired
+    private EmailService emailService;
 
     @Autowired
     private KampanyeGambarModel kampanyeGambarModel;
@@ -107,57 +108,81 @@ public class AuthController extends BaseController{
         return "register";
     }
 
-@PostMapping("/register")
-    public String registerUser(@ModelAttribute("akunBaru") Akun akun, RedirectAttributes ra) {
-
-        // Validasi dasar (bisa ditambahkan validasi lain)
+    @PostMapping("/register")
+    public String handleRegister(@ModelAttribute Akun akun, RedirectAttributes ra, HttpSession session) {
+        // Validasi dasar
         if (akun.getUsername() == null || akun.getUsername().trim().isEmpty() ||
             akun.getEmail() == null || akun.getEmail().trim().isEmpty() ||
             akun.getPassword() == null || akun.getPassword().isEmpty() ||
             akun.getRole() == null || akun.getRole().trim().isEmpty() ||
             akun.getNama() == null || akun.getNama().trim().isEmpty()) {
             ra.addFlashAttribute("error", "Semua field wajib diisi.");
-            // Kembalikan objek akun agar data yang sudah diisi tidak hilang
             ra.addFlashAttribute("akunBaru", akun);
             return "redirect:/register";
         }
 
-        // Membersihkan input
-        akun.setUsername(akun.getUsername().trim());
-        akun.setEmail(akun.getEmail().trim());
-        akun.setNama(akun.getNama().trim());
-        akun.setRole(akun.getRole().trim());
+        // Buat kode verifikasi 6 digit
+        String verificationCode = String.format("%06d", new Random().nextInt(999999));
 
-        // 1. Simpan Akun dan dapatkan ID nya
-        int idAkunBaru = akunModel.saveAkun(akun);
+        // Simpan data akun dan kode verifikasi di session
+        session.setAttribute("akun_pending_verification", akun);
+        session.setAttribute("verification_code", verificationCode);
 
-        if (idAkunBaru > 0) { // Cek apakah akun berhasil disimpan (ID > 0)
-            boolean detailSaved = false;
-            // 2. Simpan ke tabel Donatur atau Organisasi berdasarkan role
-            if ("donatur".equals(akun.getRole())) {
-                detailSaved = donaturModel.saveDonatur(idAkunBaru);
-            } else if ("organisasi".equals(akun.getRole())) {
-                // Menggunakan nama akun sebagai nama organisasi default
-                detailSaved = organisasiModel.saveOrganisasi(idAkunBaru, akun.getNama());
-            }
+        // Kirim email verifikasi
+        emailService.sendVerificationEmail(akun.getEmail(), verificationCode);
 
-            // 3. Cek hasil penyimpanan detail
-            if (detailSaved) {
-                ra.addFlashAttribute("success", "Registrasi berhasil! Silakan masuk.");
-                return "redirect:/"; // Redirect ke login jika sukses
+        // Arahkan ke halaman verifikasi
+        return "redirect:/verifikasiEmail";
+    }
+
+    @GetMapping("/verifikasiEmail")
+    public String showVerificationPage(HttpSession session) {
+        // Jika tidak ada akun yang menunggu verifikasi, kembalikan ke register
+        if (session.getAttribute("akun_pending_verification") == null) {
+            return "redirect:/register";
+        }
+        return "verifikasiEmail";
+    }
+
+    @PostMapping("/verify")
+    public String verifyCode(@RequestParam("code") String code, HttpSession session, RedirectAttributes ra) {
+        String sessionCode = (String) session.getAttribute("verification_code");
+        Akun akun = (Akun) session.getAttribute("akun_pending_verification");
+
+        if (sessionCode == null || akun == null) {
+            return "redirect:/register";
+        }
+
+        if (sessionCode.equals(code)) {
+            // Kode cocok, lanjutkan proses registrasi
+            int idAkunBaru = akunModel.saveAkun(akun);
+
+            if (idAkunBaru > 0) {
+                boolean detailSaved = false;
+                if ("donatur".equals(akun.getRole())) {
+                    detailSaved = donaturModel.saveDonatur(idAkunBaru);
+                } else if ("organisasi".equals(akun.getRole())) {
+                    detailSaved = organisasiModel.saveOrganisasi(idAkunBaru, akun.getNama());
+                }
+
+                if (detailSaved) {
+                    ra.addFlashAttribute("success", "Verifikasi berhasil! Silakan masuk.");
+                    // Hapus data dari session setelah berhasil
+                    session.removeAttribute("akun_pending_verification");
+                    session.removeAttribute("verification_code");
+                    return "redirect:/";
+                } else {
+                    ra.addFlashAttribute("error", "Registrasi gagal setelah verifikasi. Hubungi admin.");
+                    return "redirect:/register";
+                }
             } else {
-                // Jika gagal menyimpan detail (Donatur/Organisasi), sebaiknya ada mekanisme rollback
-                // atau setidaknya berikan pesan error yang jelas.
-                // Untuk simplicity, kita tampilkan error umum.
-                ra.addFlashAttribute("error", "Registrasi Akun berhasil, tetapi gagal menyimpan detail role. Hubungi admin.");
-                 ra.addFlashAttribute("akunBaru", akun); // Kembalikan data form
+                ra.addFlashAttribute("error", "Registrasi gagal. Username atau Email mungkin sudah terdaftar.");
                 return "redirect:/register";
             }
         } else {
-            // Jika saveAkun mengembalikan -1 (gagal)
-            ra.addFlashAttribute("error", "Registrasi gagal. Username atau Email mungkin sudah terdaftar.");
-            ra.addFlashAttribute("akunBaru", akun); // Kembalikan data form
-            return "redirect:/register";
+            // Kode tidak cocok
+            ra.addFlashAttribute("error", "Kode verifikasi salah. Silakan coba lagi.");
+            return "redirect:/verifikasiEmail";
         }
     }
     
@@ -170,7 +195,90 @@ public class AuthController extends BaseController{
         return "redirect:/";
     }
 
+    // =================================================================
+    // FORGOT PASSWORD
+    // =================================================================
+    @GetMapping("/forgot-password")
+    public String forgotPassword() {
+        return "forgot-password";
+    }
 
+    @PostMapping("/forgot-password")
+    public String handleForgotPassword(@RequestParam("email") String email, HttpSession session, RedirectAttributes ra) {
+        Akun akun = akunModel.findByEmail(email);
+        if (akun == null) {
+            ra.addFlashAttribute("error", "Email tidak terdaftar di sistem kami.");
+            return "redirect:/forgot-password";
+        }
+        String verificationCode = String.format("%06d", new Random().nextInt(999999));
+        emailService.sendPasswordResetEmail(email, verificationCode);
+        
+        session.setAttribute("reset_email", email);
+        session.setAttribute("reset_code", verificationCode);
+        
+        return "redirect:/verify-reset-code";
+    }
+
+    @GetMapping("/verify-reset-code")
+    public String verifyResetCodePage(HttpSession session) {
+        if (session.getAttribute("reset_email") == null) {
+            return "redirect:/forgot-password";
+        }
+        return "verify-reset-code";
+    }
+
+    @PostMapping("/verify-reset-code")
+    public String handleVerifyResetCode(@RequestParam("code") String code, HttpSession session, RedirectAttributes ra) {
+        String sessionCode = (String) session.getAttribute("reset_code");
+        if (sessionCode == null) {
+            return "redirect:/forgot-password";
+        }
+        if (sessionCode.equals(code)) {
+            session.setAttribute("reset_verified", true);
+            session.removeAttribute("reset_code"); 
+            return "redirect:/reset-password";
+        } else {
+            ra.addFlashAttribute("error", "Kode verifikasi salah.");
+            return "redirect:/verify-reset-code";
+        }
+    }
+
+    @GetMapping("/reset-password")
+    public String resetPasswordPage(HttpSession session) {
+        Boolean isVerified = (Boolean) session.getAttribute("reset_verified");
+        if (isVerified == null || !isVerified) {
+            return "redirect:/forgot-password";
+        }
+        return "reset-password";
+    }
+
+    @PostMapping("/reset-password")
+    public String handleResetPassword(@RequestParam("password") String password,
+                                    @RequestParam("confirmPassword") String confirmPassword,
+                                    HttpSession session, RedirectAttributes ra) {
+        Boolean isVerified = (Boolean) session.getAttribute("reset_verified");
+        String email = (String) session.getAttribute("reset_email");
+
+        if (isVerified == null || !isVerified || email == null) {
+            return "redirect:/forgot-password";
+        }
+
+        if (!password.equals(confirmPassword)) {
+            ra.addFlashAttribute("error", "Password dan konfirmasi password tidak cocok.");
+            return "redirect:/reset-password";
+        }
+
+        boolean success = akunModel.updatePasswordByEmail(email, password);
+        if (success) {
+            session.removeAttribute("reset_email");
+            session.removeAttribute("reset_verified");
+            ra.addFlashAttribute("success", "Password berhasil diubah. Silakan login dengan password baru Anda.");
+            return "redirect:/";
+        } else {
+            ra.addFlashAttribute("error", "Gagal mengubah password. Silakan coba lagi.");
+            return "redirect:/reset-password";
+        }
+    }
 
     // =================================================================
     // PENGALIH UTAMA (DASHBOARD & PROFIL)
