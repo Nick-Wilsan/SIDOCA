@@ -57,6 +57,11 @@ public class AuthController extends BaseController{
         this.session = session;
     }
 
+    
+
+    // =================================================================
+    // HALAMAN PUBLIK & AUTENTIKASI
+    // =================================================================
     @GetMapping("/")
     public String Login() {
         if (session.getAttribute("user") != null) {
@@ -64,7 +69,28 @@ public class AuthController extends BaseController{
         }
         return "index";
     }
+    @PostMapping("/login")
+    public String loginUser(@RequestParam("username") String identifier, // Mengambil input username/email
+                            @RequestParam("password") String password,
+                            RedirectAttributes ra) {
 
+        // 1. Ambil data dan lakukan pengecekan
+        Akun akun = akunModel.findUserForLogin(identifier, password);
+
+        if (akun != null) {
+            // 3. Login berhasil: Simpan objek Akun ke dalam session
+            session.setAttribute("user", akun);
+            ra.addFlashAttribute("success", "Login berhasil! Selamat datang, " + akun.getNama() + ".");
+            // Redirect ke halaman dashboard
+            return "redirect:/dashboard";
+        } else {
+            // Login gagal
+            ra.addFlashAttribute("error", "Username/Email atau Password salah.");
+            // Redirect kembali ke halaman login
+            return "redirect:/";
+        }
+    }
+    
     @GetMapping("/register")
     public String Register() {
         if (session.getAttribute("user") != null) {
@@ -72,130 +98,43 @@ public class AuthController extends BaseController{
         }
         return "register";
     }
-    
-    @GetMapping("/laporanPenggunaanDana")
-    public String LaporanPenggunaanDana() {
-        if (session.getAttribute("user") == null) {
+
+    @PostMapping("/register")
+    public String registerUser(@ModelAttribute("akunBaru") Akun akun, RedirectAttributes ra) {
+        
+        // Mencegah XXS
+        akun.setUsername(akun.getUsername().trim());
+        akun.setEmail(akun.getEmail().trim());
+        // Jika form tidak mengirim 'nama', gunakan 'username' sebagai nama sementara
+        akun.setNama(akun.getUsername().trim()); 
+        akun.setRole(akun.getRole().trim());
+
+        // Mencegah SQL Injection
+        boolean success = akunModel.saveAkun(akun);
+
+        if (success) {
+            ra.addFlashAttribute("success", "Registrasi berhasil! Silakan masuk.");
             return "redirect:/";
-        } 
-        return "laporanPenggunaanDana";
-    }
-    
-    @GetMapping("/riwayatDonasi")
-    public String RiwayatDonasi() {
-        if (session.getAttribute("user") == null) {
-            return "redirect:/";
-        } 
-        return "riwayatDonasi";
-    }
-    
-    @GetMapping("/leaderboard")
-    public String Leaderboard() {
-        if (session.getAttribute("user") == null) {
-            return "redirect:/";
-        } 
-        return "leaderboard";
+        } else {
+            ra.addFlashAttribute("error", "Registrasi gagal, coba lagi.");
+            return "redirect:/register";            
+        }
     }
     
-    @GetMapping("/kampanyeBaru")
-    public String KampanyeBaru() {
-        if (session.getAttribute("user") == null) {
-            return "redirect:/";
-        } 
-        return "kampanyeBaru";
-    }
-    
-    @GetMapping("/pencairanDana")
-    public String PencairanDana() {
-        if (session.getAttribute("user") == null) {
-            return "redirect:/";
-        } 
-        return "pencairanDana";
-    }
-    
-    @GetMapping("/mengajukanLaporanDana")
-    public String MengajukanLaporanDana() {
-        if (session.getAttribute("user") == null) {
-            return "redirect:/";
-        } 
-        return "mengajukanLaporanDana";
+    @GetMapping("/logout")
+    public String logout(HttpSession session, RedirectAttributes ra) {
+        // Hapus semua data sesi
+        session.invalidate();
+        ra.addFlashAttribute("success", "Anda telah berhasil logout.");
+        // Redirect kembali ke halaman login (/)
+        return "redirect:/";
     }
 
-    @GetMapping("/statusVerifikasi")
-    public String StatusVerifikasi() {
-        if (session.getAttribute("user") == null) {
-            return "redirect:/";
-        } 
-        return "statusVerfikasi";
-    }
-    
-    @GetMapping("/aboutUs")
-    public String AboutUs() {
-        return "aboutUs";
-    }
 
-    @GetMapping("/verifikasiPenggunaanDana")
-    public String VerifikasiPenggunaanDana() {
-        if (session.getAttribute("user") == null) {
-            return "redirect:/";
-        } 
-        return "verifikasiPenggunaanDana";
-    }
 
-    @GetMapping("/verifikasiPencairanDana")
-    public String VerifikasiPencairanDana() {
-        if (session.getAttribute("user") == null) {
-            return "redirect:/";
-        } 
-        return "verifikasiPencairanDana";
-    }
-
-    @GetMapping("/menonaktifkanKampanye")
-    public String MenonaktifkanKampanye() {
-        if (session.getAttribute("user") == null) {
-            return "redirect:/";
-        } 
-        return "menonaktifkanKampanye";
-    }
-
-    @GetMapping("/kelolaAkun")
-    public String KelolaAkun() {
-        if (session.getAttribute("user") == null) {
-            return "redirect:/";
-        } 
-        return "kelolaAkun";
-    }
-    
-    @GetMapping("/pusatBantuan")
-    public String PusatBantuan() {
-        return "pusatBantuan";
-    }
-
-    @GetMapping("/faq")
-    public String FAQ() {
-        return "faq";
-    }
-
-    @GetMapping("/hubungiKami")
-    public String hubungiKami() {
-        return "hubungiKami";
-    }
-
-    @GetMapping("/layanan")
-    public String Layanan() {
-        return "layanan";
-    }
-
-    @GetMapping("/kebijakanPrivasi")
-    public String KebijakanPrivasi() {
-        return "kebijakanPrivasi";
-    }
-
-    @GetMapping("/blog")
-    public String Blog() {
-        return "blog";
-    }
-
+    // =================================================================
+    // PENGALIH UTAMA (DASHBOARD & PROFIL)
+    // =================================================================
     @GetMapping("/dashboard")
     public String dashboard() {
         if (session.getAttribute("user") == null) {
@@ -215,33 +154,6 @@ public class AuthController extends BaseController{
             default:
                 return "redirect:/";
         }
-    }
-
-    @GetMapping("/dashboardDonatur")
-    public ModelAndView dashboardDonatur() {
-        if (session.getAttribute("user") == null) {
-            return new ModelAndView("redirect:/");
-        }
-        Akun user = (Akun) session.getAttribute("user");
-        return loadView("dashboardDonatur", java.util.Map.of("Judul", "Dashboard Donatur", "nama", user.getNama()));
-    }
-    
-    @GetMapping("/dashboardOrganisasi")
-    public ModelAndView dashboardOrganisasi() {
-        if (session.getAttribute("user") == null) {
-            return new ModelAndView("redirect:/");
-        }
-        Akun user = (Akun) session.getAttribute("user");
-        return loadView("dashboardOrganisasi", java.util.Map.of("Judul", "Dashboard Organisasi", "nama", user.getNama()));
-    }
-
-    @GetMapping("/dashboardAdmin")
-    public ModelAndView dashboardAdmin() {
-        if (session.getAttribute("user") == null) {
-            return new ModelAndView("redirect:/");
-        }
-        Akun user = (Akun) session.getAttribute("user");
-        return loadView("dashboardAdmin", java.util.Map.of("Judul", "Dashboard Admin", "nama", user.getNama()));
     }
 
     @GetMapping("/profil")
@@ -265,6 +177,48 @@ public class AuthController extends BaseController{
         }
     }
 
+
+
+    // =================================================================
+    // HALAMAN KHUSUS DONATUR
+    // =================================================================
+    @GetMapping("/dashboardDonatur")
+    public ModelAndView dashboardDonatur() {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null) {
+        return new ModelAndView("redirect:/");
+        }
+        // Khusus Donatur
+        if (!"donatur".equals(user.getRole())) {
+        return new ModelAndView("redirect:/dashboard");
+        }
+        return loadView("dashboardDonatur", java.util.Map.of("Judul", "Dashboard Donatur", "nama", user.getNama()));
+    }
+
+    @GetMapping("/laporanPenggunaanDana")
+    public String LaporanPenggunaanDana() {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/";
+        } 
+        return "laporanPenggunaanDana";
+    }
+
+    @GetMapping("/riwayatDonasi")
+    public String RiwayatDonasi() {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/";
+        } 
+        return "riwayatDonasi";
+    }
+    
+    @GetMapping("/leaderboard")
+    public String Leaderboard() {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/";
+        } 
+        return "leaderboard";
+    }
+
     @GetMapping("/profilDonatur")
     public ModelAndView profilDonatur() {
         if (session.getAttribute("user") == null) {
@@ -273,78 +227,36 @@ public class AuthController extends BaseController{
         Akun user = (Akun) session.getAttribute("user");
         return loadView("profilDonatur", java.util.Map.of("Judul", "profil Donatur", "nama", user.getNama()));
     }
-    
-    @GetMapping("/profilOrganisasi")
-    public ModelAndView profilOrganisasi() {
-        if (session.getAttribute("user") == null) {
+
+
+
+    // =================================================================
+    // HALAMAN KHUSUS ORGANISASI
+    // =================================================================
+    @GetMapping("/dashboardOrganisasi")
+    public ModelAndView dashboardOrganisasi() {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null) {
             return new ModelAndView("redirect:/");
         }
-        Akun user = (Akun) session.getAttribute("user");
-        return loadView("profilOrganisasi", java.util.Map.of("Judul", "profil Organisasi", "nama", user.getNama()));
-    }
-
-    @GetMapping("/profilAdmin")
-    public ModelAndView profilAdmin() {
-        if (session.getAttribute("user") == null) {
-            return new ModelAndView("redirect:/");
+        // Khusus Organisasi
+        if (!"organisasi".equals(user.getRole())) {
+            return new ModelAndView("redirect:/dashboard");
         }
-        Akun user = (Akun) session.getAttribute("user");
-        return loadView("profilAdmin", java.util.Map.of("Judul", "profil Admin", "nama", user.getNama()));
+        return loadView("dashboardOrganisasi", java.util.Map.of("Judul", "Dashboard Organisasi", "nama", user.getNama()));
     }
 
-    @PostMapping("/login")
-    public String loginUser(@RequestParam("username") String identifier, // Mengambil input username/email
-                            @RequestParam("password") String password,
-                            RedirectAttributes ra) {
-
-        // 1. Ambil data dan lakukan pengecekan
-        Akun akun = akunModel.findUserForLogin(identifier, password);
-
-        if (akun != null) {
-            // 3. Login berhasil: Simpan objek Akun ke dalam session
-            session.setAttribute("user", akun);
-            ra.addFlashAttribute("success", "Login berhasil! Selamat datang, " + akun.getNama() + ".");
-            // Redirect ke halaman dashboard
+    @GetMapping("/kampanyeBaru")
+    public String KampanyeBaru() {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/";
+        } 
+        // Khusus Organisasi
+        if (!"organisasi".equals(user.getRole())) {
             return "redirect:/dashboard";
-        } else {
-            // Login gagal
-            ra.addFlashAttribute("error", "Username/Email atau Password salah.");
-            // Redirect kembali ke halaman login
-            return "redirect:/";
         }
-    }
-    
-    // --- (4) Proses Logout ---
-    @GetMapping("/logout")
-    public String logout(HttpSession session, RedirectAttributes ra) {
-        // Hapus semua data sesi
-        session.invalidate();
-        ra.addFlashAttribute("success", "Anda telah berhasil logout.");
-        // Redirect kembali ke halaman login (/)
-        return "redirect:/";
-    }
-
-    // POST: Memproses data Registrasi
-    @PostMapping("/register")
-    public String registerUser(@ModelAttribute("akunBaru") Akun akun, RedirectAttributes ra) {
-        
-        // Mencegah XXS
-        akun.setUsername(akun.getUsername().trim());
-        akun.setEmail(akun.getEmail().trim());
-        // Jika form tidak mengirim 'nama', gunakan 'username' sebagai nama sementara
-        akun.setNama(akun.getUsername().trim()); 
-        akun.setRole(akun.getRole().trim());
-
-        // Mencegah SQL Injection
-        boolean success = akunModel.saveAkun(akun);
-
-        if (success) {
-            ra.addFlashAttribute("success", "Registrasi berhasil! Silakan masuk.");
-            return "redirect:/";
-        } else {
-            ra.addFlashAttribute("error", "Registrasi gagal, coba lagi.");
-            return "redirect:/register";            
-        }
+        return "kampanyeBaru";
     }
 
     @PostMapping("/buat-kampanye")
@@ -409,21 +321,72 @@ public class AuthController extends BaseController{
         return "redirect:/dashboardOrganisasi";
     }
 
-    @GetMapping("/verifikasiKampanye")
-    public ModelAndView VerifikasiKampanye() { // Ubah tipe return menjadi ModelAndView
+    @GetMapping("/pencairanDana")
+    public String PencairanDana() {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/";
+        } 
+        return "pencairanDana";
+    }
+
+    @GetMapping("/mengajukanLaporanDana")
+    public String MengajukanLaporanDana() {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/";
+        } 
+        return "mengajukanLaporanDana";
+    }
+
+    @GetMapping("/statusVerifikasi")
+    public String StatusVerifikasi() {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/";
+        } 
+        return "statusVerfikasi";
+    }
+
+    @GetMapping("/profilOrganisasi")
+    public ModelAndView profilOrganisasi() {
         if (session.getAttribute("user") == null) {
             return new ModelAndView("redirect:/");
-        } 
+        }
+        Akun user = (Akun) session.getAttribute("user");
+        return loadView("profilOrganisasi", java.util.Map.of("Judul", "profil Organisasi", "nama", user.getNama()));
+    }
 
-        // Ambil daftar kampanye dari model
+
+
+    // =================================================================
+    // HALAMAN KHUSUS ADMIN
+    // =================================================================
+    @GetMapping("/dashboardAdmin")
+    public ModelAndView dashboardAdmin() {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null) {
+            return new ModelAndView("redirect:/");
+        }
+        // Khusus Admin
+        if (!"admin".equals(user.getRole())) {
+            return new ModelAndView("redirect:/dashboard");
+        }
+        return loadView("dashboardAdmin", java.util.Map.of("Judul", "Dashboard Admin", "nama", user.getNama()));
+    }
+    @GetMapping("/verifikasiKampanye")
+    public ModelAndView VerifikasiKampanye() {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null) {
+            return new ModelAndView("redirect:/");
+        }
+        // Khusus Admin
+        if (!"admin".equals(user.getRole())) {
+            return new ModelAndView("redirect:/dashboard");
+        }
+
         List<KampanyeVerifikasiDTO> daftarKampanye = kampanyeModel.getKampanyeMenungguVerifikasi();
-
-        // Siapkan data untuk dikirim ke view
         Map<String, Object> data = new HashMap<>();
         data.put("judul", "Verifikasi Kampanye");
         data.put("kampanyeList", daftarKampanye);
 
-        // Kirim data ke view "verifikasiKampanye"
         return loadView("verifikasiKampanye", data);
     }
 
@@ -466,21 +429,70 @@ public class AuthController extends BaseController{
         return "redirect:/verifikasiKampanye";
     }
 
-    @GetMapping("/daftarKampanye")
-    public ModelAndView daftarKampanye(@RequestParam(name = "keyword", required = false) String keyword,
-                                        @RequestParam(name = "urutkan", required = false) String urutkan) {
+    @GetMapping("/verifikasiPenggunaanDana")
+    public String VerifikasiPenggunaanDana() {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/";
+        } 
+        return "verifikasiPenggunaanDana";
+    }
+
+    @GetMapping("/verifikasiPencairanDana")
+    public String VerifikasiPencairanDana() {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/";
+        } 
+        return "verifikasiPencairanDana";
+    }
+
+    @GetMapping("/menonaktifkanKampanye")
+    public String MenonaktifkanKampanye() {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/";
+        } 
+        return "menonaktifkanKampanye";
+    }
+
+    @GetMapping("/kelolaAkun")
+    public String KelolaAkun() {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/";
+        } 
+        return "kelolaAkun";
+    }
+
+    @GetMapping("/profilAdmin")
+    public ModelAndView profilAdmin() {
         if (session.getAttribute("user") == null) {
             return new ModelAndView("redirect:/");
         }
+        Akun user = (Akun) session.getAttribute("user");
+        return loadView("profilAdmin", java.util.Map.of("Judul", "profil Admin", "nama", user.getNama()));
+    }
 
-        // Panggil method baru dari KampanyeModel
+
+
+    // =================================================================
+    // HALAMAN KAMPANYE (DIAKSES DONATUR DAN ORGANISASI)
+    // =================================================================
+    @GetMapping("/daftarKampanye")
+    public ModelAndView daftarKampanye(@RequestParam(name = "keyword", required = false) String keyword,
+                                        @RequestParam(name = "urutkan", required = false) String urutkan) {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null) {
+            return new ModelAndView("redirect:/");
+        }
+        // HANYA DONATUR YANG BISA AKSES
+        if (!"donatur".equals(user.getRole())) {
+            return new ModelAndView("redirect:/dashboard");
+        }
+
         List<KampanyeAktifDTO> daftarKampanye = kampanyeModel.getKampanyeAktif(keyword, urutkan);
-
         Map<String, Object> data = new HashMap<>();
         data.put("judul", "Daftar Kampanye");
         data.put("kampanyeList", daftarKampanye);
-        data.put("keyword", keyword); // Kirim kembali keyword untuk ditampilkan di search bar
-        data.put("urutkan", urutkan); // Kirim kembali pilihan urutan
+        data.put("keyword", keyword);
+        data.put("urutkan", urutkan);
 
         return loadView("daftarKampanye", data);
     }
@@ -546,4 +558,46 @@ public class AuthController extends BaseController{
 
         return new ModelAndView("redirect:/kampanye/" + idKampanye + "#komentarSection");
     }
+
+
+
+    // =================================================================
+    // HALAMAN STATIS (DAPAT DIAKSES SEMUA)
+    // =================================================================
+    
+    @GetMapping("/aboutUs")
+    public String AboutUs() {
+        return "aboutUs";
+    }
+    
+    @GetMapping("/pusatBantuan")
+    public String PusatBantuan() {
+        return "pusatBantuan";
+    }
+
+    @GetMapping("/faq")
+    public String FAQ() {
+        return "faq";
+    }
+
+    @GetMapping("/hubungiKami")
+    public String hubungiKami() {
+        return "hubungiKami";
+    }
+
+    @GetMapping("/layanan")
+    public String Layanan() {
+        return "layanan";
+    }
+
+    @GetMapping("/kebijakanPrivasi")
+    public String KebijakanPrivasi() {
+        return "kebijakanPrivasi";
+    }
+
+    @GetMapping("/blog")
+    public String Blog() {
+        return "blog";
+    }
+
 }
