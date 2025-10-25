@@ -27,4 +27,20 @@ public class EmailService {
             System.out.println("====================================");
         }
     }
+
+    public void sendPasswordResetEmail(String to, String code) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(to);
+            message.setSubject("Kode Reset Password SIDOCA");
+            message.setText("Gunakan kode berikut untuk mereset password Anda: " + code);
+            mailSender.send(message);
+        } catch (Exception e) {
+            System.out.println("====================================");
+            System.out.println("Gagal mengirim email reset password ke: " + to);
+            System.out.println("Kode reset: " + code);
+            System.out.println("Error: " + e.getMessage());
+            System.out.println("====================================");
+        }
+    }
 }

@@ -195,7 +195,90 @@ public class AuthController extends BaseController{
         return "redirect:/";
     }
 
+    // =================================================================
+    // FORGOT PASSWORD
+    // =================================================================
+    @GetMapping("/forgot-password")
+    public String forgotPassword() {
+        return "forgot-password";
+    }
 
+    @PostMapping("/forgot-password")
+    public String handleForgotPassword(@RequestParam("email") String email, HttpSession session, RedirectAttributes ra) {
+        Akun akun = akunModel.findByEmail(email);
+        if (akun == null) {
+            ra.addFlashAttribute("error", "Email tidak terdaftar di sistem kami.");
+            return "redirect:/forgot-password";
+        }
+        String verificationCode = String.format("%06d", new Random().nextInt(999999));
+        emailService.sendPasswordResetEmail(email, verificationCode);
+        
+        session.setAttribute("reset_email", email);
+        session.setAttribute("reset_code", verificationCode);
+        
+        return "redirect:/verify-reset-code";
+    }
+
+    @GetMapping("/verify-reset-code")
+    public String verifyResetCodePage(HttpSession session) {
+        if (session.getAttribute("reset_email") == null) {
+            return "redirect:/forgot-password";
+        }
+        return "verify-reset-code";
+    }
+
+    @PostMapping("/verify-reset-code")
+    public String handleVerifyResetCode(@RequestParam("code") String code, HttpSession session, RedirectAttributes ra) {
+        String sessionCode = (String) session.getAttribute("reset_code");
+        if (sessionCode == null) {
+            return "redirect:/forgot-password";
+        }
+        if (sessionCode.equals(code)) {
+            session.setAttribute("reset_verified", true);
+            session.removeAttribute("reset_code"); 
+            return "redirect:/reset-password";
+        } else {
+            ra.addFlashAttribute("error", "Kode verifikasi salah.");
+            return "redirect:/verify-reset-code";
+        }
+    }
+
+    @GetMapping("/reset-password")
+    public String resetPasswordPage(HttpSession session) {
+        Boolean isVerified = (Boolean) session.getAttribute("reset_verified");
+        if (isVerified == null || !isVerified) {
+            return "redirect:/forgot-password";
+        }
+        return "reset-password";
+    }
+
+    @PostMapping("/reset-password")
+    public String handleResetPassword(@RequestParam("password") String password,
+                                    @RequestParam("confirmPassword") String confirmPassword,
+                                    HttpSession session, RedirectAttributes ra) {
+        Boolean isVerified = (Boolean) session.getAttribute("reset_verified");
+        String email = (String) session.getAttribute("reset_email");
+
+        if (isVerified == null || !isVerified || email == null) {
+            return "redirect:/forgot-password";
+        }
+
+        if (!password.equals(confirmPassword)) {
+            ra.addFlashAttribute("error", "Password dan konfirmasi password tidak cocok.");
+            return "redirect:/reset-password";
+        }
+
+        boolean success = akunModel.updatePasswordByEmail(email, password);
+        if (success) {
+            session.removeAttribute("reset_email");
+            session.removeAttribute("reset_verified");
+            ra.addFlashAttribute("success", "Password berhasil diubah. Silakan login dengan password baru Anda.");
+            return "redirect:/";
+        } else {
+            ra.addFlashAttribute("error", "Gagal mengubah password. Silakan coba lagi.");
+            return "redirect:/reset-password";
+        }
+    }
 
     // =================================================================
     // PENGALIH UTAMA (DASHBOARD & PROFIL)
