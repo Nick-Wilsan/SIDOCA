@@ -141,6 +141,20 @@ ADD COLUMN status ENUM('aktif', 'nonaktif') NOT NULL DEFAULT 'aktif';
 ALTER TABLE Kampanye
 ADD COLUMN alasan_penolakan TEXT NULL DEFAULT NULL AFTER status_kampanye;
 
+-- Tambahkan tgl_pengajuan dan tgl_verifikasi pada tabel Kampanye
+ALTER TABLE Kampanye
+ADD COLUMN tgl_pengajuan DATETIME DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN tgl_verifikasi DATETIME NULL DEFAULT NULL;
+
+-- Tambahkan tgl_verifikasi pada tabel Pencairan_Dana (tgl_pengajuan sudah ada)
+ALTER TABLE Pencairan_Dana
+ADD COLUMN tgl_verifikasi DATETIME NULL DEFAULT NULL;
+
+-- Tambahkan tgl_pengajuan dan tgl_verifikasi pada tabel Laporan_Dana
+ALTER TABLE Laporan_Dana
+ADD COLUMN tgl_pengajuan DATETIME DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN tgl_verifikasi DATETIME NULL DEFAULT NULL;
+
 -- 1. Akun Admin 1
 INSERT INTO Akun (nama, username, email, no_hp, password, role) VALUES
 ('Nick Wilsan', 'nickadmin', 'wilsannick55@gmail.com', '081249730818', PASSWORD('nick123'), 'admin');
