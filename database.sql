@@ -113,6 +113,18 @@ CREATE TABLE Leaderboard (
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+CREATE TABLE Komentar (
+    id_komentar INT PRIMARY KEY AUTO_INCREMENT,
+    id_akun INT NOT NULL,
+    id_kampanye INT NOT NULL,
+    isi_komentar TEXT NOT NULL,
+    tanggal_komentar DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_akun) REFERENCES Akun(id_akun)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_kampanye) REFERENCES Kampanye(id_kampanye)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 -- tambahkan alter di tabel akun
 ALTER TABLE akun
 ADD COLUMN no_hp VARCHAR(15) NULL AFTER email;
