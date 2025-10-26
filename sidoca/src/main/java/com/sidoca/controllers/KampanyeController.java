@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.sidoca.Models.KampanyeGambarModel;
 import com.sidoca.Models.KampanyeModel;
 import com.sidoca.Models.DTO.KampanyeAktifDTO;
@@ -29,8 +28,11 @@ import com.sidoca.Models.DTO.KampanyeDetailDTO;
 import com.sidoca.Models.DataBaseClass.Akun;
 import com.sidoca.Models.DataBaseClass.Kampanye;
 import com.sidoca.Models.DataBaseClass.KampanyeGambar;
-
 import jakarta.servlet.http.HttpSession;
+import com.sidoca.Models.DTO.StatusVerifikasiDTO;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 public class KampanyeController extends BaseController{
@@ -150,17 +152,25 @@ public class KampanyeController extends BaseController{
     }
 
     @GetMapping("/statusVerifikasi")
-    public ModelAndView StatusVerifikasi() {
+    public ModelAndView statusVerifikasi(@RequestParam(name = "keyword", required = false) String keyword,
+                                        @RequestParam(name = "jenis", required = false) String jenis,
+                                        @RequestParam(name = "status", required = false) String status) {
         Akun user = (Akun) session.getAttribute("user");
-        if (user == null) {
+        if (user == null || !"organisasi".equals(user.getRole())) {
             return new ModelAndView("redirect:/");
         }
-        if (!"organisasi".equals(user.getRole())) {
-            return new ModelAndView("redirect:/dashboard");
-        }
-        return loadView("statusVerikasi", java.util.Map.of("Judul", "Dashboard Organisasi", "nama", user.getNama()));
-    }
 
+        List<StatusVerifikasiDTO> daftarStatus = kampanyeModel.getStatusVerifikasiForOrganisasi(user.getId_akun(), keyword, jenis, status);
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("judul", "Status Verifikasi");
+        data.put("statusList", daftarStatus);
+        data.put("keyword", keyword);
+        data.put("selectedJenis", jenis);
+        data.put("selectedStatus", status);
+
+        return loadView("statusVerifikasi", data);
+    }
     @GetMapping("/daftarKampanye")
     public ModelAndView daftarKampanye(@RequestParam(name = "keyword", required = false) String keyword,
                                         @RequestParam(name = "urutkan", required = false) String urutkan) {

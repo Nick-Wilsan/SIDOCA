@@ -1,0 +1,67 @@
+.management-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.main-title {
+    color: #3a5a40;
+    font-weight: 600;
+}
+
+.filter-card {
+    border: none;
+}
+
+.btn-primary-filter {
+    background-color: #3a5a40;
+    border-color: #3a5a40;
+    color: white;
+    font-weight: 500;
+}
+
+.btn-primary-filter:hover {
+    background-color: #2e4a33;
+    border-color: #2e4a33;
+}
+
+.table {
+    font-size: 0.95rem;
+}
+
+.table thead th {
+    color: #6c757d;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom-width: 1px;
+}
+
+.badge {
+    padding: 0.4em 0.7em;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.status-terverifikasi {
+    background-color: #d1e7dd;
+    color: #0f5132;
+}
+
+.status-menunggu {
+    background-color: #fff3cd;
+    color: #664d03;
+}
+
+.status-ditolak {
+    background-color: #f8d7da;
+    color: #842029;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #3a5a40;
+    border-color: #3a5a40;
+}
+
+.pagination .page-link {
+    color: #3a5a40;
+}

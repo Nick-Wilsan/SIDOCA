@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Status Verifikasi - SIDOCA</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+        <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}" />
+        <link rel="stylesheet" th:href="@{/css/headerStyleOrganisasi.css}" />
+        <link rel="stylesheet" th:href="@{/css/footerStyle.css}" />
+        <link rel="stylesheet" th:href="@{/css/statusVerifikasiStyle.css}" />
+    </head>
+    <body>
+        <header th:replace="~{headerOrganisasi :: navbarOrganisasi}"></header>
+
+        <main class="container my-5">
+            <div class="management-container">
+                <h1 class="main-title mb-4">Status Verifikasi</h1>
+
+                <div class="card shadow-sm mb-4 filter-card">
+                    <div class="card-body">
+                        <form th:action="@{/statusVerifikasi}" method="get" class="row g-3 align-items-center">
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                    <input type="text" name="keyword" class="form-control" placeholder="Cari berdasarkan nama kampanye" th:value="${keyword}" />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="jenis" class="form-select">
+                                    <option value="">Filter berdasarkan Jenis</option>
+                                    <option value="Kampanye Baru" th:selected="${'Kampanye Baru'.equals(selectedJenis)}">Kampanye Baru</option>
+                                    <option value="Pencairan Dana" th:selected="${'Pencairan Dana'.equals(selectedJenis)}">Pencairan Dana</option>
+                                    <option value="Laporan Penggunaan Dana" th:selected="${'Laporan Penggunaan Dana'.equals(selectedJenis)}">Laporan Penggunaan Dana</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="status" class="form-select">
+                                    <option value="">Filter berdasarkan Status</option>
+                                    <option value="Terverifikasi" th:selected="${'Terverifikasi'.equals(selectedStatus)}">Terverifikasi</option>
+                                    <option value="Menunggu Verifikasi" th:selected="${'Menunggu Verifikasi'.equals(selectedStatus)}">Menunggu Verifikasi</option>
+                                    <option value="Ditolak" th:selected="${'Ditolak'.equals(selectedStatus)}">Ditolak</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 d-grid">
+                                <button type="submit" class="btn btn-primary-filter">Terapkan Filter</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="table-responsive bg-white rounded shadow-sm">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">NAMA KAMPANYE</th>
+                                <th scope="col">JENIS PENGAJUAN</th>
+                                <th scope="col">TANGGAL PENGAJUAN</th>
+                                <th scope="col">TANGGAL VERIFIKASI</th>
+                                <th scope="col">STATUS VERIFIKASI</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="item : ${statusList}">
+                                <td><strong th:text="${item.namaKampanye}">Nama Kampanye</strong></td>
+                                <td th:text="${item.jenisPengajuan}">Jenis Pengajuan</td>
+                                <td th:text="${item.tanggalPengajuan != null ? #dates.format(item.tanggalPengajuan, 'dd MMM yyyy HH:mm') : '-'}">Tgl Pengajuan</td>
+                                <td th:text="${item.tanggalVerifikasi != null ? #dates.format(item.tanggalVerifikasi, 'dd MMM yyyy HH:mm') : '-'}">Tgl Verifikasi</td>
+                                <td>
+                                    <span
+                                        th:text="${item.statusVerifikasi}"
+                                        th:classappend="${item.statusVerifikasi == 'Terverifikasi' ? 'status-terverifikasi' : 
+                                                        (item.statusVerifikasi == 'Menunggu Verifikasi' ? 'status-menunggu' : 
+                                                        (item.statusVerifikasi == 'Ditolak' ? 'status-ditolak' : ''))}"
+                                        class="badge"
+                                    >
+                                        Status
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(statusList)}">
+                                <td colspan="5" class="text-center text-muted py-4">Tidak ada data pengajuan yang ditemukan.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <nav aria-label="Page navigation" class="d-flex justify-content-between align-items-center mt-4">
+                    <span class="text-muted">Menampilkan 1-5 dari 100</span>
+                    <ul class="pagination mb-0">
+                        <li class="page-item disabled"><a class="page-link" href="#">Sebelumnya</a></li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item"><a class="page-link" href="#">Berikutnya</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </main>
+
+        <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="logoutModalLabel" style="color: #2E5C4D">Konfirmasi Logout</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body"  style="color: #A1A1A1">Anda akan keluar dari sesi saat ini. Apakah anda yakin ingin melanjutkannya?</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">BATAL</button>
+                        <a th:href="@{/logout}" class="btn btn-danger">YA, LOGOUT</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer th:replace="~{footer :: footer}"></footer>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>

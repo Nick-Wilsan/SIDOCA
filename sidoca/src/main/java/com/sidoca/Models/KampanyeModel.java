@@ -8,7 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
+import com.sidoca.Models.DTO.StatusVerifikasiDTO;
 import com.sidoca.Models.DTO.KampanyeDetailDTO;
 import com.sidoca.Models.DTO.KampanyeVerifikasiDTO;
 import java.util.ArrayList;
@@ -284,5 +284,87 @@ public class KampanyeModel extends BaseModel {
             e.printStackTrace(); // Sebaiknya gunakan logger
             return false;
         }
+    }
+
+    public List<StatusVerifikasiDTO> getStatusVerifikasiForOrganisasi(int idAkun, String keyword, String jenis, String status) {
+        List<StatusVerifikasiDTO> resultList = new ArrayList<>();
+        
+        // Query untuk mengambil data dari 3 tabel dan menyatukannya
+        String query = 
+            // 1. Data dari Kampanye Baru
+            "SELECT judul_kampanye AS nama_kampanye, 'Kampanye Baru' AS jenis_pengajuan, tgl_pengajuan, tgl_verifikasi, " +
+            "CASE " +
+            "    WHEN status_kampanye = 'menunggu' THEN 'Menunggu Verifikasi' " +
+            "    WHEN status_kampanye = 'aktif' THEN 'Terverifikasi' " +
+            "    WHEN status_kampanye = 'nonaktif' THEN 'Ditolak' " +
+            "    ELSE status_kampanye " +
+            "END AS status_verifikasi " +
+            "FROM Kampanye WHERE id_akun = ? " +
+
+            "UNION ALL " +
+
+            // 2. Data dari Pencairan Dana
+            "SELECT k.judul_kampanye, 'Pencairan Dana' AS jenis_pengajuan, pd.tanggal_pengajuan, pd.tgl_verifikasi, " +
+            "CASE " +
+            "    WHEN pd.status_pencairan = 'diajukan' THEN 'Menunggu Verifikasi' " +
+            "    WHEN pd.status_pencairan = 'disetujui' THEN 'Terverifikasi' " +
+            "    WHEN pd.status_pencairan = 'ditolak' THEN 'Ditolak' " +
+            "    ELSE pd.status_pencairan " +
+            "END AS status_verifikasi " +
+            "FROM Pencairan_Dana pd JOIN Kampanye k ON pd.id_kampanye = k.id_kampanye WHERE k.id_akun = ? " +
+
+            "UNION ALL " +
+
+            // 3. Data dari Laporan Dana
+            "SELECT k.judul_kampanye, 'Laporan Penggunaan Dana' AS jenis_pengajuan, ld.tgl_pengajuan, ld.tgl_verifikasi, " +
+            "CASE " +
+            "    WHEN ld.status_verifikasi = 'menunggu' THEN 'Menunggu Verifikasi' " +
+            "    WHEN ld.status_verifikasi = 'disetujui' THEN 'Terverifikasi' " +
+            "    WHEN ld.status_verifikasi = 'ditolak' THEN 'Ditolak' " +
+            "    ELSE ld.status_verifikasi " +
+            "END AS status_verifikasi " +
+            "FROM Laporan_Dana ld JOIN Kampanye k ON ld.id_kampanye = k.id_kampanye WHERE k.id_akun = ?";
+
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query)) {
+            
+            stmt.setInt(1, idAkun);
+            stmt.setInt(2, idAkun);
+            stmt.setInt(3, idAkun);
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                StatusVerifikasiDTO dto = new StatusVerifikasiDTO();
+                dto.setNamaKampanye(rs.getString("nama_kampanye"));
+                dto.setJenisPengajuan(rs.getString("jenis_pengajuan"));
+                dto.setTanggalPengajuan(rs.getTimestamp("tgl_pengajuan"));
+                dto.setTanggalVerifikasi(rs.getTimestamp("tgl_verifikasi"));
+                dto.setStatusVerifikasi(rs.getString("status_verifikasi"));
+                resultList.add(dto);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Terapkan filter di sisi Java setelah mengambil semua data
+        List<StatusVerifikasiDTO> filteredList = new ArrayList<>();
+        for (StatusVerifikasiDTO item : resultList) {
+            boolean match = true;
+            if (keyword != null && !keyword.isEmpty() && !item.getNamaKampanye().toLowerCase().contains(keyword.toLowerCase())) {
+                match = false;
+            }
+            if (jenis != null && !jenis.isEmpty() && !item.getJenisPengajuan().equals(jenis)) {
+                match = false;
+            }
+            if (status != null && !status.isEmpty() && !item.getStatusVerifikasi().equals(status)) {
+                match = false;
+            }
+            if (match) {
+                filteredList.add(item);
+            }
+        }
+
+        return filteredList;
     }
 }  
