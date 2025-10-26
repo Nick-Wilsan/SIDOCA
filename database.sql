@@ -91,11 +91,11 @@ CREATE TABLE Laporan_Dana (
 
 CREATE TABLE Komentar (
     id_komentar INT PRIMARY KEY AUTO_INCREMENT,
-    id_donatur INT NOT NULL,
+    id_akun INT NOT NULL,
     id_kampanye INT NOT NULL,
     isi_komentar TEXT NOT NULL,
     tanggal_komentar DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_donatur) REFERENCES Donatur(id_donatur)
+    FOREIGN KEY (id_akun) REFERENCES Akun(id_akun)
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (id_kampanye) REFERENCES Kampanye(id_kampanye)
         ON DELETE CASCADE ON UPDATE CASCADE
@@ -110,18 +110,6 @@ CREATE TABLE Leaderboard (
     FOREIGN KEY (id_kampanye) REFERENCES Kampanye(id_kampanye)
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (id_donatur) REFERENCES Donatur(id_donatur)
-        ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE Komentar (
-    id_komentar INT PRIMARY KEY AUTO_INCREMENT,
-    id_akun INT NOT NULL,
-    id_kampanye INT NOT NULL,
-    isi_komentar TEXT NOT NULL,
-    tanggal_komentar DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_akun) REFERENCES Akun(id_akun)
-        ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (id_kampanye) REFERENCES Kampanye(id_kampanye)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
