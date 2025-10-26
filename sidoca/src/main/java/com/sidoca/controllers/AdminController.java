@@ -117,8 +117,8 @@ public class AdminController extends BaseController{
         return loadView("verifikasiPencairanDana", java.util.Map.of("Judul", "Dashboard Admin", "nama", user.getNama()));
     }
 
-    @GetMapping("/menonaktifkanKampanye")
-    public ModelAndView MenonaktifkanKampanye() {
+    @GetMapping("/daftarKampanyeAdmin")
+    public ModelAndView DaftarKampanyeAdmin() {
         Akun user = (Akun) session.getAttribute("user");
         if (user == null) {
             return new ModelAndView("redirect:/");
@@ -126,7 +126,7 @@ public class AdminController extends BaseController{
         if (!"admin".equals(user.getRole())) {
             return new ModelAndView("redirect:/dashboard");
         }
-        return loadView("menonaktifkanKampanye", java.util.Map.of("Judul", "Dashboard Admin", "nama", user.getNama()));
+        return loadView("daftarKampanyeAdmin", java.util.Map.of("Judul", "Dashboard Admin", "nama", user.getNama()));
     }
 
     @GetMapping("/kelolaAkun")
