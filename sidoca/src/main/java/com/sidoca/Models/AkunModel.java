@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class AkunModel extends BaseModel{
@@ -42,7 +44,7 @@ public class AkunModel extends BaseModel{
     public Akun findUserForLogin(String identifier, String password) {
         // Query untuk mencari berdasarkan username ATAU email, dan membandingkan password
         // dengan hash yang disimpan di DB
-        String query = "SELECT * FROM akun WHERE (username = ? OR email = ?) AND password = PASSWORD(?)";
+        String query = "SELECT * FROM akun WHERE (username = ? OR email = ?) AND password = PASSWORD(?) AND status = 'aktif'";
         try (Connection conn = getConnection();
                 PreparedStatement stmt = conn.prepareStatement(query)) {
 
@@ -106,34 +108,97 @@ public class AkunModel extends BaseModel{
         }
     }
 
-    // Mencegah SQL Injection
     public int saveAkun(Akun akun) {
-        // Query dengan placeholder (?) dan request generated keys
-        String query = "INSERT INTO akun (nama, username, email, password, role) VALUES (?, ?, ?, PASSWORD(?), ?)";
+        // Tambahkan tgl_registrasi dan status ke dalam query
+        String query = "INSERT INTO akun (nama, username, email, password, role, tgl_registrasi, status) VALUES (?, ?, ?, PASSWORD(?), ?, NOW(), 'aktif')";
         try (Connection conn = getConnection();
-             // Menambahkan Statement.RETURN_GENERATED_KEYS
             PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, akun.getNama());
             stmt.setString(2, akun.getUsername());
             stmt.setString(3, akun.getEmail());
-            stmt.setString(4, akun.getPassword()); // Pastikan password sudah di-handle dengan benar
+            stmt.setString(4, akun.getPassword());
             stmt.setString(5, akun.getRole());
 
             int rowsInserted = stmt.executeUpdate();
 
             if (rowsInserted > 0) {
-                // Ambil generated keys (ID akun baru)
                 ResultSet generatedKeys = stmt.getGeneratedKeys();
                 if (generatedKeys.next()) {
-                    return generatedKeys.getInt(1); // Kembalikan ID akun baru
+                    return generatedKeys.getInt(1);
                 }
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
-            // Anda mungkin ingin menambahkan logger di sini
         }
-        return -1; // Kembalikan -1 jika gagal
+        return -1;
+    }
+
+    public List<Akun> getAllAkun(String keyword, String role, String status, int loggedInAdminId) {
+        List<Akun> akunList = new ArrayList<>();
+        // Ambil juga kolom tgl_registrasi dan status
+        StringBuilder queryBuilder = new StringBuilder(
+            "SELECT id_akun, nama, email, role, tgl_registrasi, status FROM akun WHERE id_akun != ? "
+        );
+
+        List<Object> params = new ArrayList<>();
+        params.add(loggedInAdminId);
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            queryBuilder.append(" AND (nama LIKE ? OR email LIKE ?) ");
+            params.add("%" + keyword + "%");
+            params.add("%" + keyword + "%");
+        }
+
+        if (role != null && !role.trim().isEmpty()) {
+            queryBuilder.append(" AND role = ? ");
+            params.add(role);
+        }
+
+        if (status != null && !status.trim().isEmpty()) {
+            queryBuilder.append(" AND status = ? ");
+            params.add(status);
+        }
+
+        queryBuilder.append(" ORDER BY id_akun DESC");
+
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(queryBuilder.toString())) {
+
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+
+            ResultSet rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                Akun akun = new Akun();
+                akun.setId_akun(rs.getInt("id_akun"));
+                akun.setNama(rs.getString("nama"));
+                akun.setEmail(rs.getString("email"));
+                akun.setRole(rs.getString("role"));
+                akun.setTgl_registrasi(rs.getTimestamp("tgl_registrasi"));
+                akun.setStatus(rs.getString("status"));
+                akunList.add(akun);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return akunList;
+    }
+    
+    // Metode baru untuk mengubah status
+    public boolean ubahStatusAkun(int idAkun, String status) {
+        String query = "UPDATE Akun SET status = ? WHERE id_akun = ?";
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, status);
+            stmt.setInt(2, idAkun);
+            int rowsUpdated = stmt.executeUpdate();
+            return rowsUpdated > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

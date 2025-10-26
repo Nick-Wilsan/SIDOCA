@@ -3,7 +3,6 @@ package com.sidoca.controllers;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,13 +11,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.sidoca.Models.KampanyeModel;
 import com.sidoca.Models.DTO.KampanyeDetailDTO;
 import com.sidoca.Models.DTO.KampanyeVerifikasiDTO;
 import com.sidoca.Models.DataBaseClass.Akun;
-
 import jakarta.servlet.http.HttpSession;
+import com.sidoca.Models.AkunModel;
 
 @Controller
 public class AdminController extends BaseController{
@@ -26,6 +24,9 @@ public class AdminController extends BaseController{
 
     @Autowired
     private KampanyeModel kampanyeModel;
+
+    @Autowired
+    private AkunModel akunModel;
 
     public AdminController(HttpSession session) {
         this.session = session;
@@ -127,15 +128,50 @@ public class AdminController extends BaseController{
         }
         return loadView("menonaktifkanKampanye", java.util.Map.of("Judul", "Dashboard Admin", "nama", user.getNama()));
     }
+
     @GetMapping("/kelolaAkun")
-    public ModelAndView KelolaAkun() {
+    public ModelAndView KelolaAkun(@RequestParam(name = "keyword", required = false) String keyword,
+                                @RequestParam(name = "role", required = false) String role,
+                                @RequestParam(name = "status", required = false) String status) {
         Akun user = (Akun) session.getAttribute("user");
-        if (user == null) {
+        if (user == null || !"admin".equals(user.getRole())) {
             return new ModelAndView("redirect:/");
         }
-        if (!"admin".equals(user.getRole())) {
-            return new ModelAndView("redirect:/dashboard");
+
+        // Dapatkan ID admin yang sedang login
+        int loggedInAdminId = user.getId_akun();
+
+        // Panggil model dengan parameter filter dan ID admin
+        List<Akun> daftarAkun = akunModel.getAllAkun(keyword, role, status, loggedInAdminId);
+        
+        Map<String, Object> data = new HashMap<>();
+        data.put("judul", "Kelola Akun");
+        data.put("akunList", daftarAkun);
+
+        // Kirim kembali nilai filter untuk ditampilkan di form
+        data.put("keyword", keyword);
+        data.put("selectedRole", role);
+        data.put("selectedStatus", status);
+
+        return loadView("kelolaAkun", data);
+    }
+
+    @PostMapping("/kelolaAkun/ubahStatus")
+    public String ubahStatusAkun(@RequestParam("id_akun") int idAkun, 
+                                @RequestParam("status") String status, 
+                                RedirectAttributes ra) {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null || !"admin".equals(user.getRole())) {
+            return "redirect:/";
         }
-        return loadView("kelolaAkun", java.util.Map.of("Judul", "Dashboard Admin", "nama", user.getNama()));
+
+        boolean berhasil = akunModel.ubahStatusAkun(idAkun, status);
+        if (berhasil) {
+            ra.addFlashAttribute("success", "Status akun berhasil diubah.");
+        } else {
+            ra.addFlashAttribute("error", "Gagal mengubah status akun.");
+        }
+
+        return "redirect:/kelolaAkun";
     }
 }

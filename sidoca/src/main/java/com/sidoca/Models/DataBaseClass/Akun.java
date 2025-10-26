@@ -1,4 +1,5 @@
 package com.sidoca.Models.DataBaseClass;
+import java.sql.Timestamp;
 
 // ini representasi dari tabel akun di database
 public class Akun {
@@ -9,6 +10,8 @@ public class Akun {
     private String no_hp;
     private String password;
     private String role;
+    private Timestamp tgl_registrasi;
+    private String status;
 
     // Getter & Setter 
     public int getId_akun() {
@@ -54,5 +57,19 @@ public class Akun {
     }
     public void setRole(String role) {
         this.role = role;
+    }
+    public Timestamp getTgl_registrasi() {
+        return tgl_registrasi;
+    }
+    public void setTgl_registrasi(Timestamp tgl_registrasi) {
+        this.tgl_registrasi = tgl_registrasi;
+    }
+
+    // Getter & Setter untuk status
+    public String getStatus() {
+        return status;
+    }
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
