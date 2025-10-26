@@ -79,7 +79,6 @@
                                     <span th:if="${akun.status == 'nonaktif'}" class="badge status-nonaktif">Nonaktif</span>
                                 </td>
                                 <td class="text-center">
-                                    <a href="#" class="text-secondary me-2"><i class="bi bi-pencil-fill"></i></a>
                                     <a href="#" th:if="${akun.status == 'aktif'}" data-bs-toggle="modal" data-bs-target="#confirmationModal" th:attr="data-akun-id=${akun.id_akun}, data-akun-nama=${akun.nama}, data-new-status='nonaktif'">
                                         <i class="bi bi-toggle-on text-success fs-4"></i>
                                     </a>
