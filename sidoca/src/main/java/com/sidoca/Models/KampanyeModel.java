@@ -84,13 +84,11 @@ public class KampanyeModel extends BaseModel {
         String donasiQuery = "SELECT SUM(nominal_donasi) FROM Donasi WHERE id_kampanye = ? AND status_pembayaran = 'berhasil'";
         String gambarQuery = "SELECT url_gambar FROM Kampanye_Gambar WHERE id_kampanye = ?";
 
-        // --- QUERY KOMENTAR YANG DIPERBAIKI ---
         String komentarQuery = "SELECT a.nama, kom.isi_komentar, kom.tanggal_komentar " +
-                                "FROM Komentar kom " +
-                                "JOIN Donatur d ON kom.id_donatur = d.id_donatur " +
-                                "JOIN Akun a ON d.id_akun = a.id_akun " +
-                                "WHERE kom.id_kampanye = ? " +
-                                "ORDER BY kom.tanggal_komentar DESC";
+                            "FROM Komentar kom " +
+                            "JOIN Akun a ON kom.id_akun = a.id_akun " +
+                            "WHERE kom.id_kampanye = ? " +
+                            "ORDER BY kom.tanggal_komentar DESC";
 
         try (Connection conn = getConnection()) {
             // 1. Ambil detail kampanye
@@ -167,18 +165,18 @@ public class KampanyeModel extends BaseModel {
         return detail;
     }
 
-    public void tambahKomentar(int idKampanye, int idDonatur, String isiKomentar) {
-        String query = "INSERT INTO Komentar (id_kampanye, id_donatur, isi_komentar, tanggal_komentar) VALUES (?, ?, ?, NOW())";
-        try (Connection conn = getConnection();
-            PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, idKampanye);
-            stmt.setInt(2, idDonatur); // Menggunakan id_donatur
-            stmt.setString(3, isiKomentar);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    public void tambahKomentar(int idKampanye, int idAkun, String isiKomentar) {
+    String query = "INSERT INTO Komentar (id_kampanye, id_akun, isi_komentar, tanggal_komentar) VALUES (?, ?, ?, NOW())";
+    try (Connection conn = getConnection();
+        PreparedStatement stmt = conn.prepareStatement(query)) {
+        stmt.setInt(1, idKampanye);
+        stmt.setInt(2, idAkun);
+        stmt.setString(3, isiKomentar);
+        stmt.executeUpdate();
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+}
 
     public List<KampanyeAktifDTO> getKampanyeAktif(String keyword, String urutkan) {
         updateStatusKampanyeOtomatis();

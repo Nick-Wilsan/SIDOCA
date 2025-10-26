@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.sidoca.Models.DonaturModel;
 import com.sidoca.Models.KampanyeModel;
 import com.sidoca.Models.DataBaseClass.Akun;
 
@@ -17,9 +16,6 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 public class KomentarController extends BaseController{
     private final HttpSession session;
-
-    @Autowired
-    private DonaturModel donaturModel;
 
     @Autowired
     private KampanyeModel kampanyeModel;
@@ -36,18 +32,14 @@ public class KomentarController extends BaseController{
         if (loggedInUser == null) {
             return new ModelAndView("redirect:/");
         }
-        if (!"donatur".equals(loggedInUser.getRole())) {
-            ra.addFlashAttribute("error", "Hanya donatur yang dapat memberikan komentar.");
-            return new ModelAndView("redirect:/kampanye/" + idKampanye);
-        }
-        Integer idDonatur = donaturModel.getDonaturIdByAkunId(loggedInUser.getId_akun());
-        if (idDonatur == null) {
-            ra.addFlashAttribute("error", "Gagal mengirim komentar. Data donatur tidak ditemukan.");
-            return new ModelAndView("redirect:/kampanye/" + idKampanye);
-        }
+        
+        // Langsung gunakan id_akun dari user yang login
+        int idAkun = loggedInUser.getId_akun();
+
         if (isiKomentar != null && !isiKomentar.trim().isEmpty()) {
-            kampanyeModel.tambahKomentar(idKampanye, idDonatur, isiKomentar);
+            kampanyeModel.tambahKomentar(idKampanye, idAkun, isiKomentar);
         }
+
         return new ModelAndView("redirect:/kampanye/" + idKampanye + "#komentarSection");
     }
 }
