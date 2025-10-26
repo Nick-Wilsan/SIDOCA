@@ -17,6 +17,8 @@ import com.sidoca.Models.DTO.KampanyeVerifikasiDTO;
 import com.sidoca.Models.DataBaseClass.Akun;
 import jakarta.servlet.http.HttpSession;
 import com.sidoca.Models.AkunModel;
+import com.sidoca.Models.DTO.KampanyeAdminDTO;
+import java.time.LocalDate;
 
 @Controller
 public class AdminController extends BaseController{
@@ -118,15 +120,63 @@ public class AdminController extends BaseController{
     }
 
     @GetMapping("/daftarKampanyeAdmin")
-    public ModelAndView DaftarKampanyeAdmin() {
+    public ModelAndView daftarKampanyeAdmin(@RequestParam(name = "keyword", required = false) String keyword,
+                                            @RequestParam(name = "status", required = false) String status) {
         Akun user = (Akun) session.getAttribute("user");
-        if (user == null) {
+        if (user == null || !"admin".equals(user.getRole())) {
             return new ModelAndView("redirect:/");
         }
-        if (!"admin".equals(user.getRole())) {
-            return new ModelAndView("redirect:/dashboard");
+        
+        List<KampanyeAdminDTO> daftarKampanye = kampanyeModel.getAllKampanyeForAdmin(keyword, status);
+        
+        Map<String, Object> data = new HashMap<>();
+        data.put("judul", "Daftar Kampanye");
+        data.put("kampanyeList", daftarKampanye);
+        data.put("keyword", keyword);
+        data.put("selectedStatus", status);
+        
+        return loadView("daftarKampanyeAdmin", data);
+    }
+
+    @GetMapping("/daftarKampanyeAdmin/detail/{id}")
+    public ModelAndView detailKampanyeAdmin(@PathVariable("id") int id) {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null || !"admin".equals(user.getRole())) {
+            return new ModelAndView("redirect:/");
         }
-        return loadView("daftarKampanyeAdmin", java.util.Map.of("Judul", "Dashboard Admin", "nama", user.getNama()));
+
+        KampanyeDetailDTO detail = kampanyeModel.getDetailKampanyeById(id);
+        Map<String, Object> data = new HashMap<>();
+        
+        if (detail != null) {
+            // Cek apakah kampanye sudah berakhir
+            boolean isExpired = detail.getBatas_waktu().toLocalDate().isBefore(LocalDate.now());
+            data.put("isExpired", isExpired);
+        }
+        
+        data.put("judul", "Detail Kampanye");
+        data.put("kampanye", detail);
+
+        return loadView("detailKampanyeAdmin", data);
+    }
+
+    @PostMapping("/daftarKampanyeAdmin/ubahStatus")
+    public String ubahStatusKampanye(@RequestParam("id_kampanye") int idKampanye, 
+                                    @RequestParam("status") String status, 
+                                    RedirectAttributes ra) {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null || !"admin".equals(user.getRole())) {
+            return "redirect:/";
+        }
+
+        boolean berhasil = kampanyeModel.ubahStatusKampanyeAdmin(idKampanye, status);
+        if (berhasil) {
+            ra.addFlashAttribute("success", "Status kampanye berhasil diubah menjadi " + status + ".");
+        } else {
+            ra.addFlashAttribute("error", "Gagal mengubah status. Kampanye mungkin telah berakhir.");
+        }
+
+        return "redirect:/daftarKampanyeAdmin";
     }
 
     @GetMapping("/kelolaAkun")

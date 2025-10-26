@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Detail Kampanye Admin</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+        <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}" />
+        <link rel="stylesheet" th:href="@{/css/headerStyleAdmin.css}" />
+        <link rel="stylesheet" th:href="@{/css/footerStyle.css}" />
+        <link rel="stylesheet" th:href="@{/css/lihatDetailKampanyeStyle.css}" />
+    </head>
+    <body>
+        <header th:replace="~{headerAdmin :: navbarAdmin}"></header>
+
+        <main class="container my-5">
+            <div th:if="${kampanye != null}">
+                <div class="row">
+                    <div class="col-12 col-lg-8">
+                        <div class="main-image-wrapper mb-4">
+                            <img
+                                th:src="${kampanye.url_gambar_kampanye != null and !#lists.isEmpty(kampanye.url_gambar_kampanye) ? kampanye.url_gambar_kampanye[0] : '/images/image.png'}"
+                                class="img-fluid rounded"
+                                alt="Gambar Kampanye Utama"
+                            />
+                        </div>
+                        <h1 class="campaign-title mb-2" th:text="${kampanye.judul_kampanye}">Judul Kampanye</h1>
+                        <p class="organizer-info mb-4">
+                            <i class="bi bi-person-check-fill"></i>
+                            <span th:text="${kampanye.nama_organisasi}">Organisasi Harapan Bangsa</span>
+                        </p>
+                        <div class="campaign-description">
+                            <h4 class="mb-3">Deskripsi Kampanye</h4>
+                            <div th:utext="${kampanye.deskripsi_kampanye}"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-4">
+                        <div class="sidebar sticky-top pt-lg-0">
+                            <div class="card p-4 mb-4 shadow-sm donation-summary-card">
+                                <div class="d-flex justify-content-between">
+                                    <span>Terkumpul</span>
+                                    <span>Target</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h4 class="mb-0 fw-bold text-success" th:text="'Rp ' + ${#numbers.formatDecimal(kampanye.dana_terkumpul, 0, 'POINT', 0, 'COMMA')}"></h4>
+                                    <p class="mb-0 text-muted" th:text="'Rp ' + ${#numbers.formatDecimal(kampanye.target_dana, 0, 'POINT', 0, 'COMMA')}"></p>
+                                </div>
+                                <div class="progress mb-2" style="height: 12px">
+                                    <div class="progress-bar" role="progressbar" th:style="'width:' + ${kampanye.persentase_terkumpul} + '%'"></div>
+                                </div>
+                                <small class="text-muted mb-4 d-block">Sisa <span th:text="${kampanye.sisa_hari}"></span> Hari</small>
+
+                                <div class="d-grid gap-2">
+                                    <button
+                                        th:if="${kampanye.status_kampanye == 'aktif'}"
+                                        type="button"
+                                        class="btn btn-danger"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#confirmationModal"
+                                        th:attr="data-kampanye-id=${kampanye.id_kampanye}, data-kampanye-judul=${kampanye.judul_kampanye}, data-new-status='nonaktif'"
+                                    >
+                                        <i class="bi bi-toggle-off"></i> Nonaktifkan Kampanye
+                                    </button>
+
+                                    <th:block th:if="${kampanye.status_kampanye == 'nonaktif'}">
+                                        <button
+                                            th:if="${!isExpired}"
+                                            type="button"
+                                            class="btn btn-success"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#confirmationModal"
+                                            th:attr="data-kampanye-id=${kampanye.id_kampanye}, data-kampanye-judul=${kampanye.judul_kampanye}, data-new-status='aktif'"
+                                        >
+                                            <i class="bi bi-toggle-on"></i> Aktifkan Kampanye
+                                        </button>
+                                        <button th:if="${isExpired}" type="button" class="btn btn-secondary" disabled><i class="bi bi-calendar-x"></i> Kampanye Telah Berakhir</button>
+                                    </th:block>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${kampanye == null}" class="alert alert-warning text-center">Kampanye tidak ditemukan.</div>
+        </main>
+
+        <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmationModalLabel">Konfirmasi Perubahan Status</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Anda yakin ingin mengubah status kampanye <strong id="kampanyeJudul"></strong> menjadi <strong id="kampanyeStatus"></strong>?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <form th:action="@{/daftarKampanyeAdmin/ubahStatus}" method="post" id="statusChangeForm">
+                            <input type="hidden" name="id_kampanye" id="kampanyeIdInput" />
+                            <input type="hidden" name="status" id="kampanyeStatusInput" />
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-danger">Ya, Ubah Status</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="logoutModalLabel" style="color: #2e5c4d">Konfirmasi Logout</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="color: #a1a1a1">Anda akan keluar dari sesi saat ini. Apakah anda yakin ingin melanjutkannya?</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">BATAL</button>
+                        <a th:href="@{/logout}" class="btn btn-danger">YA, LOGOUT</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer th:replace="~{footer :: footer}"></footer>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            var confirmationModal = document.getElementById('confirmationModal');
+            confirmationModal.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                var kampanyeId = button.getAttribute('data-kampanye-id');
+                var kampanyeJudul = button.getAttribute('data-kampanye-judul');
+                var newStatus = button.getAttribute('data-new-status');
+
+                confirmationModal.querySelector('#kampanyeJudul').textContent = kampanyeJudul;
+                confirmationModal.querySelector('#kampanyeStatus').textContent = newStatus;
+                confirmationModal.querySelector('#kampanyeIdInput').value = kampanyeId;
+                confirmationModal.querySelector('#kampanyeStatusInput').value = newStatus;
+            });
+        </script>
+    </body>
+</html>

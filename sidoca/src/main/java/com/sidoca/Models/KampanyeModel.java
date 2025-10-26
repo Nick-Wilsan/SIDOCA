@@ -19,6 +19,8 @@ import java.time.temporal.ChronoUnit;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import com.sidoca.Models.DTO.KomentarDTO;
+import com.sidoca.Models.DTO.KampanyeAdminDTO;
+import java.time.LocalDate;
 
 @Component
 public class KampanyeModel extends BaseModel {
@@ -347,7 +349,6 @@ public class KampanyeModel extends BaseModel {
             e.printStackTrace();
         }
 
-        // Terapkan filter di sisi Java setelah mengambil semua data
         List<StatusVerifikasiDTO> filteredList = new ArrayList<>();
         for (StatusVerifikasiDTO item : resultList) {
             boolean match = true;
@@ -366,5 +367,84 @@ public class KampanyeModel extends BaseModel {
         }
 
         return filteredList;
+    }
+
+    public List<KampanyeAdminDTO> getAllKampanyeForAdmin(String keyword, String status) {
+        List<KampanyeAdminDTO> kampanyeList = new ArrayList<>();
+        StringBuilder queryBuilder = new StringBuilder(
+            "SELECT k.id_kampanye, k.judul_kampanye, o.nama_organisasi, k.status_kampanye " +
+            "FROM Kampanye k " +
+            "JOIN Akun a ON k.id_akun = a.id_akun " +
+            "JOIN Organisasi o ON a.id_akun = o.id_akun WHERE 1=1"
+        );
+
+        List<Object> params = new ArrayList<>();
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            queryBuilder.append(" AND (k.judul_kampanye LIKE ? OR o.nama_organisasi LIKE ?)");
+            params.add("%" + keyword + "%");
+            params.add("%" + keyword + "%");
+        }
+
+        if (status != null && !status.trim().isEmpty()) {
+            queryBuilder.append(" AND k.status_kampanye = ?");
+            params.add(status);
+        }
+
+        queryBuilder.append(" ORDER BY k.id_kampanye DESC");
+
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(queryBuilder.toString())) {
+
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                KampanyeAdminDTO dto = new KampanyeAdminDTO();
+                dto.setId_kampanye(rs.getInt("id_kampanye"));
+                dto.setJudul_kampanye(rs.getString("judul_kampanye"));
+                dto.setNama_organisasi(rs.getString("nama_organisasi"));
+                dto.setStatus_kampanye(rs.getString("status_kampanye"));
+                kampanyeList.add(dto);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return kampanyeList;
+    }
+
+    public boolean ubahStatusKampanyeAdmin(int idKampanye, String newStatus) {
+        if ("aktif".equals(newStatus)) {
+            String checkDateQuery = "SELECT batas_waktu FROM Kampanye WHERE id_kampanye = ?";
+            try (Connection conn = getConnection();
+                PreparedStatement stmt = conn.prepareStatement(checkDateQuery)) {
+                stmt.setInt(1, idKampanye);
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    Date batasWaktu = rs.getDate("batas_waktu");
+                    if (batasWaktu != null && batasWaktu.toLocalDate().isBefore(LocalDate.now())) {
+                        System.out.println("Gagal mengaktifkan: Kampanye telah berakhir.");
+                        return false;
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        String query = "UPDATE Kampanye SET status_kampanye = ? WHERE id_kampanye = ?";
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, newStatus);
+            stmt.setInt(2, idKampanye);
+            int rowsUpdated = stmt.executeUpdate();
+            return rowsUpdated > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }  
