@@ -133,6 +133,11 @@ CREATE TABLE Kampanye_Gambar (
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- Tambahkan Status Akun dan Tanggal Registrasi
+ALTER TABLE Akun
+ADD COLUMN tgl_registrasi DATETIME DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN status ENUM('aktif', 'nonaktif') NOT NULL DEFAULT 'aktif';
+
 ALTER TABLE Kampanye
 ADD COLUMN alasan_penolakan TEXT NULL DEFAULT NULL AFTER status_kampanye;
 
