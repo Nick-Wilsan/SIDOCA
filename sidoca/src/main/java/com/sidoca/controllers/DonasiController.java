@@ -19,11 +19,12 @@ import com.midtrans.httpclient.error.MidtransError;
 
 import jakarta.servlet.http.HttpSession;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Map;
 import com.sidoca.Models.KampanyeModel;
 import com.sidoca.Models.DonasiModel;
 import com.sidoca.Models.DTO.DonasiDTO;
-
+import com.sidoca.Models.DTO.RiwayatDonasiSummaryDTO;
 
 @Controller
 public class DonasiController extends BaseController {
@@ -47,18 +48,30 @@ public class DonasiController extends BaseController {
     @GetMapping("/riwayatDonasi")
     public ModelAndView RiwayatDonasi() {
         Akun user = (Akun) session.getAttribute("user");
-        if (user == null) {
+        if (user == null || !"donatur".equals(user.getRole())) {
             return new ModelAndView("redirect:/");
         }
-        if (!"donatur".equals(user.getRole())) {
+        
+        Integer idDonatur = donaturModel.getDonaturIdByAkunId(user.getId_akun());
+        if (idDonatur == null) {
+            // Handle jika data donatur tidak ditemukan
             return new ModelAndView("redirect:/dashboard");
         }
-        return loadView("riwayatDonasi", java.util.Map.of("Judul", "Dashboard Donatur", "nama", user.getNama()));
+
+        RiwayatDonasiSummaryDTO riwayat = donasiModel.getRiwayatDonasi(idDonatur);
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("Judul", "Riwayat Donasi");
+        data.put("nama", user.getNama());
+        data.put("riwayat", riwayat);
+        
+        return loadView("riwayatDonasi", data);
     }
 
     @GetMapping("/donasi/{id}")
     public ModelAndView donasi(@PathVariable("id") int idKampanye) {
-        if (session.getAttribute("user") == null) {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null || !"donatur".equals(user.getRole())) {
             return new ModelAndView("redirect:/");
         }
         
@@ -81,7 +94,7 @@ public class DonasiController extends BaseController {
                                 RedirectAttributes ra) {
                                 
         Akun user = (Akun) session.getAttribute("user");
-        if (user == null) {
+        if (user == null || !"donatur".equals(user.getRole())) {
             return "redirect:/";
         }
 
@@ -113,6 +126,10 @@ public class DonasiController extends BaseController {
             ra.addFlashAttribute("snapToken", snapToken);
             ra.addFlashAttribute("orderId", orderId);
             ra.addFlashAttribute("nominal", nominal);
+
+            // Set session flag sebagai "tiket" untuk mengakses halaman konfirmasi
+            session.setAttribute("can_access_konfirmasi", true);
+
             return "redirect:/donasi/konfirmasi";
 
         } catch (MidtransError e) {
@@ -124,14 +141,30 @@ public class DonasiController extends BaseController {
 
     @GetMapping("/donasi/konfirmasi")
     public ModelAndView konfirmasiDonasi() {
+        Akun user = (Akun) session.getAttribute("user");
+        Boolean canAccess = (Boolean) session.getAttribute("can_access_konfirmasi");
+
+        // Cek user, role, dan "tiket"
+        if (user == null || !"donatur".equals(user.getRole()) || canAccess == null || !canAccess) {
+            // Jika tidak valid, redirect ke dashboard
+            return new ModelAndView("redirect:/dashboard");
+        }
+
+        // Hapus "tiket" setelah digunakan agar tidak bisa diakses lagi
+        session.removeAttribute("can_access_konfirmasi");
+
         return new ModelAndView("donasiKonfirmasi");
     }
 
-    // ENDPOINT BARU UNTUK MENANGANI REDIRECT DARI MIDTRANS
     @GetMapping("/donasi/status")
     public ModelAndView donasiStatus(@RequestParam("order_id") String orderId,
                                     @RequestParam("status") String status) {
         
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null || !"donatur".equals(user.getRole())) {
+            return new ModelAndView("redirect:/");
+        }
+
         ModelAndView mav = new ModelAndView("donasiStatus");
         DonasiDTO donasiInfo = donasiModel.getDonasiAndKampanyeByOrderId(orderId);
 

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Riwayat Donasi - SIDOCA</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+        <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}" />
+        <link rel="stylesheet" th:href="@{/css/headerStyleDonatur.css}" />
+        <link rel="stylesheet" th:href="@{/css/footerStyle.css}" />
+        <style>
+            .summary-card {
+                border: 1px solid #dee2e6;
+                border-radius: 0.5rem;
+                padding: 1.5rem;
+                background-color: #fff;
+            }
+            .donation-item-card {
+                border: 1px solid #e9ecef;
+                border-radius: 0.5rem;
+                padding: 1rem;
+                background-color: #fff;
+            }
+            .campaign-img {
+                width: 120px;
+                height: 90px;
+                object-fit: cover;
+                border-radius: 0.375rem;
+            }
+        </style>
+    </head>
+    <body>
+        <header th:replace="~{headerDonatur :: navbarDonatur}"></header>
+
+        <main class="container my-5">
+            <h1 class="fw-bold mb-3">Riwayat Donasi</h1>
+            <p class="lead text-muted mb-4">Lacak dan lihat dampak dari setiap kontribusi yang telah Anda berikan.</p>
+
+            <div class="row g-4 mb-5">
+                <div class="col-md-6">
+                    <div class="summary-card h-100">
+                        <h6 class="text-muted">Total donasi</h6>
+                        <h2 class="fw-bold text-success" th:text="'Rp ' + ${riwayat.totalDonasi != null ? #numbers.formatDecimal(riwayat.totalDonasi, 0, 'POINT', 2, 'COMMA') : '0,00'}">Rp 0,00</h2>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="summary-card h-100">
+                        <h6 class="text-muted">Kampanye Didukung</h6>
+                        <h2 class="fw-bold text-primary" th:text="${riwayat.totalKampanye}">0</h2>
+                        <small class="text-muted">Aktif bersama sesama</small>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="fw-bold mb-4">Rincian Donasi per kampanye</h3>
+            <div class="row g-4">
+                <div th:if="${riwayat.rincianDonasi == null or #lists.isEmpty(riwayat.rincianDonasi)}" class="col-12">
+                    <div class="alert alert-info text-center">Anda belum memiliki riwayat donasi.</div>
+                </div>
+
+                <div class="col-lg-6" th:each="item : ${riwayat.rincianDonasi}">
+                    <div class="donation-item-card d-flex align-items-center">
+                        <img th:src="${item.gambarKampanye != null ? item.gambarKampanye : '/images/image.png'}" class="campaign-img me-3" alt="Gambar Kampanye" />
+                        <div class="w-100">
+                            <h5 class="mb-1" th:text="${item.namaKampanye}">Supporting 40 orphans due to the Covid-19...</h5>
+                            <p class="text-muted small mb-2" th:text="${item.namaOrganisasi}">Vinacapital Foundation</p>
+                            <hr class="my-2" />
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-muted d-block">Jumlah donasi</small>
+                                    <strong th:text="'Rp ' + ${#numbers.formatDecimal(item.jumlahDonasi, 0, 'POINT', 0, 'COMMA')}">Rp 100.000</strong>
+                                </div>
+                                <div class="text-end">
+                                    <small class="text-muted d-block" th:text="${#dates.format(item.tanggalDonasi, 'dd MMMM yyyy')}">10 Oktober 2025</small>
+                                    <small class="text-muted d-block" th:text="${#dates.format(item.tanggalDonasi, 'HH:mm')}">17:59</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="logoutModalLabel" style="color: #2e5c4d">Konfirmasi Logout</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="color: #a1a1a1">Anda akan keluar dari sesi saat ini. Apakah anda yakin ingin melanjutkannya?</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">BATAL</button>
+                        <a th:href="@{/logout}" class="btn btn-danger">YA, LOGOUT</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer th:replace="~{footer :: footer}"></footer>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>
