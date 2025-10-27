@@ -79,7 +79,7 @@ public class DonasiController extends BaseController {
                                 @RequestParam("judul_kampanye") String judulKampanye,
                                 @RequestParam("nominal") double nominal,
                                 RedirectAttributes ra) {
-        
+                                
         Akun user = (Akun) session.getAttribute("user");
         if (user == null) {
             return "redirect:/";
@@ -89,7 +89,7 @@ public class DonasiController extends BaseController {
         Integer idDonatur = donaturModel.getDonaturIdByAkunId(user.getId_akun());
         if (idDonatur == null) {
             ra.addFlashAttribute("error", "Data donatur tidak ditemukan.");
-            return "redirect:/kampanye/" + idKampanye;
+            return "redirect:/donasi/" + idKampanye;
         }
 
         String orderId = "SIDOCA-" + idKampanye + "-" + System.currentTimeMillis();
@@ -98,7 +98,7 @@ public class DonasiController extends BaseController {
         boolean isSaved = donasiModel.saveDonasi(idDonatur, idKampanye, new BigDecimal(nominal), orderId);
         if (!isSaved) {
             ra.addFlashAttribute("error", "Gagal menyimpan transaksi awal.");
-            return "redirect:/kampanye/" + idKampanye;
+            return "redirect:/donasi/" + idKampanye;
         }
 
         try {
@@ -118,7 +118,7 @@ public class DonasiController extends BaseController {
         } catch (MidtransError e) {
             e.printStackTrace();
             ra.addFlashAttribute("error", "Gagal membuat transaksi: " + e.getMessage());
-            return "redirect:/kampanye/" + idKampanye;
+            return "redirect:/donasi/" + idKampanye;
         }
     }
 
@@ -130,7 +130,7 @@ public class DonasiController extends BaseController {
     // ENDPOINT BARU UNTUK MENANGANI REDIRECT DARI MIDTRANS
     @GetMapping("/donasi/status")
     public ModelAndView donasiStatus(@RequestParam("order_id") String orderId,
-                                     @RequestParam("status") String status) {
+                                    @RequestParam("status") String status) {
         
         ModelAndView mav = new ModelAndView("donasiStatus");
         DonasiDTO donasiInfo = donasiModel.getDonasiAndKampanyeByOrderId(orderId);
