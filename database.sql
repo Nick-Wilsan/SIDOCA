@@ -155,6 +155,10 @@ ALTER TABLE Laporan_Dana
 ADD COLUMN tgl_pengajuan DATETIME DEFAULT CURRENT_TIMESTAMP,
 ADD COLUMN tgl_verifikasi DATETIME NULL DEFAULT NULL;
 
+-- Ubah kolom bukti_dokumen menjadi mediumBlob
+ALTER TABLE laporan_dana
+MODIFY COLUMN bukti_dokumen MEDIUMBLOB;
+
 -- 1. Akun Admin 1
 INSERT INTO Akun (nama, username, email, no_hp, password, role) VALUES
 ('Nick Wilsan', 'nickadmin', 'wilsannick55@gmail.com', '081249730818', PASSWORD('nick123'), 'admin');
