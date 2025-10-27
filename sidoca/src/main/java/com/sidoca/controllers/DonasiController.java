@@ -129,6 +129,9 @@ public class DonasiController extends BaseController {
 
             // Set session flag sebagai "tiket" untuk mengakses halaman konfirmasi
             session.setAttribute("can_access_konfirmasi", true);
+            
+            // Tambahkan tiket untuk mengakses halaman status
+            session.setAttribute("can_access_status", true);
 
             return "redirect:/donasi/konfirmasi";
 
@@ -161,9 +164,15 @@ public class DonasiController extends BaseController {
                                     @RequestParam("status") String status) {
         
         Akun user = (Akun) session.getAttribute("user");
-        if (user == null || !"donatur".equals(user.getRole())) {
+        Boolean canAccess = (Boolean) session.getAttribute("can_access_status");
+        
+        // Cek user, role, dan "tiket" untuk halaman status
+        if (user == null || !"donatur".equals(user.getRole()) || canAccess == null || !canAccess) {
             return new ModelAndView("redirect:/");
         }
+
+        // Hapus "tiket" setelah digunakan
+        session.removeAttribute("can_access_status");
 
         ModelAndView mav = new ModelAndView("donasiStatus");
         DonasiDTO donasiInfo = donasiModel.getDonasiAndKampanyeByOrderId(orderId);
