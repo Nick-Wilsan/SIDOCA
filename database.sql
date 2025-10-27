@@ -113,6 +113,21 @@ CREATE TABLE Leaderboard (
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+CREATE TABLE Biaya_Admin (
+    id_biaya_admin INT PRIMARY KEY AUTO_INCREMENT,
+    id_donasi INT NOT NULL,
+    id_donatur INT NOT NULL,
+    id_kampanye INT NOT NULL,
+    jumlah_biaya DECIMAL(15,2) NOT NULL,
+    tanggal_biaya DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_donasi) REFERENCES Donasi(id_donasi)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_donatur) REFERENCES Donatur(id_donatur)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_kampanye) REFERENCES Kampanye(id_kampanye)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 -- tambahkan alter di tabel akun
 ALTER TABLE akun
 ADD COLUMN no_hp VARCHAR(15) NULL AFTER email;
