@@ -125,7 +125,7 @@
                                 <span th:text="${kampanye.sisa_hari} + ' Hari'">10 Hari</span> lagi untuk menggalang donasi
                             </div>
 
-                            <a href="#" class="btn btn-primary-custom w-100 btn-lg">Donasi Sekarang</a>
+                            <a th:href="@{/donasi/{id}(id=${kampanye.id_kampanye})}" class="btn btn-primary-custom w-100 btn-lg">Donasi Sekarang</a>
                         </div>
                     </div>
                 </div>

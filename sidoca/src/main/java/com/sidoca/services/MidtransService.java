@@ -2,6 +2,7 @@ package com.sidoca.services;
 
 import com.midtrans.Config;
 import com.midtrans.service.MidtransSnapApi;
+import com.midtrans.service.impl.MidtransSnapApiImpl; // Tambahkan import ini
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import com.midtrans.httpclient.error.MidtransError;
@@ -32,7 +33,8 @@ public class MidtransService {
                 .setClientKey(clientKey)
                 .setIsProduction(isProduction)
                 .build();
-        this.snapApi = new MidtransSnapApi(config);
+        // Perbaikan: Gunakan MidtransSnapApiImpl
+        this.snapApi = new MidtransSnapApiImpl(config);
     }
 
     public String createSnapToken(String orderId, double grossAmount, String itemName, String firstName, String email) throws MidtransError {
