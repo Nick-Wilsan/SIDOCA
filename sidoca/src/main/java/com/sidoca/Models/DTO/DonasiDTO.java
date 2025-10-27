@@ -3,19 +3,31 @@ package com.sidoca.Models.DTO;
 import java.math.BigDecimal;
 
 public class DonasiDTO {
-    private int idKampanye; // Tambahkan ini
+    private int idDonasi;
+    private int idDonatur;
+    private int idKampanye;
     private String namaKampanye;
     private BigDecimal nominalDonasi;
 
-    // Tambahkan getter dan setter untuk idKampanye
+    // Getters and Setters
+    public int getIdDonasi() {
+        return idDonasi;
+    }
+    public void setIdDonasi(int idDonasi) {
+        this.idDonasi = idDonasi;
+    }
+    public int getIdDonatur() {
+        return idDonatur;
+    }
+    public void setIdDonatur(int idDonatur) {
+        this.idDonatur = idDonatur;
+    }
     public int getIdKampanye() {
         return idKampanye;
     }
     public void setIdKampanye(int idKampanye) {
         this.idKampanye = idKampanye;
     }
-
-    // Getter dan Setter lainnya...
     public String getNamaKampanye() {
         return namaKampanye;
     }

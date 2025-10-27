@@ -115,7 +115,7 @@ public class DonasiController extends BaseController {
         try {
             String snapToken = midtransService.createSnapToken(
                 orderId, 
-                nominal, 
+                nominal, // Kirim nominal asli ke service
                 "Donasi untuk: " + judulKampanye, 
                 user.getNama(), 
                 user.getEmail()
@@ -187,7 +187,6 @@ public class DonasiController extends BaseController {
 
     @PostMapping("/donasi/notifikasi")
     public ResponseEntity<String> handleMidtransNotification(@RequestBody Map<String, Object> notificationPayload) {
-        // Mengambil order_id dan status transaksi dari data yang dikirim Midtrans
         String orderId = (String) notificationPayload.get("order_id");
         String transactionStatus = (String) notificationPayload.get("transaction_status");
         String fraudStatus = (String) notificationPayload.get("fraud_status");
@@ -195,7 +194,6 @@ public class DonasiController extends BaseController {
         String newStatus = "pending";
         boolean isSuccess = false;
 
-        // Logika untuk menentukan status baru berdasarkan notifikasi
         if ("capture".equals(transactionStatus)) {
             if ("accept".equals(fraudStatus)) {
                 newStatus = "berhasil";
@@ -208,14 +206,17 @@ public class DonasiController extends BaseController {
             newStatus = "gagal";
         }
 
-        // Memanggil model untuk memperbarui status di database
         boolean statusUpdated = donasiModel.updateStatusByOrderId(orderId, newStatus);
 
-        // Jika pembayaran berhasil, perbarui juga total dana terkumpul pada kampanye
         if (isSuccess && statusUpdated) {
             DonasiDTO donasiInfo = donasiModel.getDonasiAndKampanyeByOrderId(orderId);
             if (donasiInfo != null) {
+                // Update dana terkumpul di kampanye
                 kampanyeModel.updateDanaTerkumpul(donasiInfo.getIdKampanye(), donasiInfo.getNominalDonasi());
+                
+                // Hitung dan simpan biaya admin
+                BigDecimal adminFee = donasiInfo.getNominalDonasi().multiply(new BigDecimal("0.1"));
+                donasiModel.saveBiayaAdmin(donasiInfo.getIdDonasi(), donasiInfo.getIdDonatur(), donasiInfo.getIdKampanye(), adminFee);
             }
         }
 

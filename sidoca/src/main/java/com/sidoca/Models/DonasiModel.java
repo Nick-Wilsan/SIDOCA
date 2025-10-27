@@ -45,14 +45,16 @@ public class DonasiModel extends BaseModel {
     }
 
     public DonasiDTO getDonasiAndKampanyeByOrderId(String orderId) {
-        String query = "SELECT d.id_kampanye, k.judul_kampanye, d.nominal_donasi FROM Donasi d JOIN Kampanye k ON d.id_kampanye = k.id_kampanye WHERE d.order_id = ?";
+        String query = "SELECT d.id_donasi, d.id_donatur, d.id_kampanye, k.judul_kampanye, d.nominal_donasi FROM Donasi d JOIN Kampanye k ON d.id_kampanye = k.id_kampanye WHERE d.order_id = ?";
         try (Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, orderId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 DonasiDTO dto = new DonasiDTO();
-                dto.setIdKampanye(rs.getInt("id_kampanye")); // Ambil id_kampanye
+                dto.setIdDonasi(rs.getInt("id_donasi"));
+                dto.setIdDonatur(rs.getInt("id_donatur"));
+                dto.setIdKampanye(rs.getInt("id_kampanye"));
                 dto.setNamaKampanye(rs.getString("judul_kampanye"));
                 dto.setNominalDonasi(rs.getBigDecimal("nominal_donasi"));
                 return dto;
@@ -61,6 +63,21 @@ public class DonasiModel extends BaseModel {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public boolean saveBiayaAdmin(int idDonasi, int idDonatur, int idKampanye, BigDecimal jumlahBiaya) {
+        String query = "INSERT INTO Biaya_Admin (id_donasi, id_donatur, id_kampanye, jumlah_biaya, tanggal_biaya) VALUES (?, ?, ?, ?, NOW())";
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, idDonasi);
+            stmt.setInt(2, idDonatur);
+            stmt.setInt(3, idKampanye);
+            stmt.setBigDecimal(4, jumlahBiaya);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public RiwayatDonasiSummaryDTO getRiwayatDonasi(int idDonatur) {
