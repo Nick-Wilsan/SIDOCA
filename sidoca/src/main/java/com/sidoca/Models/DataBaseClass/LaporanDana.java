@@ -6,6 +6,7 @@ public class LaporanDana {
     private int id_laporan;
     private int id_kampanye;
     private int id_organisasi;
+    private int total_pengeluaran;
     private byte[] bukti_dokumen;
     private String deskripsi_penggunaan;
     private String status_verifikasi;
@@ -34,6 +35,14 @@ public class LaporanDana {
 
     public void setId_organisasi(int id_organisasi) {
         this.id_organisasi = id_organisasi;
+    }
+
+    public int getTotal_Pengeluaran() {
+        return total_pengeluaran;
+    }
+
+    public void setTotal_Pengeluaran(int total_pengeluaran) {
+        this.total_pengeluaran = total_pengeluaran;
     }
 
     public byte[] getBukti_dokumen() {
