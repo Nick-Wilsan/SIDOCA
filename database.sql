@@ -159,6 +159,10 @@ ADD COLUMN tgl_verifikasi DATETIME NULL DEFAULT NULL;
 ALTER TABLE laporan_dana
 MODIFY COLUMN bukti_dokumen MEDIUMBLOB;
 
+-- Tambahkan kolom order_id ke tabel Donasi
+ALTER TABLE Donasi
+ADD COLUMN order_id VARCHAR(255) NULL UNIQUE AFTER id_donasi;
+
 -- 1. Akun Admin 1
 INSERT INTO Akun (nama, username, email, no_hp, password, role) VALUES
 ('Nick Wilsan', 'nickadmin', 'wilsannick55@gmail.com', '081249730818', PASSWORD('nick123'), 'admin');
