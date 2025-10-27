@@ -1,67 +1,61 @@
 <!DOCTYPE html>
 <html lang="id" xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <title>Konfirmasi Donasi Anda</title>
-        <script type="text/javascript" th:src="@{${'https://app.sandbox.midtrans.com/snap/snap.js'}}" data-client-key="${midtransClientKey}"></script>
-        <script th:inline="javascript">
-            const clientKey = /*[[${midtransClientKey}]]*/ 'Mid-client-Rw5fVcNOfFGVQ2cb'; // Pass from controller
-        </script>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-        </head>
-    <body>
-        <header th:replace="~{headerDonatur :: navbarDonatur}"></header>
+<head>
+    <title>Konfirmasi Donasi Anda</title>
+    <script type="text/javascript" 
+            th:src="@{'https://app.sandbox.midtrans.com/snap/snap.js'}" 
+            th:attr="data-client-key='${midtransClientKey}'"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+    <header th:replace="~{headerDonatur :: navbarDonatur}"></header>
 
-        <main class="container my-5">
-            <div class="card p-4 mx-auto" style="max-width: 600px;">
-                <h2 class="text-center" style="color: #3A5A40;">Konfirmasi Donasi Anda</h2>
+    <main class="container my-5">
+        <div class="card p-4 mx-auto" style="max-width: 600px;">
+            <h2 class="text-center" style="color: #3A5A40;">Konfirmasi Donasi Anda</h2>
 
-                <div th:if="${snapToken == null}" class="alert alert-danger">
-                    Terjadi kesalahan. Token pembayaran tidak ditemukan.
+            <div th:if="${snapToken == null}" class="alert alert-danger">
+                Terjadi kesalahan. Token pembayaran tidak ditemukan.
+            </div>
+            
+            <div th:if="${snapToken != null}">
+                <hr/>
+                <p class="fw-bold">Detail Donasi</p>
+                <div class="d-flex justify-content-between">
+                    <span>Nominal Donasi</span>
+                    <span th:text="'Rp ' + ${#numbers.formatDecimal(nominal, 0, 'POINT', 0, 'COMMA')}"></span>
                 </div>
+                <hr/>
                 
-                <div th:if="${snapToken != null}">
-                    <hr/>
-                    <p class="fw-bold">Detail Donasi</p>
-                    <div class="d-flex justify-content-between">
-                        <span>Nominal Donasi</span>
-                        <span th:text="'Rp ' + ${#numbers.formatDecimal(nominal, 0, 'POINT', 0, 'COMMA')}">Rp 500.000</span>
-                    </div>
-                    <hr/>
-                    
-                    <div class="d-grid gap-2 mt-4">
-                        <button id="pay-button" class="btn btn-lg" style="background-color: #3A5A40; color: white;">BAYAR SEKARANG</button>
-                    </div>
+                <div class="d-grid gap-2 mt-4">
+                    <button id="pay-button" class="btn btn-lg" style="background-color: #3A5A40; color: white;">BAYAR SEKARANG</button>
                 </div>
             </div>
-        </main>
-        
-        <script th:inline="javascript">
-            document.getElementById('pay-button').onclick = function() {
-                // Get the snap token passed from the controller (via flash attribute)
-                const snapToken = /*[[${snapToken}]]*/ 'YOUR_SNAP_TOKEN_HERE';
-                
-                snap.pay(snapToken, {
-                    onSuccess: function(result) {
-                        // Redirect on successful payment (Step 3/4)
-                        window.location.href = '/donasi/status?order_id=' + /*[[${orderId}]]*/ + '&status=success';
-                    },
-                    onPending: function(result) {
-                        // Redirect on pending payment (Step 3/4)
-                        window.location.href = '/donasi/status?order_id=' + /*[[${orderId}]]*/ + '&status=pending';
-                    },
-                    onError: function(result) {
-                        // Redirect on failed payment
-                        window.location.href = '/donasi/status?order_id=' + /*[[${orderId}]]*/ + '&status=error';
-                    },
-                    onClose: function() {
-                        // User closed the pop-up without completing the payment
-                        alert('Anda menutup jendela pembayaran.');
-                    }
-                });
-            };
-        </script>
-        
-        <footer th:replace="~{footer :: footer}"></footer>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    </body>
+        </div>
+    </main>
+    
+    <script th:inline="javascript">
+        document.getElementById('pay-button').onclick = function() {
+            const snapToken = /*[[${snapToken}]]*/ '';
+            const orderId = /*[[${orderId}]]*/ '';
+            
+            snap.pay(snapToken, {
+                onSuccess: function(result) {
+                    window.location.href = '/donasi/status?order_id=' + orderId + '&status=success';
+                },
+                onPending: function(result) {
+                    window.location.href = '/donasi/status?order_id=' + orderId + '&status=pending';
+                },
+                onError: function(result) {
+                    window.location.href = '/donasi/status?order_id=' + orderId + '&status=error';
+                },
+                onClose: function() {
+                    alert('Anda menutup jendela pembayaran tanpa menyelesaikan transaksi.');
+                }
+            });
+        };
+    </script>
+    
+    <footer th:replace="~{footer :: footer}"></footer>
+</body>
 </html>
