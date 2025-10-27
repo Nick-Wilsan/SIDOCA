@@ -11,12 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.sidoca.Models.DataBaseClass.Akun;
 import com.sidoca.Models.DonaturModel;
 import com.sidoca.services.MidtransService;
 import com.midtrans.httpclient.error.MidtransError;
-
 import jakarta.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -196,21 +194,32 @@ public class DonasiController extends BaseController {
         System.out.println("Menerima notifikasi untuk Order ID: " + orderId + " dengan status: " + transactionStatus);
 
         String newStatus = "pending";
+        boolean isSuccess = false;
 
         if ("capture".equals(transactionStatus)) {
             if ("accept".equals(fraudStatus)) {
                 newStatus = "berhasil";
+                isSuccess = true;
             }
         } else if ("settlement".equals(transactionStatus)) {
             newStatus = "berhasil";
+            isSuccess = true;
         } else if ("cancel".equals(transactionStatus) || "deny".equals(transactionStatus) || "expire".equals(transactionStatus)) {
             newStatus = "gagal";
         }
 
         System.out.println("Memperbarui status Order ID: " + orderId + " menjadi " + newStatus);
-        
+
         // Update status di database
-        donasiModel.updateStatusByOrderId(orderId, newStatus);
+        boolean statusUpdated = donasiModel.updateStatusByOrderId(orderId, newStatus);
+
+        // Jika pembayaran berhasil, update juga dana terkumpul di tabel kampanye
+        if (isSuccess && statusUpdated) {
+            DonasiDTO donasiInfo = donasiModel.getDonasiAndKampanyeByOrderId(orderId);
+            if (donasiInfo != null) {
+                kampanyeModel.updateDanaTerkumpul(donasiInfo.getIdKampanye(), donasiInfo.getNominalDonasi());
+            }
+        }
 
         return new ResponseEntity<>("Notification received.", HttpStatus.OK);
     }

@@ -447,4 +447,17 @@ public class KampanyeModel extends BaseModel {
             return false;
         }
     }
+
+    public boolean updateDanaTerkumpul(int idKampanye, BigDecimal jumlahDonasi) {
+        String query = "UPDATE Kampanye SET dana_terkumpul = dana_terkumpul + ? WHERE id_kampanye = ?";
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setBigDecimal(1, jumlahDonasi);
+            stmt.setInt(2, idKampanye);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }  

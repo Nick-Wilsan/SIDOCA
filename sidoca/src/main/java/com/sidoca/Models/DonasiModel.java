@@ -45,13 +45,14 @@ public class DonasiModel extends BaseModel {
     }
 
     public DonasiDTO getDonasiAndKampanyeByOrderId(String orderId) {
-        String query = "SELECT k.judul_kampanye, d.nominal_donasi FROM Donasi d JOIN Kampanye k ON d.id_kampanye = k.id_kampanye WHERE d.order_id = ?";
+        String query = "SELECT d.id_kampanye, k.judul_kampanye, d.nominal_donasi FROM Donasi d JOIN Kampanye k ON d.id_kampanye = k.id_kampanye WHERE d.order_id = ?";
         try (Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, orderId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 DonasiDTO dto = new DonasiDTO();
+                dto.setIdKampanye(rs.getInt("id_kampanye")); // Ambil id_kampanye
                 dto.setNamaKampanye(rs.getString("judul_kampanye"));
                 dto.setNominalDonasi(rs.getBigDecimal("nominal_donasi"));
                 return dto;
