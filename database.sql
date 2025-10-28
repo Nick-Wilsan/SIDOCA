@@ -201,33 +201,25 @@ BEGIN
 END$$
 DELIMITER ;
 
--- 1. Akun Admin 1
-INSERT INTO Akun (nama, username, email, no_hp, password, role) VALUES
-('Nick Wilsan', 'nickadmin', 'wilsannick55@gmail.com', '081249730818', PASSWORD('nick123'), 'admin');
 
--- 2. Akun Admin 2
-INSERT INTO Akun (nama, username, email, no_hp, password, role) VALUES
-('Muhammad Zaqy', 'zaqyadmin', 'zaqy@gmail.com', '0812567489', PASSWORD('zaqy123'), 'admin');
 
--- 3. Akun Organisasi 1
-INSERT INTO Akun (nama, username, email, no_hp, password, role) VALUES
-('Yayasan Peduli Anak', 'ypa_official', 'ypa@gmail.com', '081281803794', PASSWORD('ypa123'), 'organisasi');
 
--- 4. Akun Organisasi 2
-INSERT INTO Akun (nama, username, email, no_hp, password, role) VALUES
-('Panti Jompo Kasih', 'pjk_official', 'pjk@gmail.com', '082200764422', PASSWORD('pjk123'), 'organisasi');
 
--- 5. Akun Donatur 1
-INSERT INTO Akun (nama, username, email, no_hp, password, role) VALUES
-('Ihsan Ramadhan', 'ihsan', 'ihsan.rmd@gmail.com', '082284670022', PASSWORD('ihsan123'), 'donatur');
 
--- 6. Akun Donatur 2
-INSERT INTO Akun (nama, username, email, no_hp, password, role) VALUES
-('Metteu AK Saragih', 'metteu', 'metteusaragih@gmail.com', '082384294702', PASSWORD('metteu123'), 'donatur');
+INSERT INTO Akun (nama, username, email, no_hp, password, role, status, tgl_registrasi)
+VALUES (
+    'Nick Wilsan',
+    'nickadmin',
+    'wilsannick55@gmail.com',
+    '081249730818',
+    '*410CF83F572280AF59D55670EF5EB7DE2FCB824A',
+    'admin',
+    'aktif',
+    '2025-10-28 20:14:00'
+);
 
--- Mengisi Tabel Organisasi (id_akun = 2 dan 3)
-INSERT INTO Organisasi (id_akun, nama_organisasi, deskripsi_organisasi) VALUES
-(3, 'Yayasan Peduli Anak Sejahtera', 'Fokus pada pendidikan dan kesehatan anak yatim.'),
-(4, 'Panti Jompo Kasih Ibu', 'Menyediakan tempat tinggal dan perawatan bagi lansia.');
-
--- Input Semua
+INSERT INTO Admin (id_akun, level_akses)
+VALUES (
+    LAST_INSERT_ID(),
+    'Super Admin'
+);
