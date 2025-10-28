@@ -32,4 +32,23 @@ public class OrganisasiModel extends BaseModel {
             return false;
         }
     }
+
+    public int GetIdOrganisasiByIdAkun(int idAkun) {
+        String query = "SELECT id_organisasi FROM Organisasi WHERE id_akun = ?";
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, idAkun);
+            var rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("id_organisasi");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return -1; // Mengembalikan -1 jika tidak ditemukan atau gagal
+    }
 }

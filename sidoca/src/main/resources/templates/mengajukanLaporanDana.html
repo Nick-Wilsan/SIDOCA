@@ -26,10 +26,21 @@
         </div>
 
         <form th:action="@{/tambahLaporanDana}" method="post" enctype="multipart/form-data" th:object="${laporanDanaBaru}">
-          <!-- Hidden inputs -->
-          <input type="hidden" th:field="*{id_kampanye}" />
+          <!-- Hidden -->
           <input type="hidden" th:field="*{id_organisasi}" />
 
+          <!-- Dropdown Kampanye -->
+          <div class="mb-3">
+            <label for="id_kampanye" class="form-label">Pilih Kampanye</label>
+            <select class="form-select" id="id_kampanye" th:field="*{id_kampanye}" required>
+              <option value="" disabled selected>-- Pilih Kampanye --</option>
+              <option th:each="k : ${listKampanye}" 
+                      th:value="${k.id_kampanye}" 
+                      th:text="${k.judul_kampanye}"></option>
+            </select>
+          </div>
+
+          <!-- Total Pengeluaran -->
           <div class="mb-3">
             <label for="total_pengeluaran" class="form-label">Total Pengeluaran</label>
             <div class="input-group">
@@ -38,18 +49,20 @@
             </div>
           </div>
 
+          <!-- Bukti Dokumen -->
           <div class="mb-3">
-            <label for="bukti_dokumen" class="form-label">Unggah Bukti Dokumen (PDF)</label>
-            <input type="file" class="form-control" id="bukti_dokumen" th:field="*{bukti_dokumen}" accept="application/pdf" required />
-            <div class="form-text text-muted">Unggah bukti dalam format PDF (maks. 5MB)</div>
+            <label for="bukti_dokumen" class="form-label">Unggah Bukti Dokumen (PDF/Gambar)</label>
+            <input type="file" class="form-control" id="bukti_dokumen" name="bukti_dokumen" accept="application/pdf,image/*" required />
+            <div class="form-text text-muted">Unggah file bukti dalam format PDF, JPG, PNG, atau JPEG (maks. 5MB)</div>
           </div>
 
+          <!-- Deskripsi -->
           <div class="mb-3">
             <label for="deskripsi_penggunaan" class="form-label">Deskripsi Penggunaan Dana</label>
             <textarea class="form-control" id="deskripsi_penggunaan" th:field="*{deskripsi_penggunaan}" rows="5" placeholder="Jelaskan bagaimana dana digunakan..." required></textarea>
           </div>
 
-          <!-- Kolom yang dikosongkan otomatis -->
+          <!-- Hidden auto-filled fields -->
           <input type="hidden" th:field="*{tgl_verifikasi}" />
           <input type="hidden" th:field="*{tgl_pengajuan}" />
           <input type="hidden" th:field="*{status_verifikasi}" />

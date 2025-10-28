@@ -590,7 +590,7 @@ public class KampanyeModel extends BaseModel {
         return resultList;
     }
 
-    public List<Kampanye> GetAllKampanyeByOrganisasi(int idOrganisasi) {
+    public List<Kampanye> GetAllKampanyeByOrganisasi(int id_akun) {
         List<Kampanye> kampanyeList = new ArrayList<>();
 
         String query = "SELECT k.id_kampanye, k.id_akun, k.judul_kampanye, k.deskripsi_kampanye, " +
@@ -598,12 +598,12 @@ public class KampanyeModel extends BaseModel {
                     "FROM Kampanye k " +
                     "JOIN Akun a ON k.id_akun = a.id_akun " +
                     "JOIN Organisasi o ON a.id_akun = o.id_akun " +
-                    "WHERE o.id_organisasi = ?";
+                    "WHERE o.id_akun = ?";
 
         try (Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setInt(1, idOrganisasi);
+            stmt.setInt(1, id_akun);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
