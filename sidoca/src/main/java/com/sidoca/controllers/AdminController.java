@@ -19,6 +19,10 @@ import jakarta.servlet.http.HttpSession;
 import com.sidoca.Models.AkunModel;
 import com.sidoca.Models.DTO.KampanyeAdminDTO;
 import java.time.LocalDate;
+import com.sidoca.Models.PencairanDanaModel;
+import com.sidoca.Models.DTO.PencairanDanaDetailDTO;
+import com.sidoca.Models.DTO.PencairanDanaVerifikasiDTO;
+import java.math.BigDecimal;
 
 @Controller
 public class AdminController extends BaseController{
@@ -29,6 +33,9 @@ public class AdminController extends BaseController{
 
     @Autowired
     private AkunModel akunModel;
+
+    @Autowired
+    private PencairanDanaModel pencairanDanaModel;
 
     public AdminController(HttpSession session) {
         this.session = session;
@@ -108,15 +115,80 @@ public class AdminController extends BaseController{
     }
 
     @GetMapping("/verifikasiPencairanDana")
-    public ModelAndView VerifikasiPencairanDana() {
+    public ModelAndView verifikasiPencairanDana(
+            @RequestParam(name = "sortBy", required = false) String sortBy,
+            @RequestParam(name = "sortOrder", required = false) String sortOrder) {
+                
         Akun user = (Akun) session.getAttribute("user");
-        if (user == null) {
+        if (user == null || !"admin".equals(user.getRole())) {
             return new ModelAndView("redirect:/");
         }
-        if (!"admin".equals(user.getRole())) {
-            return new ModelAndView("redirect:/dashboard");
+
+        List<PencairanDanaVerifikasiDTO> daftarPengajuan = pencairanDanaModel.getPengajuanPencairanDana(sortBy, sortOrder);
+        
+        Map<String, Object> data = new HashMap<>();
+        data.put("Judul", "Verifikasi Pencairan Dana");
+        data.put("pengajuanList", daftarPengajuan);
+        data.put("sortBy", sortBy);
+        data.put("sortOrder", sortOrder);
+        
+        return loadView("verifikasiPencairanDana", data);
+    }
+
+    @GetMapping("/verifikasiPencairanDana/detail/{id}")
+    public ModelAndView detailPencairanDana(@PathVariable("id") int idPencairan) {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null || !"admin".equals(user.getRole())) {
+            return new ModelAndView("redirect:/");
         }
-        return loadView("verifikasiPencairanDana", java.util.Map.of("Judul", "Dashboard Admin", "nama", user.getNama()));
+
+        PencairanDanaDetailDTO detail = pencairanDanaModel.getDetailPencairanById(idPencairan);
+        if (detail == null) {
+            return new ModelAndView("redirect:/verifikasiPencairanDana");
+        }
+        
+        Map<String, Object> data = new HashMap<>();
+        data.put("Judul", "Detail Verifikasi Pencairan");
+        data.put("detail", detail);
+
+        return loadView("verifikasiDetailPencairanDana", data);
+    }
+
+    @PostMapping("/verifikasiPencairanDana/proses")
+    public String prosesVerifikasiPencairan(
+            @RequestParam("idPencairan") int idPencairan,
+            @RequestParam("idKampanye") int idKampanye,
+            @RequestParam("jumlahDiajukan") BigDecimal jumlahDiajukan,
+            @RequestParam("action") String action,
+            @RequestParam(name = "komentar", required = false) String komentar,
+            RedirectAttributes ra) {
+        
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null || !"admin".equals(user.getRole())) {
+            return "redirect:/";
+        }
+
+        boolean berhasil = false;
+        if ("setuju".equals(action)) {
+            // Logika untuk persetujuan
+            berhasil = pencairanDanaModel.updateStatusPencairan(idPencairan, "disetujui", komentar);
+            if (berhasil) {
+                kampanyeModel.kurangiDanaTerkumpul(idKampanye, jumlahDiajukan);
+                ra.addFlashAttribute("success", "Pengajuan pencairan dana berhasil disetujui.");
+            } else {
+                ra.addFlashAttribute("error", "Gagal menyetujui pengajuan.");
+            }
+        } else if ("tolak".equals(action)) {
+            // Logika untuk penolakan
+            berhasil = pencairanDanaModel.updateStatusPencairan(idPencairan, "ditolak", komentar);
+            if (berhasil) {
+                ra.addFlashAttribute("success", "Pengajuan pencairan dana telah ditolak.");
+            } else {
+                ra.addFlashAttribute("error", "Gagal menolak pengajuan.");
+            }
+        }
+
+        return "redirect:/verifikasiPencairanDana";
     }
 
     @GetMapping("/daftarKampanyeAdmin")

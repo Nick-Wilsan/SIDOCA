@@ -688,4 +688,16 @@ public class KampanyeModel extends BaseModel {
         return kampanyeList;
     }
 
+    public boolean kurangiDanaTerkumpul(int idKampanye, BigDecimal jumlah) {
+        String query = "UPDATE Kampanye SET dana_terkumpul = dana_terkumpul - ? WHERE id_kampanye = ?";
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setBigDecimal(1, jumlah);
+            stmt.setInt(2, idKampanye);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
