@@ -208,6 +208,13 @@ ADD COLUMN dana_terkumpul DECIMAL(15,2) NOT NULL DEFAULT 0 AFTER target_dana;
 
 ALTER TABLE Akun ADD UNIQUE (no_hp);
 
+ALTER TABLE Pencairan_Dana
+ADD COLUMN nama_bank VARCHAR(50) NOT NULL,
+ADD COLUMN nomor_rekening VARCHAR(50) NOT NULL,
+ADD COLUMN nama_pemilik_rekening VARCHAR(100) NOT NULL,
+ADD COLUMN bukti_pendukung VARCHAR(255) NOT NULL,
+ADD COLUMN alasan_pencairan TEXT;
+
 -- 1. Akun Admin 1
 INSERT INTO Akun (nama, username, email, no_hp, password, role) VALUES
 ('Nick Wilsan', 'nickadmin', 'wilsannick55@gmail.com', '081249730818', PASSWORD('nick123'), 'admin');
