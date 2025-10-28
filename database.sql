@@ -1,13 +1,33 @@
+-- =================================================================
+-- BAGIAN 1: DEFINISI TABEL (FINAL)
+-- =================================================================
+
+-- Tabel untuk menyimpan semua jenis akun pengguna
 CREATE TABLE Akun (
     id_akun INT PRIMARY KEY AUTO_INCREMENT,
     nama VARCHAR(100) NOT NULL,
     username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
+    no_hp VARCHAR(15) NULL UNIQUE,
+    alamat TEXT NULL,
+    photo_profile MEDIUMBLOB NULL,
     password VARCHAR(255) NOT NULL,
-    role ENUM('admin', 'donatur', 'organisasi') NOT NULL
+    role ENUM('admin', 'donatur', 'organisasi') NOT NULL,
+    tgl_registrasi DATETIME DEFAULT CURRENT_TIMESTAMP,
+    status ENUM('aktif', 'nonaktif') NOT NULL DEFAULT 'aktif'
 );
 
+-- Tabel profil yang terhubung dengan setiap akun
+CREATE TABLE Profil (
+    id_profil INT PRIMARY KEY AUTO_INCREMENT,
+    id_akun INT NOT NULL UNIQUE,
+    alamat TEXT NULL,
+    photo_profile VARCHAR(255) DEFAULT 'default.png',
+    FOREIGN KEY (id_akun) REFERENCES Akun(id_akun)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
 
+-- Tabel spesifik untuk peran Admin
 CREATE TABLE Admin (
     id_admin INT PRIMARY KEY AUTO_INCREMENT,
     id_akun INT NOT NULL,
@@ -16,6 +36,7 @@ CREATE TABLE Admin (
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- Tabel spesifik untuk peran Organisasi
 CREATE TABLE Organisasi (
     id_organisasi INT PRIMARY KEY AUTO_INCREMENT,
     id_akun INT NOT NULL,
@@ -25,6 +46,7 @@ CREATE TABLE Organisasi (
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- Tabel spesifik untuk peran Donatur
 CREATE TABLE Donatur (
     id_donatur INT PRIMARY KEY AUTO_INCREMENT,
     id_akun INT NOT NULL,
@@ -33,22 +55,36 @@ CREATE TABLE Donatur (
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- Tabel untuk kampanye donasi
 CREATE TABLE Kampanye (
     id_kampanye INT PRIMARY KEY AUTO_INCREMENT,
     id_akun INT NOT NULL,
     judul_kampanye VARCHAR(150) NOT NULL,
     deskripsi_kampanye TEXT,
     target_dana DECIMAL(15,2) NOT NULL,
+    dana_terkumpul DECIMAL(15,2) NOT NULL DEFAULT 0,
     batas_waktu DATE,
-    -- UBAH BARIS DI BAWAH INI
-    status_kampanye ENUM('aktif', 'nonaktif', 'selesai', 'menunggu') DEFAULT 'menunggu',
-    gambar_kampanye VARCHAR(255),
+    status_kampanye ENUM('aktif', 'nonaktif', 'menunggu', 'ditolak') DEFAULT 'menunggu',
+    alasan_penolakan TEXT NULL,
+    tgl_pengajuan DATETIME DEFAULT CURRENT_TIMESTAMP,
+    tgl_verifikasi DATETIME NULL DEFAULT NULL,
     FOREIGN KEY (id_akun) REFERENCES Akun(id_akun)
         ON DELETE CASCADE ON UPDATE CASCADE
-    );
+);
 
+-- Tabel untuk menyimpan gambar-gambar yang terkait dengan kampanye
+CREATE TABLE Kampanye_Gambar (
+    id_gambar INT PRIMARY KEY AUTO_INCREMENT,
+    id_kampanye INT NOT NULL,
+    url_gambar VARCHAR(255) NOT NULL,
+    FOREIGN KEY (id_kampanye) REFERENCES Kampanye(id_kampanye)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Tabel untuk mencatat setiap donasi yang masuk
 CREATE TABLE Donasi (
     id_donasi INT PRIMARY KEY AUTO_INCREMENT,
+    order_id VARCHAR(255) NULL UNIQUE,
     id_donatur INT NOT NULL,
     id_kampanye INT NOT NULL,
     nominal_donasi DECIMAL(15,2) NOT NULL,
@@ -62,6 +98,7 @@ CREATE TABLE Donasi (
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- Tabel untuk proses pencairan dana oleh organisasi
 CREATE TABLE Pencairan_Dana (
     id_pencairan INT PRIMARY KEY AUTO_INCREMENT,
     id_kampanye INT NOT NULL,
@@ -69,26 +106,37 @@ CREATE TABLE Pencairan_Dana (
     jumlah_dana DECIMAL(15,2) NOT NULL,
     tanggal_pengajuan DATETIME DEFAULT CURRENT_TIMESTAMP,
     status_pencairan ENUM('diajukan', 'disetujui', 'ditolak') DEFAULT 'diajukan',
+    tgl_verifikasi DATETIME NULL DEFAULT NULL,
+    nama_bank VARCHAR(50) NOT NULL,
+    nomor_rekening VARCHAR(50) NOT NULL,
+    nama_pemilik_rekening VARCHAR(100) NOT NULL,
+    bukti_pendukung VARCHAR(255) NOT NULL,
+    alasan_pencairan TEXT,
+    komentar_admin TEXT NULL,
     FOREIGN KEY (id_kampanye) REFERENCES Kampanye(id_kampanye)
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (id_organisasi) REFERENCES Organisasi(id_organisasi)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- Tabel untuk laporan penggunaan dana oleh organisasi
 CREATE TABLE Laporan_Dana (
     id_laporan INT PRIMARY KEY AUTO_INCREMENT,
     id_kampanye INT NOT NULL,
     id_organisasi INT NOT NULL,
     total_pengeluaran DECIMAL(15,2),
-    bukti_dokumen VARCHAR(255),
+    bukti_dokumen MEDIUMBLOB,
     deskripsi_penggunaan TEXT,
     status_verifikasi ENUM('menunggu', 'disetujui', 'ditolak') DEFAULT 'menunggu',
+    tgl_pengajuan DATETIME DEFAULT CURRENT_TIMESTAMP,
+    tgl_verifikasi DATETIME NULL DEFAULT NULL,
     FOREIGN KEY (id_kampanye) REFERENCES Kampanye(id_kampanye)
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (id_organisasi) REFERENCES Organisasi(id_organisasi)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- Tabel untuk komentar pada setiap kampanye
 CREATE TABLE Komentar (
     id_komentar INT PRIMARY KEY AUTO_INCREMENT,
     id_akun INT NOT NULL,
@@ -101,6 +149,7 @@ CREATE TABLE Komentar (
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- Tabel untuk leaderboard donatur per kampanye
 CREATE TABLE Leaderboard (
     id_leaderboard INT PRIMARY KEY AUTO_INCREMENT,
     id_kampanye INT NOT NULL,
@@ -113,6 +162,7 @@ CREATE TABLE Leaderboard (
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- Tabel untuk mencatat biaya administrasi per donasi
 CREATE TABLE Biaya_Admin (
     id_biaya_admin INT PRIMARY KEY AUTO_INCREMENT,
     id_donasi INT NOT NULL,
@@ -128,15 +178,7 @@ CREATE TABLE Biaya_Admin (
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE Profil (
-    id_profil INT PRIMARY KEY AUTO_INCREMENT,
-    id_akun INT NOT NULL UNIQUE,
-    alamat TEXT NULL,
-    photo_profile VARCHAR(255) DEFAULT 'default.png',
-    FOREIGN KEY (id_akun) REFERENCES Akun(id_akun)
-        ON DELETE CASCADE ON UPDATE CASCADE
-);
-
+-- Tabel untuk menyimpan dana dari kampanye yang dihapus/nonaktif
 CREATE TABLE Uang_Kampanye_Nonaktif (
     id_uang_nonaktif INT PRIMARY KEY AUTO_INCREMENT,
     id_kampanye_asal INT NOT NULL,
@@ -144,6 +186,12 @@ CREATE TABLE Uang_Kampanye_Nonaktif (
     tanggal_penghapusan DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+
+-- =================================================================
+-- BAGIAN 2: DEFINISI TRIGGER
+-- =================================================================
+
+-- Trigger untuk secara otomatis membuat baris baru di tabel Profil setiap kali akun baru ditambahkan
 DELIMITER $$
 CREATE TRIGGER after_akun_insert
 AFTER INSERT ON Akun
@@ -152,74 +200,6 @@ BEGIN
     INSERT INTO Profil (id_akun) VALUES (NEW.id_akun);
 END$$
 DELIMITER ;
-
--- tambahkan alter di tabel akun
-ALTER TABLE akun
-ADD COLUMN no_hp VARCHAR(15) NULL AFTER email;
-
-ALTER TABLE Akun
-ADD COLUMN alamat TEXT NULL AFTER no_hp,
-ADD COLUMN photo_profile MEDIUMBLOB NULL AFTER alamat;
-
--- HAPUS KOLOM GAMBAR KAMPANYE LAMA DARI TABEL KAMPANYE
-ALTER TABLE Kampanye DROP COLUMN gambar_kampanye;
-
--- BUAT TABEL BARU UNTUK MENYIMPAN GAMBAR KAMPANYE
-CREATE TABLE Kampanye_Gambar (
-    id_gambar INT PRIMARY KEY AUTO_INCREMENT,
-    id_kampanye INT NOT NULL,
-    url_gambar VARCHAR(255) NOT NULL,
-    FOREIGN KEY (id_kampanye) REFERENCES Kampanye(id_kampanye)
-        ON DELETE CASCADE ON UPDATE CASCADE
-);
-
--- Tambahkan Status Akun dan Tanggal Registrasi
-ALTER TABLE Akun
-ADD COLUMN tgl_registrasi DATETIME DEFAULT CURRENT_TIMESTAMP,
-ADD COLUMN status ENUM('aktif', 'nonaktif') NOT NULL DEFAULT 'aktif';
-
-ALTER TABLE Kampanye
-ADD COLUMN alasan_penolakan TEXT NULL DEFAULT NULL AFTER status_kampanye;
-
--- Tambahkan tgl_pengajuan dan tgl_verifikasi pada tabel Kampanye
-ALTER TABLE Kampanye
-ADD COLUMN tgl_pengajuan DATETIME DEFAULT CURRENT_TIMESTAMP,
-ADD COLUMN tgl_verifikasi DATETIME NULL DEFAULT NULL;
-
--- Tambahkan tgl_verifikasi pada tabel Pencairan_Dana (tgl_pengajuan sudah ada)
-ALTER TABLE Pencairan_Dana
-ADD COLUMN tgl_verifikasi DATETIME NULL DEFAULT NULL;
-
--- Tambahkan tgl_pengajuan dan tgl_verifikasi pada tabel Laporan_Dana
-ALTER TABLE Laporan_Dana
-ADD COLUMN tgl_pengajuan DATETIME DEFAULT CURRENT_TIMESTAMP,
-ADD COLUMN tgl_verifikasi DATETIME NULL DEFAULT NULL;
-
--- Ubah kolom bukti_dokumen menjadi mediumBlob
-ALTER TABLE laporan_dana
-MODIFY COLUMN bukti_dokumen MEDIUMBLOB;
-
--- Tambahkan kolom order_id ke tabel Donasi
-ALTER TABLE Donasi
-ADD COLUMN order_id VARCHAR(255) NULL UNIQUE AFTER id_donasi;
-
-ALTER TABLE Kampanye
-ADD COLUMN dana_terkumpul DECIMAL(15,2) NOT NULL DEFAULT 0 AFTER target_dana;
-
-ALTER TABLE Akun ADD UNIQUE (no_hp);
-
-ALTER TABLE Pencairan_Dana
-ADD COLUMN nama_bank VARCHAR(50) NOT NULL,
-ADD COLUMN nomor_rekening VARCHAR(50) NOT NULL,
-ADD COLUMN nama_pemilik_rekening VARCHAR(100) NOT NULL,
-ADD COLUMN bukti_pendukung VARCHAR(255) NOT NULL,
-ADD COLUMN alasan_pencairan TEXT;
-
-ALTER TABLE Pencairan_Dana
-ADD COLUMN komentar_admin TEXT NULL AFTER alasan_pencairan;
-
-ALTER TABLE Kampanye
-MODIFY COLUMN status_kampanye ENUM('aktif', 'nonaktif', 'selesai', 'menunggu', 'ditolak') DEFAULT 'menunggu';
 
 -- 1. Akun Admin 1
 INSERT INTO Akun (nama, username, email, no_hp, password, role) VALUES
