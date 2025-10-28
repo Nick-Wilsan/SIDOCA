@@ -201,4 +201,108 @@ public class AkunModel extends BaseModel{
             return false;
         }
     }
+
+    public boolean ubahPeranMenjadiAdmin(int idAkun) {
+        String updateRoleQuery = "UPDATE Akun SET role = 'admin' WHERE id_akun = ?";
+        String deleteDonaturQuery = "DELETE FROM Donatur WHERE id_akun = ?";
+        String insertAdminQuery = "INSERT INTO Admin (id_akun) VALUES (?)";
+    
+        Connection conn = null;
+        try {
+            conn = getConnection();
+            conn.setAutoCommit(false);
+    
+            // Hapus dari tabel Donatur
+            try (PreparedStatement stmt = conn.prepareStatement(deleteDonaturQuery)) {
+                stmt.setInt(1, idAkun);
+                stmt.executeUpdate();
+            }
+    
+            // Masukkan ke tabel Admin
+            try (PreparedStatement stmt = conn.prepareStatement(insertAdminQuery)) {
+                stmt.setInt(1, idAkun);
+                stmt.executeUpdate();
+            }
+    
+            // Ubah peran di tabel Akun
+            try (PreparedStatement stmt = conn.prepareStatement(updateRoleQuery)) {
+                stmt.setInt(1, idAkun);
+                stmt.executeUpdate();
+            }
+    
+            conn.commit();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            return false;
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    
+    public boolean ubahPeranMenjadiDonatur(int idAkun) {
+        String updateRoleQuery = "UPDATE Akun SET role = 'donatur' WHERE id_akun = ?";
+        String deleteAdminQuery = "DELETE FROM Admin WHERE id_akun = ?";
+        String insertDonaturQuery = "INSERT INTO Donatur (id_akun) VALUES (?)";
+    
+        Connection conn = null;
+        try {
+            conn = getConnection();
+            conn.setAutoCommit(false);
+    
+            // Hapus dari tabel Admin
+            try (PreparedStatement stmt = conn.prepareStatement(deleteAdminQuery)) {
+                stmt.setInt(1, idAkun);
+                stmt.executeUpdate();
+            }
+    
+            // Masukkan ke tabel Donatur
+            try (PreparedStatement stmt = conn.prepareStatement(insertDonaturQuery)) {
+                stmt.setInt(1, idAkun);
+                stmt.executeUpdate();
+            }
+    
+            // Ubah peran di tabel Akun
+            try (PreparedStatement stmt = conn.prepareStatement(updateRoleQuery)) {
+                stmt.setInt(1, idAkun);
+                stmt.executeUpdate();
+            }
+    
+            conn.commit();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            return false;
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }

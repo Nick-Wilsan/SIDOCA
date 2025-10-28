@@ -85,6 +85,12 @@
                                     <a href="#" th:if="${akun.status == 'nonaktif'}" data-bs-toggle="modal" data-bs-target="#confirmationModal" th:attr="data-akun-id=${akun.id_akun}, data-akun-nama=${akun.nama}, data-new-status='aktif'">
                                         <i class="bi bi-toggle-off text-danger fs-4"></i>
                                     </a>
+                                    <button th:if="${akun.role == 'donatur'}" type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#promoteAdminModal" th:attr="data-akun-id=${akun.id_akun}, data-akun-nama=${akun.nama}">
+                                        Jadikan Admin
+                                    </button>
+                                    <button th:if="${akun.role == 'admin'}" type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#revertAdminModal" th:attr="data-akun-id=${akun.id_akun}, data-akun-nama=${akun.nama}">
+                                        Jadikan Donatur
+                                    </button>
                                 </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(akunList)}">
@@ -118,6 +124,48 @@
             </div>
         </div>
 
+        <div class="modal fade" id="promoteAdminModal" tabindex="-1" aria-labelledby="promoteAdminModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="promoteAdminModalLabel">Konfirmasi Perubahan Peran</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Anda yakin ingin mengubah peran akun <strong id="promoteAkunNama"></strong> menjadi <strong>Admin</strong>?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <form th:action="@{/kelolaAkun/ubahPeran}" method="post" id="roleChangeForm">
+                            <input type="hidden" name="id_akun" id="promoteAkunIdInput" />
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-primary">Ya, Jadikan Admin</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="revertAdminModal" tabindex="-1" aria-labelledby="revertAdminModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="revertAdminModalLabel">Konfirmasi Perubahan Peran</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Anda yakin ingin mengubah peran akun <strong id="revertAkunNama"></strong> menjadi <strong>Donatur</strong>?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <form th:action="@{/kelolaAkun/revertPeran}" method="post" id="revertRoleChangeForm">
+                            <input type="hidden" name="id_akun" id="revertAkunIdInput" />
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-warning">Ya, Jadikan Donatur</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true"></div>
 
         <footer th:replace="~{footer :: footer}"></footer>
@@ -141,6 +189,32 @@
                 modalBodyStatus.textContent = newStatus;
                 akunIdInput.value = akunId;
                 akunStatusInput.value = newStatus;
+            });
+
+            var promoteAdminModal = document.getElementById('promoteAdminModal');
+            promoteAdminModal.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                var akunId = button.getAttribute('data-akun-id');
+                var akunNama = button.getAttribute('data-akun-nama');
+            
+                var modalBodyNama = promoteAdminModal.querySelector('#promoteAkunNama');
+                var akunIdInput = promoteAdminModal.querySelector('#promoteAkunIdInput');
+            
+                modalBodyNama.textContent = akunNama;
+                akunIdInput.value = akunId;
+            });
+
+            var revertAdminModal = document.getElementById('revertAdminModal');
+            revertAdminModal.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                var akunId = button.getAttribute('data-akun-id');
+                var akunNama = button.getAttribute('data-akun-nama');
+            
+                var modalBodyNama = revertAdminModal.querySelector('#revertAkunNama');
+                var akunIdInput = revertAdminModal.querySelector('#revertAkunIdInput');
+            
+                modalBodyNama.textContent = akunNama;
+                akunIdInput.value = akunId;
             });
         </script>
     </body>

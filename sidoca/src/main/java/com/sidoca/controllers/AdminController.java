@@ -224,4 +224,38 @@ public class AdminController extends BaseController{
 
         return "redirect:/kelolaAkun";
     }
+
+    @PostMapping("/kelolaAkun/ubahPeran")
+    public String ubahPeranMenjadiAdmin(@RequestParam("id_akun") int idAkun, RedirectAttributes ra) {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null || !"admin".equals(user.getRole())) {
+            return "redirect:/";
+        }
+
+        boolean berhasil = akunModel.ubahPeranMenjadiAdmin(idAkun);
+        if (berhasil) {
+            ra.addFlashAttribute("success", "Peran akun berhasil diubah menjadi Admin.");
+        } else {
+            ra.addFlashAttribute("error", "Gagal mengubah peran akun.");
+        }
+
+        return "redirect:/kelolaAkun";
+    }
+
+    @PostMapping("/kelolaAkun/revertPeran")
+    public String revertPeranKeDonatur(@RequestParam("id_akun") int idAkun, RedirectAttributes ra) {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null || !"admin".equals(user.getRole())) {
+            return "redirect:/";
+        }
+    
+        boolean berhasil = akunModel.ubahPeranMenjadiDonatur(idAkun);
+        if (berhasil) {
+            ra.addFlashAttribute("success", "Peran akun berhasil diubah menjadi Donatur.");
+        } else {
+            ra.addFlashAttribute("error", "Gagal mengubah peran akun.");
+        }
+    
+        return "redirect:/kelolaAkun";
+    }
 }
