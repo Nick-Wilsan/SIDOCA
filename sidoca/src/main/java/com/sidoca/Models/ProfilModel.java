@@ -20,7 +20,7 @@ public class ProfilModel extends BaseModel {
             queryBuilder.append(", o.deskripsi_organisasi ");
         }
 
-        queryBuilder.append("FROM Akun a JOIN Profil p ON a.id_akun = p.id_akun ");
+        queryBuilder.append("FROM Akun a LEFT JOIN Profil p ON a.id_akun = p.id_akun ");
 
         if ("organisasi".equals(role)) {
             queryBuilder.append("LEFT JOIN Organisasi o ON a.id_akun = o.id_akun ");
