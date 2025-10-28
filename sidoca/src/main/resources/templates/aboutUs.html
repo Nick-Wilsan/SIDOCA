@@ -13,7 +13,21 @@
     <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}" />
 </head>
 <body>
-    <header th:replace="~{headerFooter :: navbarFooter}"></header>
+    <header>
+    <div th:if="${session.user != null}">
+        <div th:switch="${session.user.role}">
+            <div th:case="'donatur'">
+                <div th:replace="~{headerDonatur :: navbarDonatur}"></div>
+            </div>
+            <div th:case="'organisasi'">
+                <div th:replace="~{headerOrganisasi :: navbarOrganisasi}"></div>
+            </div>
+            <div th:case="'admin'">
+                <div th:replace="~{headerAdmin :: navbarAdmin}"></div>
+            </div>
+        </div>
+    </div>
+    </header>
 
     <main>
         
@@ -87,7 +101,7 @@
                 </div>
                 
                 <div class="team-member">
-                    <img th:src="@{/images/ihsan.jpg}" alt="Foto Ihsan" class="team-photo-placeholder">
+                    <img th:src="@{/images/mikirkidz.jpg}" alt="Foto Ihsan" class="team-photo-placeholder">
                     <h3>Ihsan</h3>
                 </div>
                 

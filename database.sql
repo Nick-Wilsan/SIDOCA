@@ -128,6 +128,24 @@ CREATE TABLE Biaya_Admin (
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+CREATE TABLE Profil (
+    id_profil INT PRIMARY KEY AUTO_INCREMENT,
+    id_akun INT NOT NULL UNIQUE,
+    alamat TEXT NULL,
+    photo_profile VARCHAR(255) DEFAULT 'default.png',
+    FOREIGN KEY (id_akun) REFERENCES Akun(id_akun)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+DELIMITER $$
+CREATE TRIGGER after_akun_insert
+AFTER INSERT ON Akun
+FOR EACH ROW
+BEGIN
+    INSERT INTO Profil (id_akun) VALUES (NEW.id_akun);
+END$$
+DELIMITER ;
+
 -- tambahkan alter di tabel akun
 ALTER TABLE akun
 ADD COLUMN no_hp VARCHAR(15) NULL AFTER email;
