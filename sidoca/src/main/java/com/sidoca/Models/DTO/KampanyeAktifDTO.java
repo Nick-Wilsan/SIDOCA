@@ -5,6 +5,7 @@ import java.sql.Date;
 
 public class KampanyeAktifDTO {
     private int id_kampanye;
+    private int id_akun;
     private String judul_kampanye;
     private String nama_organisasi;
     private BigDecimal target_dana;
@@ -41,4 +42,9 @@ public class KampanyeAktifDTO {
 
     public int getPersentase_terkumpul() { return persentase_terkumpul; }
     public void setPersentase_terkumpul(int persentase_terkumpul) { this.persentase_terkumpul = persentase_terkumpul; }
+
+    public int getId_akun() { return id_akun; }
+    public void setId_akun(int id_akun) { this.id_akun = id_akun; }
+
+    
 }

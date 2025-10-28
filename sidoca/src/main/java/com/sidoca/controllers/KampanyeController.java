@@ -137,18 +137,6 @@ public class KampanyeController extends BaseController{
         return new ModelAndView("redirect:/dashboardOrganisasi");
     }
 
-    @GetMapping("/pencairanDana")
-    public ModelAndView PencairanDana() {
-        Akun user = (Akun) session.getAttribute("user");
-        if (user == null) {
-            return new ModelAndView("redirect:/");
-        }
-        if (!"organisasi".equals(user.getRole())) {
-            return new ModelAndView("redirect:/dashboard");
-        }
-        return loadView("pencairanDana", java.util.Map.of("Judul", "Dashboard Organisasi", "nama", user.getNama()));
-    }
-
     @GetMapping("/mengajukanLaporanDana")
     public ModelAndView MengajukanLaporanDana() {
         Akun user = (Akun) session.getAttribute("user");
