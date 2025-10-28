@@ -41,8 +41,6 @@ public class AuthController extends BaseController{
         this.session = session;
     }
 
-    
-
     // =================================================================
     // HALAMAN PUBLIK & AUTENTIKASI
     // =================================================================
@@ -84,17 +82,20 @@ public class AuthController extends BaseController{
     }
 
     @PostMapping("/register")
-    public String handleRegister(@ModelAttribute Akun akun, RedirectAttributes ra, HttpSession session) {
-        // Validasi dasar
-        if (akun.getUsername() == null || akun.getUsername().trim().isEmpty() ||
-            akun.getEmail() == null || akun.getEmail().trim().isEmpty() ||
-            akun.getPassword() == null || akun.getPassword().isEmpty() ||
-            akun.getRole() == null || akun.getRole().trim().isEmpty() ||
-            akun.getNama() == null || akun.getNama().trim().isEmpty()) {
-            ra.addFlashAttribute("error", "Semua field wajib diisi.");
-            ra.addFlashAttribute("akunBaru", akun);
-            return "redirect:/register";
-        }
+    public String handleRegister(
+        @RequestParam("username") String username,
+        @RequestParam("nama") String nama,
+        @RequestParam("email") String email,
+        @RequestParam("password") String password,
+        @RequestParam("role") String role,
+        RedirectAttributes ra) {
+
+        Akun akun = new Akun();
+        akun.setNama(nama);
+        akun.setUsername(username);
+        akun.setEmail(email);
+        akun.setPassword(password);
+        akun.setRole(role);
 
         // Buat kode verifikasi 6 digit
         String verificationCode = String.format("%06d", new Random().nextInt(999999));
@@ -102,7 +103,6 @@ public class AuthController extends BaseController{
         // Simpan data akun dan kode verifikasi di session
         session.setAttribute("akun_pending_verification", akun);
         session.setAttribute("verification_code", verificationCode);
-
         session.setAttribute("can_access_verify_email", true);
 
         // Kirim email verifikasi
