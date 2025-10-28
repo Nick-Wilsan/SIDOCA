@@ -16,14 +16,15 @@ import java.util.List;
 @Component
 public class DonasiModel extends BaseModel {
 
-    public boolean saveDonasi(int idDonatur, int idKampanye, BigDecimal nominal, String orderId) {
-        String query = "INSERT INTO Donasi (id_donatur, id_kampanye, nominal_donasi, order_id, status_pembayaran, tanggal_donasi) VALUES (?, ?, ?, ?, 'pending', NOW())";
+    public boolean saveDonasi(int idDonatur, int idKampanye, BigDecimal nominal, String orderId, boolean anonim) {
+        String query = "INSERT INTO Donasi (id_donatur, id_kampanye, nominal_donasi, order_id, status_pembayaran, tanggal_donasi, anonim) VALUES (?, ?, ?, ?, 'pending', NOW(), ?)";
         try (Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, idDonatur);
             stmt.setInt(2, idKampanye);
             stmt.setBigDecimal(3, nominal);
             stmt.setString(4, orderId);
+            stmt.setBoolean(5, anonim);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -134,5 +135,19 @@ public class DonasiModel extends BaseModel {
         }
 
         return summary;
+    }
+
+    public boolean updateStatusAndPaymentMethodByOrderId(String orderId, String status, String paymentMethod) {
+        String query = "UPDATE Donasi SET status_pembayaran = ?, metode_pembayaran = ? WHERE order_id = ?";
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, status);
+            stmt.setString(2, paymentMethod);
+            stmt.setString(3, orderId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

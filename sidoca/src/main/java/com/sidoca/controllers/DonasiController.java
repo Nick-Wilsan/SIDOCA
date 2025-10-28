@@ -89,6 +89,7 @@ public class DonasiController extends BaseController {
     public String prosesDonasi(@RequestParam("id_kampanye") int idKampanye,
                                 @RequestParam("judul_kampanye") String judulKampanye,
                                 @RequestParam("nominal") double nominal,
+                                @RequestParam(name = "anonim", required = false) boolean anonim,
                                 RedirectAttributes ra) {
                                 
         Akun user = (Akun) session.getAttribute("user");
@@ -106,7 +107,7 @@ public class DonasiController extends BaseController {
         String orderId = "SIDOCA-" + idKampanye + "-" + System.currentTimeMillis();
 
         // Simpan transaksi ke DB dengan status 'pending'
-        boolean isSaved = donasiModel.saveDonasi(idDonatur, idKampanye, new BigDecimal(nominal), orderId);
+        boolean isSaved = donasiModel.saveDonasi(idDonatur, idKampanye, new BigDecimal(nominal), orderId, anonim);
         if (!isSaved) {
             ra.addFlashAttribute("error", "Gagal menyimpan transaksi awal.");
             return "redirect:/donasi/" + idKampanye;
@@ -190,6 +191,7 @@ public class DonasiController extends BaseController {
         String orderId = (String) notificationPayload.get("order_id");
         String transactionStatus = (String) notificationPayload.get("transaction_status");
         String fraudStatus = (String) notificationPayload.get("fraud_status");
+        String paymentType = (String) notificationPayload.get("payment_type");
 
         String newStatus = "pending";
         boolean isSuccess = false;
@@ -206,7 +208,7 @@ public class DonasiController extends BaseController {
             newStatus = "gagal";
         }
 
-        boolean statusUpdated = donasiModel.updateStatusByOrderId(orderId, newStatus);
+        boolean statusUpdated = donasiModel.updateStatusAndPaymentMethodByOrderId(orderId, newStatus, paymentType);
 
         if (isSuccess && statusUpdated) {
             DonasiDTO donasiInfo = donasiModel.getDonasiAndKampanyeByOrderId(orderId);
@@ -217,6 +219,7 @@ public class DonasiController extends BaseController {
                 // Hitung dan simpan biaya admin
                 BigDecimal adminFee = donasiInfo.getNominalDonasi().multiply(new BigDecimal("0.1"));
                 donasiModel.saveBiayaAdmin(donasiInfo.getIdDonasi(), donasiInfo.getIdDonatur(), donasiInfo.getIdKampanye(), adminFee);
+                donaturModel.updateTotalDonasi(donasiInfo.getIdDonatur(), donasiInfo.getNominalDonasi());
             }
         }
 

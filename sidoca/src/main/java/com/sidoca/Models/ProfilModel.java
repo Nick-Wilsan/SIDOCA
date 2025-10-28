@@ -189,4 +189,17 @@ public class ProfilModel extends BaseModel {
             return false;
         }
     }
+
+    public boolean updatePhotoProfile(int idAkun, String fileName) {
+        String query = "UPDATE Profil SET photo_profile = ? WHERE id_akun = ?";
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, fileName);
+            stmt.setInt(2, idAkun);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

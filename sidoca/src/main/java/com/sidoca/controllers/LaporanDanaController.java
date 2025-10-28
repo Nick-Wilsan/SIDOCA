@@ -99,7 +99,7 @@ public class LaporanDanaController extends BaseController{
             ra.addFlashAttribute("error", "Gagal membaca file bukti dokumen.");
         }
 
-        return "redirect:/laporanPenggunaanDana";
+        return "redirect:/mengajukanLaporanDana";
     }
 
 }

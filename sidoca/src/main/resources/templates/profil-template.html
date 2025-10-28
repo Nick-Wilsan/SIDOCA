@@ -14,9 +14,14 @@
             <div class="row">
                 <div class="col-lg-4">
                     <div class="card p-4 text-center">
-                        <img th:src="${profil.photoProfile != null ? '/images/' + profil.photoProfile : '/images/default.png'}" class="rounded-circle mx-auto mb-3" width="150" height="150" alt="Foto Profil" />
+                        <img th:src="${profil.photoProfile != null ? '/images/profiles/' + profil.photoProfile : '/images/default.png'}" class="rounded-circle mx-auto mb-3" width="150" height="150" alt="Foto Profil" />
                         <h4 th:text="${profil.nama}">Nama Lengkap</h4>
                         <p class="text-muted" th:text="${profil.username}">username</p>
+
+                        <form th:if="${editMode}" th:action="@{/profil/update-photo}" method="post" enctype="multipart/form-data" class="mt-3">
+                            <input type="file" name="photo" class="form-control" />
+                            <button type="submit" class="btn btn-dark-green mt-2">Simpan Foto</button>
+                        </form>
 
                         <div class="d-grid gap-2 mt-3">
                             <a th:if="${!editMode}" th:href="@{?edit=true}" class="btn btn-dark-green">EDIT PROFILE</a>

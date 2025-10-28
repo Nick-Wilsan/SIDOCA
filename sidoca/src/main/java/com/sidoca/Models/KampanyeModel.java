@@ -274,16 +274,16 @@ public class KampanyeModel extends BaseModel {
     }
 
     public boolean updateStatusKampanye(int idKampanye, String newStatus, String alasan) {
-        String query = "UPDATE Kampanye SET status_kampanye = ?, alasan_penolakan = ? WHERE id_kampanye = ?";
+        String query = "UPDATE Kampanye SET status_kampanye = ?, alasan_penolakan = ?, tgl_verifikasi = NOW() WHERE id_kampanye = ?";
         try (Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, newStatus);
-            stmt.setString(2, alasan); // Bisa null jika disetujui
+            stmt.setString(2, alasan);
             stmt.setInt(3, idKampanye);
             int rowsUpdated = stmt.executeUpdate();
             return rowsUpdated > 0;
         } catch (SQLException e) {
-            e.printStackTrace(); // Sebaiknya gunakan logger
+            e.printStackTrace();
             return false;
         }
     }
