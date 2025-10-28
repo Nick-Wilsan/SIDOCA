@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+    <body>
+        <main class="container my-5" th:fragment="profilContent">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="card p-4 text-center">
+                        <img th:src="@{'/images/profiles/' + ${profil.photoProfile}}" class="rounded-circle mx-auto mb-3" width="150" height="150" alt="Foto Profil" />
+                        <h4 th:text="${profil.nama}">Nama Lengkap</h4>
+                        <p class="text-muted" th:text="${profil.username}">username</p>
+
+                        <div class="d-grid gap-2 mt-3">
+                            <a th:if="${!editMode}" th:href="@{${#httpServletRequest.requestURI} + '?edit=true'}" class="btn btn-dark-green">EDIT PROFILE</a>
+                            <button th:if="${editMode}" type="button" class="btn btn-dark-green">UBAH FOTO PROFIL</button>
+                            <a th:href="@{/ganti-kata-sandi}" class="btn btn-orange">GANTI KATA SANDI</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-8">
+                    <div class="card p-4">
+                        <h3 class="mb-4">Informasi pribadi</h3>
+                        <form th:action="@{/profil/update}" method="post">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Username</label>
+                                    <input type="text" class="form-control" th:value="${profil.username}" disabled />
+                                    <div class="form-text">Username tidak dapat diubah</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Nama Lengkap</label>
+                                    <input type="text" name="nama" class="form-control" th:value="${profil.nama}" th:readonly="${!editMode}" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Alamat Email</label>
+                                    <input type="email" name="email" class="form-control" th:value="${profil.email}" th:readonly="${!editMode}" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Nomor Telepon</label>
+                                    <input type="text" name="noHp" class="form-control" th:value="${profil.noHp}" th:readonly="${!editMode}" />
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Alamat</label>
+                                    <textarea name="alamat" class="form-control" rows="3" th:text="${profil.alamat}" th:readonly="${!editMode}"></textarea>
+                                </div>
+                                <div class="col-12" th:if="${session.user.role == 'organisasi'}">
+                                    <label class="form-label">Deskripsi Organisasi</label>
+                                    <textarea name="deskripsiOrganisasi" class="form-control" rows="4" th:text="${profil.deskripsiOrganisasi}" th:readonly="${!editMode}"></textarea>
+                                </div>
+                                <div class="col-12 text-end" th:if="${editMode}">
+                                    <button type="submit" class="btn btn-dark-green">SIMPAN PERUBAHAN</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </body>
+</html>
