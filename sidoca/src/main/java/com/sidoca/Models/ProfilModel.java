@@ -53,8 +53,6 @@ public class ProfilModel extends BaseModel {
     }
 
     public boolean updateProfil(ProfilDTO profilDTO, String role) {
-        // Implementasi logika update akan ditambahkan nanti
-        // Anda perlu membuat beberapa query UPDATE di sini
         return true;
     }
     

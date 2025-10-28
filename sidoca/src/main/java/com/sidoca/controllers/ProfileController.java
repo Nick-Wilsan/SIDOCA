@@ -3,8 +3,12 @@ package com.sidoca.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.sidoca.Models.ProfilModel;
 import com.sidoca.Models.DTO.ProfilDTO;
 import com.sidoca.Models.DataBaseClass.Akun;
@@ -62,5 +66,23 @@ public class ProfileController extends BaseController {
             return new ModelAndView("redirect:/dashboard");
         }
         return getProfilModelAndView("profilAdmin", "Profil Admin", user, edit);
+    }
+
+    @PostMapping("/profil/update")
+    public String updateProfil(@ModelAttribute ProfilDTO profilDTO, RedirectAttributes ra) {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/";
+        }
+    
+        boolean isSuccess = profilModel.updateProfil(profilDTO, user.getRole());
+    
+        if (isSuccess) {
+            ra.addFlashAttribute("success", "Profil berhasil diperbarui.");
+        } else {
+            ra.addFlashAttribute("error", "Gagal memperbarui profil.");
+        }
+    
+        return "redirect:/profil" + user.getRole().substring(0, 1).toUpperCase() + user.getRole().substring(1);
     }
 }
