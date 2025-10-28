@@ -148,7 +148,7 @@ public class AuthController extends BaseController{
                 }
 
                 if (detailSaved) {
-                    ra.addFlashAttribute("success", "Verifikasi berhasil! Silakan masuk.");
+                    ra.addFlashAttribute("success", "Pembuatan akun berhasil! Silakan masuk.");
                     // Hapus data dari session setelah berhasil
                     session.removeAttribute("akun_pending_verification");
                     session.removeAttribute("verification_code");
