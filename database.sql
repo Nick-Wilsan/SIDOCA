@@ -199,6 +199,8 @@ ADD COLUMN order_id VARCHAR(255) NULL UNIQUE AFTER id_donasi;
 ALTER TABLE Kampanye
 ADD COLUMN dana_terkumpul DECIMAL(15,2) NOT NULL DEFAULT 0 AFTER target_dana;
 
+ALTER TABLE Akun ADD UNIQUE (no_hp);
+
 -- 1. Akun Admin 1
 INSERT INTO Akun (nama, username, email, no_hp, password, role) VALUES
 ('Nick Wilsan', 'nickadmin', 'wilsannick55@gmail.com', '081249730818', PASSWORD('nick123'), 'admin');
