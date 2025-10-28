@@ -69,9 +69,14 @@
                     <div class="div1-2">
                         <h1>SIDOCA</h1>
                         <h6>Sign in to SIDOCA</h6>
+                        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert" style="width: 70%">
+                            <span th:text="${success}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
                         <div th:if="${error}" class="alert alert-danger" role="alert" style="width: 70%">
                             <span th:text="${error}"></span>
                         </div>
+                        
                         <div class="box-form">
                             <form th:action="@{/login}" method="post">
                                 <label for="Username">Username/Email</label><br />
