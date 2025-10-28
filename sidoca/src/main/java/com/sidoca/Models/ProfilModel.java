@@ -52,10 +52,117 @@ public class ProfilModel extends BaseModel {
         return profil;
     }
 
-    public boolean updateProfil(ProfilDTO profilDTO, String role) {
-        return true;
+    /**
+     * Memeriksa apakah email sudah digunakan oleh akun lain.
+     */
+    public boolean isEmailTaken(String email, int idAkun) {
+        String query = "SELECT id_akun FROM Akun WHERE email = ? AND id_akun != ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, email);
+            stmt.setInt(2, idAkun);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return true;
+        }
     }
-    
+
+    /**
+     * Memeriksa apakah nomor HP sudah digunakan oleh akun lain.
+     */
+    public boolean isNoHpTaken(String noHp, int idAkun) {
+        if (noHp == null || noHp.trim().isEmpty()) {
+            return false;
+        }
+        String query = "SELECT id_akun FROM Akun WHERE no_hp = ? AND id_akun != ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, noHp);
+            stmt.setInt(2, idAkun);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return true;
+        }
+    }
+
+    /**
+     * Memperbarui data profil pengguna (selain email).
+     */
+    public boolean updateProfil(ProfilDTO profilDTO, String role) {
+        String akunQuery = "UPDATE Akun SET nama = ?, no_hp = ? WHERE id_akun = ?";
+        String profilQuery = "UPDATE Profil SET alamat = ? WHERE id_akun = ?";
+        String orgQuery = "UPDATE Organisasi SET deskripsi_organisasi = ? WHERE id_akun = ?";
+
+        Connection conn = null;
+        try {
+            conn = getConnection();
+            conn.setAutoCommit(false);
+
+            try (PreparedStatement stmt = conn.prepareStatement(akunQuery)) {
+                stmt.setString(1, profilDTO.getNama());
+                stmt.setString(2, profilDTO.getNoHp());
+                stmt.setInt(3, profilDTO.getIdAkun());
+                stmt.executeUpdate();
+            }
+
+            try (PreparedStatement stmt = conn.prepareStatement(profilQuery)) {
+                stmt.setString(1, profilDTO.getAlamat());
+                stmt.setInt(2, profilDTO.getIdAkun());
+                stmt.executeUpdate();
+            }
+
+            if ("organisasi".equals(role)) {
+                try (PreparedStatement stmt = conn.prepareStatement(orgQuery)) {
+                    stmt.setString(1, profilDTO.getDeskripsiOrganisasi());
+                    stmt.setInt(2, profilDTO.getIdAkun());
+                    stmt.executeUpdate();
+                }
+            }
+
+            conn.commit();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            return false;
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * Memperbarui alamat email setelah verifikasi berhasil.
+     */
+    public boolean updateEmail(int idAkun, String newEmail) {
+        String query = "UPDATE Akun SET email = ? WHERE id_akun = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, newEmail);
+            stmt.setInt(2, idAkun);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public boolean verifyOldPassword(int idAkun, String oldPassword) {
         String query = "SELECT id_akun FROM Akun WHERE id_akun = ? AND password = PASSWORD(?)";
         try (Connection conn = getConnection();
