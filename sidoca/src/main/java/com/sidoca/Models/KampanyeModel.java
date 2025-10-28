@@ -647,4 +647,39 @@ public class KampanyeModel extends BaseModel {
 
         return resultList;
     }
+
+    public List<Kampanye> GetAllKampanyeByOrganisasi(int idOrganisasi) {
+        List<Kampanye> kampanyeList = new ArrayList<>();
+
+        String query = "SELECT k.id_kampanye, k.id_akun, k.judul_kampanye, k.deskripsi_kampanye, " +
+                    "k.target_dana, k.batas_waktu, k.status_kampanye " +
+                    "FROM Kampanye k " +
+                    "JOIN Akun a ON k.id_akun = a.id_akun " +
+                    "JOIN Organisasi o ON a.id_akun = o.id_akun " +
+                    "WHERE o.id_organisasi = ?";
+
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, idOrganisasi);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Kampanye kampanye = new Kampanye();
+                kampanye.setId_kampanye(rs.getInt("id_kampanye"));
+                kampanye.setId_akun(rs.getInt("id_akun"));
+                kampanye.setJudul_kampanye(rs.getString("judul_kampanye"));
+                kampanye.setDeskripsi_kampanye(rs.getString("deskripsi_kampanye"));
+                kampanye.setTarget_dana(rs.getBigDecimal("target_dana"));
+                kampanye.setBatas_waktu(rs.getDate("batas_waktu"));
+                kampanye.setStatus_kampanye(rs.getString("status_kampanye"));
+                kampanyeList.add(kampanye);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return kampanyeList;
+    }
+
 }  
