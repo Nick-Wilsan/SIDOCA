@@ -10,6 +10,7 @@ import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -28,6 +29,8 @@ import com.sidoca.Models.DTO.KampanyeDetailDTO;
 import com.sidoca.Models.DataBaseClass.Akun;
 import com.sidoca.Models.DataBaseClass.Kampanye;
 import com.sidoca.Models.DataBaseClass.KampanyeGambar;
+import com.sidoca.services.EmailService;
+
 import jakarta.servlet.http.HttpSession;
 import com.sidoca.Models.DTO.StatusVerifikasiDTO;
 import java.util.HashMap;
@@ -44,6 +47,9 @@ public class KampanyeController extends BaseController{
 
     @Autowired
     private KampanyeGambarModel kampanyeGambarModel;
+
+    @Autowired
+    private EmailService emailService;
 
     public KampanyeController(HttpSession session) {
         this.session = session;
@@ -211,5 +217,60 @@ public class KampanyeController extends BaseController{
         }
 
         return loadView("lihatDetailKampanye", data);
+    }
+
+    @GetMapping("/kampanye/hapus/{id}")
+    public String requestDeleteCampaign(@PathVariable("id") int idKampanye, RedirectAttributes ra, HttpSession session) {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null || !"organisasi".equals(user.getRole())) {
+            return "redirect:/";
+        }
+
+        String verificationCode = String.format("%06d", new Random().nextInt(999999));
+        emailService.sendDeleteCampaignEmail(user.getEmail(), verificationCode);
+
+        session.setAttribute("delete_campaign_code", verificationCode);
+        session.setAttribute("delete_campaign_id", idKampanye);
+
+        ra.addFlashAttribute("info", "Silakan cek email Anda untuk kode verifikasi penghapusan kampanye.");
+        return "redirect:/kampanye/verifikasi-hapus/" + idKampanye;
+    }
+
+    @GetMapping("/kampanye/verifikasi-hapus/{id}")
+    public ModelAndView showVerifyDeletePage(@PathVariable("id") int idKampanye) {
+        if (session.getAttribute("delete_campaign_code") == null) {
+            return new ModelAndView("redirect:/statusVerifikasi");
+        }
+        Map<String, Object> data = new HashMap<>();
+        data.put("id_kampanye", idKampanye);
+        return new ModelAndView("verifikasiHapusKampanye", data);
+    }
+
+    @PostMapping("/kampanye/verifikasi-hapus")
+    public String verifyDeleteCampaign(@RequestParam("code") String code, @RequestParam("id_kampanye") int idKampanye, RedirectAttributes ra) {
+        String sessionCode = (String) session.getAttribute("delete_campaign_code");
+        Integer campaignId = (Integer) session.getAttribute("delete_campaign_id");
+
+        if (sessionCode == null || campaignId == null || campaignId != idKampanye) {
+            return "redirect:/statusVerifikasi";
+        }
+
+        if (sessionCode.equals(code)) {
+            BigDecimal danaTerkumpul = kampanyeModel.getDanaTerkumpul(idKampanye);
+            kampanyeModel.saveDanaNonaktif(idKampanye, danaTerkumpul);
+            boolean isDeleted = kampanyeModel.deleteKampanye(idKampanye);
+            
+            if (isDeleted) {
+                ra.addFlashAttribute("success", "Kampanye Anda telah berhasil dihapus.");
+            } else {
+                ra.addFlashAttribute("error", "Gagal menghapus kampanye. Silakan coba lagi.");
+            }
+            session.removeAttribute("delete_campaign_code");
+            session.removeAttribute("delete_campaign_id");
+            return "redirect:/statusVerifikasi";
+        } else {
+            ra.addFlashAttribute("error", "Kode verifikasi salah.");
+            return "redirect:/kampanye/verifikasi-hapus/" + idKampanye;
+        }
     }
 }

@@ -78,6 +78,9 @@
                                         Status
                                     </span>
                                 </td>
+                                <td class="text-center">
+                                    <a th:if="${item.statusVerifikasi == 'Terverifikasi'}" th:href="@{/kampanye/hapus/{id}(id=${item.idKampanye})}" class="btn btn-danger btn-sm"> Hapus </a>
+                                </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(statusList)}">
                                 <td colspan="5" class="text-center text-muted py-4">Tidak ada data pengajuan yang ditemukan.</td>
@@ -103,10 +106,10 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="logoutModalLabel" style="color: #2E5C4D">Konfirmasi Logout</h5>
+                        <h5 class="modal-title" id="logoutModalLabel" style="color: #2e5c4d">Konfirmasi Logout</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body"  style="color: #A1A1A1">Anda akan keluar dari sesi saat ini. Apakah anda yakin ingin melanjutkannya?</div>
+                    <div class="modal-body" style="color: #a1a1a1">Anda akan keluar dari sesi saat ini. Apakah anda yakin ingin melanjutkannya?</div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">BATAL</button>
                         <a th:href="@{/logout}" class="btn btn-danger">YA, LOGOUT</a>

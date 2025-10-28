@@ -1,13 +1,25 @@
+// File: src/main/java/com/sidoca/Models/DTO/StatusVerifikasiDTO.java
+
 package com.sidoca.Models.DTO;
 
 import java.sql.Timestamp;
 
 public class StatusVerifikasiDTO {
+    private int idKampanye;
     private String namaKampanye;
     private String jenisPengajuan;
     private Timestamp tanggalPengajuan;
     private Timestamp tanggalVerifikasi;
     private String statusVerifikasi;
+
+    // Getter and Setter for idKampanye
+    public int getIdKampanye() {
+        return idKampanye;
+    }
+
+    public void setIdKampanye(int idKampanye) {
+        this.idKampanye = idKampanye;
+    }
 
     // Getters and Setters
     public String getNamaKampanye() {

@@ -1,3 +1,5 @@
+// File: src/main/java/com/sidoca/services/EmailService.java
+
 package com.sidoca.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,12 @@ public class EmailService {
             helper.setSubject("Kode Verifikasi Pendaftaran SIDOCA");
 
             mailSender.send(mimeMessage);
+            
+            // Menampilkan kode di terminal
+            System.out.println("====================================");
+            System.out.println("Mengirim Kode Verifikasi Pendaftaran ke: " + to);
+            System.out.println("Kode: " + code);
+            System.out.println("====================================");
 
         } catch (MessagingException e) {
             System.out.println("====================================");
@@ -54,10 +62,76 @@ public class EmailService {
             
             mailSender.send(mimeMessage);
 
+            // Menampilkan kode di terminal
+            System.out.println("====================================");
+            System.out.println("Mengirim Kode Reset Password ke: " + to);
+            System.out.println("Kode: " + code);
+            System.out.println("====================================");
+
         } catch (MessagingException e) {
             System.out.println("====================================");
             System.out.println("Gagal mengirim email reset password ke: " + to);
             System.out.println("Kode reset: " + code);
+            System.out.println("Error: " + e.getMessage());
+            System.out.println("====================================");
+        }
+    }
+    
+    public void sendDeleteAccountEmail(String to, String code) {
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
+
+            String htmlContent = buildEmailTemplate("Konfirmasi Hapus Akun SIDOCA",
+                                                    "Anda telah meminta untuk menghapus akun Anda. Gunakan kode berikut untuk mengonfirmasi:",
+                                                    code);
+            
+            helper.setText(htmlContent, true); 
+            helper.setTo(to);
+            helper.setSubject("Kode Konfirmasi Hapus Akun SIDOCA");
+
+            mailSender.send(mimeMessage);
+
+            // Menampilkan kode di terminal
+            System.out.println("====================================");
+            System.out.println("Mengirim Kode Hapus Akun ke: " + to);
+            System.out.println("Kode: " + code);
+            System.out.println("====================================");
+
+        } catch (MessagingException e) {
+            System.out.println("====================================");
+            System.out.println("Gagal mengirim email hapus akun ke: " + to);
+            System.out.println("Kode: " + code);
+            System.out.println("Error: " + e.getMessage());
+            System.out.println("====================================");
+        }
+    }
+
+    public void sendDeleteCampaignEmail(String to, String code) {
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
+
+            String htmlContent = buildEmailTemplate("Konfirmasi Hapus Kampanye SIDOCA",
+                                                    "Anda telah meminta untuk menghapus kampanye Anda. Gunakan kode berikut untuk mengonfirmasi:",
+                                                    code);
+            
+            helper.setText(htmlContent, true); 
+            helper.setTo(to);
+            helper.setSubject("Kode Konfirmasi Hapus Kampanye SIDOCA");
+
+            mailSender.send(mimeMessage);
+
+            // Menampilkan kode di terminal
+            System.out.println("====================================");
+            System.out.println("Mengirim Kode Hapus Kampanye ke: " + to);
+            System.out.println("Kode: " + code);
+            System.out.println("====================================");
+
+        } catch (MessagingException e) {
+            System.out.println("====================================");
+            System.out.println("Gagal mengirim email hapus kampanye ke: " + to);
+            System.out.println("Kode: " + code);
             System.out.println("Error: " + e.getMessage());
             System.out.println("====================================");
         }
@@ -100,29 +174,5 @@ public class EmailService {
                "    </div>" +
                "</body>" +
                "</html>";
-    }
-
-    public void sendDeleteAccountEmail(String to, String code) {
-        try {
-            MimeMessage mimeMessage = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
-
-            String htmlContent = buildEmailTemplate("Konfirmasi Hapus Akun SIDOCA",
-                                                    "Anda telah meminta untuk menghapus akun Anda. Gunakan kode berikut untuk mengonfirmasi:",
-                                                    code);
-            
-            helper.setText(htmlContent, true); 
-            helper.setTo(to);
-            helper.setSubject("Kode Konfirmasi Hapus Akun SIDOCA");
-
-            mailSender.send(mimeMessage);
-
-        } catch (MessagingException e) {
-            System.out.println("====================================");
-            System.out.println("Gagal mengirim email hapus akun ke: " + to);
-            System.out.println("Kode: " + code);
-            System.out.println("Error: " + e.getMessage());
-            System.out.println("====================================");
-        }
     }
 }

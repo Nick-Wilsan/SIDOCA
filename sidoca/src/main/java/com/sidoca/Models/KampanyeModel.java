@@ -460,4 +460,133 @@ public class KampanyeModel extends BaseModel {
             return false;
         }
     }
+
+    public BigDecimal getDanaTerkumpul(int idKampanye) {
+        String query = "SELECT dana_terkumpul FROM Kampanye WHERE id_kampanye = ?";
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, idKampanye);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getBigDecimal("dana_terkumpul");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return BigDecimal.ZERO;
+    }
+
+    public boolean saveDanaNonaktif(int idKampanye, BigDecimal danaTerkumpul) {
+        String query = "INSERT INTO Uang_Kampanye_Nonaktif (id_kampanye_asal, jumlah_dana) VALUES (?, ?)";
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, idKampanye);
+            stmt.setBigDecimal(2, danaTerkumpul);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean deleteKampanye(int idKampanye) {
+        String query = "DELETE FROM Kampanye WHERE id_kampanye = ?";
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, idKampanye);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public List<StatusVerifikasiDTO> getStatusVerifikasi(int idAkun, String keyword, String jenis, String status) {
+        List<StatusVerifikasiDTO> resultList = new ArrayList<>();
+        
+        // Query dasar untuk menggabungkan data dari tiga tabel
+        String baseQuery = 
+            "(SELECT id_kampanye, judul_kampanye AS nama_kampanye, 'Kampanye Baru' AS jenis_pengajuan, tgl_pengajuan, tgl_verifikasi, " +
+            "CASE " +
+            "    WHEN status_kampanye = 'menunggu' THEN 'Menunggu Verifikasi' " +
+            "    WHEN status_kampanye = 'aktif' THEN 'Terverifikasi' " +
+            "    WHEN status_kampanye = 'nonaktif' THEN 'Ditolak' " +
+            "    ELSE status_kampanye " +
+            "END AS status_verifikasi " +
+            "FROM Kampanye WHERE id_akun = ?) " +
+
+            "UNION ALL " +
+
+            "(SELECT k.id_kampanye, k.judul_kampanye, 'Pencairan Dana' AS jenis_pengajuan, pd.tanggal_pengajuan, pd.tgl_verifikasi, " +
+            "CASE " +
+            "    WHEN pd.status_pencairan = 'diajukan' THEN 'Menunggu Verifikasi' " +
+            "    WHEN pd.status_pencairan = 'disetujui' THEN 'Terverifikasi' " +
+            "    WHEN pd.status_pencairan = 'ditolak' THEN 'Ditolak' " +
+            "    ELSE pd.status_pencairan " +
+            "END AS status_verifikasi " +
+            "FROM Pencairan_Dana pd JOIN Kampanye k ON pd.id_kampanye = k.id_kampanye WHERE k.id_akun = ?) " +
+
+            "UNION ALL " +
+
+            "(SELECT k.id_kampanye, k.judul_kampanye, 'Laporan Penggunaan Dana' AS jenis_pengajuan, ld.tgl_pengajuan, ld.tgl_verifikasi, " +
+            "CASE " +
+            "    WHEN ld.status_verifikasi = 'menunggu' THEN 'Menunggu Verifikasi' " +
+            "    WHEN ld.status_verifikasi = 'disetujui' THEN 'Terverifikasi' " +
+            "    WHEN ld.status_verifikasi = 'ditolak' THEN 'Ditolak' " +
+            "    ELSE ld.status_verifikasi " +
+            "END AS status_verifikasi " +
+            "FROM Laporan_Dana ld JOIN Kampanye k ON ld.id_kampanye = k.id_kampanye WHERE k.id_akun = ?)";
+
+        // Membungkus query dasar dan menambahkan filter
+        StringBuilder finalQueryBuilder = new StringBuilder("SELECT * FROM (");
+        finalQueryBuilder.append(baseQuery);
+        finalQueryBuilder.append(") AS combined_results WHERE 1=1 ");
+
+        List<Object> params = new ArrayList<>();
+        params.add(idAkun);
+        params.add(idAkun);
+        params.add(idAkun);
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            finalQueryBuilder.append(" AND nama_kampanye LIKE ?");
+            params.add("%" + keyword + "%");
+        }
+
+        if (jenis != null && !jenis.trim().isEmpty()) {
+            finalQueryBuilder.append(" AND jenis_pengajuan = ?");
+            params.add(jenis);
+        }
+
+        if (status != null && !status.trim().isEmpty()) {
+            finalQueryBuilder.append(" AND status_verifikasi = ?");
+            params.add(status);
+        }
+
+        finalQueryBuilder.append(" ORDER BY tgl_pengajuan DESC");
+
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(finalQueryBuilder.toString())) {
+            
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                StatusVerifikasiDTO dto = new StatusVerifikasiDTO();
+                dto.setIdKampanye(rs.getInt("id_kampanye"));
+                dto.setNamaKampanye(rs.getString("nama_kampanye"));
+                dto.setJenisPengajuan(rs.getString("jenis_pengajuan"));
+                dto.setTanggalPengajuan(rs.getTimestamp("tgl_pengajuan"));
+                dto.setTanggalVerifikasi(rs.getTimestamp("tgl_verifikasi"));
+                dto.setStatusVerifikasi(rs.getString("status_verifikasi"));
+                resultList.add(dto);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return resultList;
+    }
 }  
