@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.sidoca.Models.AkunModel;
 
 @Controller
 public class ProfileController extends BaseController {
@@ -25,6 +26,9 @@ public class ProfileController extends BaseController {
 
     @Autowired
     private ProfilModel profilModel;
+
+    @Autowired
+    private AkunModel akunModel;
 
     @Autowired
     private EmailService emailService;
@@ -179,6 +183,56 @@ public class ProfileController extends BaseController {
         } else {
             ra.addFlashAttribute("error", "Kode verifikasi salah. Silakan coba lagi.");
             return "redirect:/profil/verifikasi-email";
+        }
+    }
+
+    @GetMapping("/profil/hapus-akun")
+    public String requestDeleteAccount(RedirectAttributes ra) {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null || !"donatur".equals(user.getRole())) {
+            return "redirect:/";
+        }
+
+        String verificationCode = String.format("%06d", new Random().nextInt(999999));
+        emailService.sendDeleteAccountEmail(user.getEmail(), verificationCode);
+
+        session.setAttribute("delete_account_code", verificationCode);
+        session.setAttribute("delete_account_user_id", user.getId_akun());
+
+        ra.addFlashAttribute("info", "Silakan cek email Anda untuk kode verifikasi penghapusan akun.");
+        return "redirect:/profil/verifikasi-hapus-akun";
+    }
+
+    @GetMapping("/profil/verifikasi-hapus-akun")
+    public ModelAndView showVerifyDeletePage() {
+        if (session.getAttribute("delete_account_code") == null) {
+            return new ModelAndView("redirect:/profilDonatur");
+        }
+        return new ModelAndView("verifikasiHapusAkun");
+    }
+
+    @PostMapping("/profil/verifikasi-hapus-akun")
+    public String verifyDeleteAccount(@RequestParam("code") String code, RedirectAttributes ra) {
+        String sessionCode = (String) session.getAttribute("delete_account_code");
+        Integer userId = (Integer) session.getAttribute("delete_account_user_id");
+
+        if (sessionCode == null || userId == null) {
+            return "redirect:/profilDonatur";
+        }
+
+        if (sessionCode.equals(code)) {
+            boolean isDeleted = akunModel.deleteAkun(userId);
+            if (isDeleted) {
+                session.invalidate();
+                ra.addFlashAttribute("success", "Akun Anda telah berhasil dihapus.");
+                return "redirect:/";
+            } else {
+                ra.addFlashAttribute("error", "Gagal menghapus akun. Silakan coba lagi.");
+                return "redirect:/profil/verifikasi-hapus-akun";
+            }
+        } else {
+            ra.addFlashAttribute("error", "Kode verifikasi salah.");
+            return "redirect:/profil/verifikasi-hapus-akun";
         }
     }
 }

@@ -10,7 +10,7 @@
 
                 <div class="row"></div>
             </main>
-            
+
             <div class="row">
                 <div class="col-lg-4">
                     <div class="card p-4 text-center">
@@ -22,6 +22,7 @@
                             <a th:if="${!editMode}" th:href="@{?edit=true}" class="btn btn-dark-green">EDIT PROFILE</a>
                             <button th:if="${editMode}" type="button" class="btn btn-dark-green">UBAH FOTO PROFIL</button>
                             <a th:href="@{/ganti-kata-sandi}" class="btn btn-orange">GANTI KATA SANDI</a>
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">HAPUS AKUN SAYA</button>
                         </div>
                     </div>
                 </div>

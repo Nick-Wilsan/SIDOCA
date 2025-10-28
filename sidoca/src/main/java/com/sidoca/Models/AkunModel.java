@@ -305,4 +305,17 @@ public class AkunModel extends BaseModel{
             }
         }
     }
+
+    public boolean deleteAkun(int idAkun) {
+        String query = "DELETE FROM Akun WHERE id_akun = ?";
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, idAkun);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

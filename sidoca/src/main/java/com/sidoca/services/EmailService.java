@@ -101,4 +101,28 @@ public class EmailService {
                "</body>" +
                "</html>";
     }
+
+    public void sendDeleteAccountEmail(String to, String code) {
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
+
+            String htmlContent = buildEmailTemplate("Konfirmasi Hapus Akun SIDOCA",
+                                                    "Anda telah meminta untuk menghapus akun Anda. Gunakan kode berikut untuk mengonfirmasi:",
+                                                    code);
+            
+            helper.setText(htmlContent, true); 
+            helper.setTo(to);
+            helper.setSubject("Kode Konfirmasi Hapus Akun SIDOCA");
+
+            mailSender.send(mimeMessage);
+
+        } catch (MessagingException e) {
+            System.out.println("====================================");
+            System.out.println("Gagal mengirim email hapus akun ke: " + to);
+            System.out.println("Kode: " + code);
+            System.out.println("Error: " + e.getMessage());
+            System.out.println("====================================");
+        }
+    }
 }
