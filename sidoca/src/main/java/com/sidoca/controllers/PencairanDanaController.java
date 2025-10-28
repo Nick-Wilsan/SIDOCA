@@ -36,7 +36,7 @@ public class PencairanDanaController {
     @Autowired
     private PencairanDanaModel pencairanDanaModel;
 
-    @GetMapping("/pencairan-dana")
+    @GetMapping("/pencairanDana")
     public ModelAndView pilihKampanye() {
         Akun user = (Akun) session.getAttribute("user");
         if (user == null || !"organisasi".equals(user.getRole())) {
