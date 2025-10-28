@@ -215,6 +215,12 @@ ADD COLUMN nama_pemilik_rekening VARCHAR(100) NOT NULL,
 ADD COLUMN bukti_pendukung VARCHAR(255) NOT NULL,
 ADD COLUMN alasan_pencairan TEXT;
 
+ALTER TABLE Pencairan_Dana
+ADD COLUMN komentar_admin TEXT NULL AFTER alasan_pencairan;
+
+ALTER TABLE Kampanye
+MODIFY COLUMN status_kampanye ENUM('aktif', 'nonaktif', 'selesai', 'menunggu', 'ditolak') DEFAULT 'menunggu';
+
 -- 1. Akun Admin 1
 INSERT INTO Akun (nama, username, email, no_hp, password, role) VALUES
 ('Nick Wilsan', 'nickadmin', 'wilsannick55@gmail.com', '081249730818', PASSWORD('nick123'), 'admin');
