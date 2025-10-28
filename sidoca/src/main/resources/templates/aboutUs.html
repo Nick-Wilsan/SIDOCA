@@ -14,6 +14,10 @@
 </head>
 <body>
     <header>
+    <div th:if="${session.user == null}">
+        <div th:replace="~{headerFooter :: navbarFooter}"></div>
+    </div>
+
     <div th:if="${session.user != null}">
         <div th:switch="${session.user.role}">
             <div th:case="'donatur'">
