@@ -1,6 +1,8 @@
 // nick-wilsan/sidoca/SIDOCA-main/sidoca/src/main/java/com/sidoca/controllers/PencairanDanaController.java
 package com.sidoca.controllers;
+
 import com.sidoca.Models.KampanyeModel;
+import com.sidoca.Models.OrganisasiModel;
 import com.sidoca.Models.PencairanDanaModel;
 import com.sidoca.Models.DTO.KampanyeAktifDTO;
 import com.sidoca.Models.DTO.KampanyeDetailDTO;
@@ -39,6 +41,9 @@ public class PencairanDanaController {
     
     @Autowired
     private PencairanDanaModel pencairanDanaModel;
+    
+    @Autowired
+    private OrganisasiModel organisasiModel; 
 
     @GetMapping("/pencairanDana")
     public ModelAndView pilihKampanye(@RequestParam(name = "urutkan", required = false) String urutkan) {
@@ -102,7 +107,12 @@ public class PencairanDanaController {
             return "redirect:/";
         }
 
-        // Handle file upload
+        int idOrganisasi = organisasiModel.GetIdOrganisasiByIdAkun(user.getId_akun());
+        if (idOrganisasi == -1) {
+            ra.addFlashAttribute("error", "Gagal menemukan data organisasi yang terhubung dengan akun Anda.");
+            return "redirect:/pencairan-dana/form/" + idKampanye;
+        }
+
         List<String> fileNames = new ArrayList<>();
         if (buktiPendukung != null && buktiPendukung.length > 0) {
             for (MultipartFile file : buktiPendukung) {
@@ -127,10 +137,9 @@ public class PencairanDanaController {
             }
         }
 
-        // Buat objek PencairanDana
         PencairanDana pencairan = new PencairanDana();
         pencairan.setId_kampanye(idKampanye);
-        pencairan.setId_organisasi(user.getId_akun()); 
+        pencairan.setId_organisasi(idOrganisasi);
         pencairan.setJumlah_dana(jumlahPencairan);
         pencairan.setNama_bank(namaBank);
         pencairan.setNomor_rekening(nomorRekening);
@@ -138,11 +147,11 @@ public class PencairanDanaController {
         pencairan.setBukti_pendukung(String.join(",", fileNames));
         pencairan.setAlasan_pencairan(alasan);
 
-        // Simpan ke database
         boolean success = pencairanDanaModel.savePencairan(pencairan);
 
         if (success) {
             KampanyeDetailDTO kampanye = kampanyeModel.getDetailKampanyeById(idKampanye);
+            // DIPERBAIKI: Menggunakan addAttribute agar menjadi parameter URL
             ra.addAttribute("nama_kampanye", kampanye.getJudul_kampanye());
             return "redirect:/pencairan-dana/konfirmasi";
         } else {
@@ -153,6 +162,10 @@ public class PencairanDanaController {
 
     @GetMapping("/pencairan-dana/konfirmasi")
     public ModelAndView konfirmasiPencairan(@RequestParam("nama_kampanye") String namaKampanye) {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null || !"organisasi".equals(user.getRole())) {
+            return new ModelAndView("redirect:/");
+        }
         return new ModelAndView("konfirmasi-pencairan", "nama_kampanye", namaKampanye);
     }
 }
