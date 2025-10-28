@@ -257,14 +257,22 @@ public class KampanyeController extends BaseController{
 
         if (sessionCode.equals(code)) {
             BigDecimal danaTerkumpul = kampanyeModel.getDanaTerkumpul(idKampanye);
-            kampanyeModel.saveDanaNonaktif(idKampanye, danaTerkumpul);
-            boolean isDeleted = kampanyeModel.deleteKampanye(idKampanye);
             
-            if (isDeleted) {
-                ra.addFlashAttribute("success", "Kampanye Anda telah berhasil dihapus.");
+            // Simpan dana ke tabel nonaktif dan periksa keberhasilannya
+            boolean isDanaSaved = kampanyeModel.saveDanaNonaktif(idKampanye, danaTerkumpul);
+            
+            if (isDanaSaved) {
+                // Jika berhasil, baru hapus kampanye
+                boolean isDeleted = kampanyeModel.deleteKampanye(idKampanye);
+                if (isDeleted) {
+                    ra.addFlashAttribute("success", "Kampanye Anda telah berhasil dihapus.");
+                } else {
+                    ra.addFlashAttribute("error", "Gagal menghapus kampanye setelah pengarsipan dana. Silakan coba lagi.");
+                }
             } else {
-                ra.addFlashAttribute("error", "Gagal menghapus kampanye. Silakan coba lagi.");
+                ra.addFlashAttribute("error", "Gagal mengarsipkan dana kampanye. Proses hapus dibatalkan.");
             }
+            
             session.removeAttribute("delete_campaign_code");
             session.removeAttribute("delete_campaign_id");
             return "redirect:/statusVerifikasi";
