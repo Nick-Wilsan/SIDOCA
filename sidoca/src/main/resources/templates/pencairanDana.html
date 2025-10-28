@@ -16,6 +16,23 @@
             <h1 class="fw-bold mb-3">Pencairan Dana</h1>
             <p class="lead text-muted mb-4">Pilih kampanye aktif yang dananya ingin Anda cairkan.</p>
 
+            <form th:action="@{/pencairanDana}" method="get" class="row g-3 mb-4 align-items-center">
+                <div class="col-md-9">
+                    <select name="urutkan" class="form-select form-select-lg" onchange="this.form.submit()">
+                        <option value="">Urutkan Berdasarkan</option>
+                        <option value="dana_terkumpul_asc" th:selected="${urutkan == 'dana_terkumpul_asc'}">Dana Terkumpul (Sedikit ke Banyak)</option>
+                        <option value="dana_terkumpul_desc" th:selected="${urutkan == 'dana_terkumpul_desc'}">Dana Terkumpul (Banyak ke Sedikit)</option>
+                        <option value="sisa_hari_asc" th:selected="${urutkan == 'sisa_hari_asc'}">Sisa Hari (Mendesak)</option>
+                        <option value="sisa_hari_desc" th:selected="${urutkan == 'sisa_hari_desc'}">Sisa Hari (Lama)</option>
+                        <option value="target_asc" th:selected="${urutkan == 'target_asc'}">Target (Kecil ke Besar)</option>
+                        <option value="target_desc" th:selected="${urutkan == 'target_desc'}">Target (Besar ke Kecil)</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg">Filter</button>
+                </div>
+            </form>
+
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                 <div th:if="${#lists.isEmpty(kampanyeList)}" class="col-12">
                     <div class="alert alert-info text-center">Tidak ada kampanye aktif yang dapat dicairkan saat ini.</div>
@@ -49,10 +66,10 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="logoutModalLabel" style="color: #2E5C4D">Konfirmasi Logout</h5>
+                        <h5 class="modal-title" id="logoutModalLabel" style="color: #2e5c4d">Konfirmasi Logout</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body" style="color: #A1A1A1">Anda akan keluar dari sesi saat ini. Apakah anda yakin ingin melanjutkannya?</div>
+                    <div class="modal-body" style="color: #a1a1a1">Anda akan keluar dari sesi saat ini. Apakah anda yakin ingin melanjutkannya?</div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">BATAL</button>
                         <a th:href="@{/logout}" class="btn btn-danger">YA, LOGOUT</a>

@@ -14,6 +14,42 @@
                 padding: 1.5rem;
                 border-radius: 0.5rem;
             }
+            .file-preview-container {
+                margin-top: 1rem;
+                border: 1px solid #dee2e6;
+                border-radius: 0.375rem;
+                padding: 1rem;
+            }
+            .file-preview-item {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0.5rem;
+                background-color: #f8f9fa;
+                border-radius: 0.25rem;
+                margin-bottom: 0.5rem;
+            }
+            .file-preview-item:last-child {
+                margin-bottom: 0;
+            }
+            .file-info {
+                display: flex;
+                align-items: center;
+            }
+            .file-preview-item img {
+                width: 40px;
+                height: 40px;
+                object-fit: cover;
+                border-radius: 0.25rem;
+                margin-right: 10px;
+            }
+            .file-name {
+                font-weight: 500;
+            }
+            .btn-remove-file {
+                color: #dc3545;
+                cursor: pointer;
+            }
         </style>
     </head>
     <body>
@@ -72,12 +108,19 @@
 
                     <div class="mb-3">
                         <label for="namaPemilikRekening" class="form-label">Nama Pemilik Rekening</label>
-                        <input type="text" id="namaPemilikRekening" name="namaPemilikRekening" class="form-control" placeholder="Sihlakan masukkan sesuai buku tabungan" required />
+                        <input type="text" id="namaPemilikRekening" name="namaPemilikRekening" class="form-control" placeholder="Sihlakan masukkan sesuai buku tabungan" required oninput="this.value = this.value.toUpperCase()" />
                     </div>
 
-                    <div class="mb-3">
-                        <label for="buktiPendukung" class="form-label">Unggah Bukti Pendukung</label>
-                        <input type="file" id="buktiPendukung" name="buktiPendukung" class="form-control" required />
+                    <div class="mb-4">
+                        <label for="fileUpload" class="form-label">Unggah Bukti Pendukung</label>
+                        <div class="upload-area text-center" id="uploadArea">
+                            <p class="upload-text">Seret dan lepas file atau klik untuk mengunggah</p>
+                            <input type="file" id="fileUpload" name="buktiPendukung" class="form-control" hidden multiple />
+                            <label for="fileUpload" class="btn btn-secondary btn-sm">Pilih File</label>
+                        </div>
+                        <div id="filePreviewContainer" class="file-preview-container d-none">
+                            <h6>File yang diunggah:</h6>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="alasanPencairan" class="form-label">Alasan Pencairan Dana</label>
@@ -85,7 +128,7 @@
                     </div>
 
                     <div class="d-flex justify-content-end gap-2 mt-4">
-                        <a th:href="@{/pencairan-dana}" class="btn btn-secondary">Batal</a>
+                        <a th:href="@{/pencairanDana}" class="btn btn-secondary">Batal</a>
                         <button type="submit" class="btn btn-success">Ajukan Pencairan Dana</button>
                     </div>
                 </form>
@@ -110,5 +153,80 @@
 
         <footer th:replace="~{footer :: footer}"></footer>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const fileInput = document.getElementById('fileUpload');
+                const previewContainer = document.getElementById('filePreviewContainer');
+                const uploadArea = document.getElementById('uploadArea');
+                let uploadedFiles = new DataTransfer();
+
+                function renderPreviews() {
+                    previewContainer.innerHTML = '<h6>File yang diunggah:</h6>'; 
+
+                    if (uploadedFiles.files.length > 0) {
+                        previewContainer.classList.remove('d-none');
+                        Array.from(uploadedFiles.files).forEach((file, index) => {
+                            const item = document.createElement('div');
+                            item.className = 'file-preview-item';
+
+                            const isImage = file.type.startsWith('image/');
+                            const fileIcon = isImage ? `<img src="${URL.createObjectURL(file)}" alt="preview">` : '<i class="bi bi-file-earmark-text fs-4 me-2"></i>';
+
+                            item.innerHTML = `
+                                <div class="file-info">
+                                    ${fileIcon}
+                                    <span class="file-name">${file.name}</span>
+                                </div>
+                                <i class="bi bi-x-circle btn-remove-file" data-index="${index}" title="Hapus file"></i>
+                            `;
+                            previewContainer.appendChild(item);
+                        });
+                    } else {
+                        previewContainer.classList.add('d-none');
+                    }
+                    fileInput.files = uploadedFiles.files;
+                }
+                fileInput.addEventListener('change', function () {
+                    for (const file of this.files) {
+                        uploadedFiles.items.add(file);
+                    }
+                    renderPreviews();
+                });
+                previewContainer.addEventListener('click', function (e) {
+                    if (e.target.classList.contains('btn-remove-file')) {
+                        const indexToRemove = parseInt(e.target.getAttribute('data-index'));
+                        const newFiles = new DataTransfer();
+
+                        Array.from(uploadedFiles.files).forEach((file, index) => {
+                            if (index !== indexToRemove) {
+                                newFiles.items.add(file);
+                            }
+                        });
+
+                        uploadedFiles = newFiles;
+                        renderPreviews();
+                    }
+                });
+
+                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach((eventName) => {
+                    uploadArea.addEventListener(eventName, preventDefaults, false);
+                });
+
+                function preventDefaults(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+
+                uploadArea.addEventListener('drop', function (e) {
+                    const dt = e.dataTransfer;
+                    const files = dt.files;
+
+                    for (const file of files) {
+                        uploadedFiles.items.add(file);
+                    }
+                    renderPreviews();
+                });
+            });
+        </script>
     </body>
 </html>

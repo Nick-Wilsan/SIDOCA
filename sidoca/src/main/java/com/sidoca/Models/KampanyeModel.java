@@ -1,3 +1,4 @@
+// nick-wilsan/sidoca/SIDOCA-main/sidoca/src/main/java/com/sidoca/Models/KampanyeModel.java
 package com.sidoca.Models;
 
 import com.sidoca.Models.DataBaseClass.Kampanye;
@@ -77,13 +78,12 @@ public class KampanyeModel extends BaseModel {
     public KampanyeDetailDTO getDetailKampanyeById(int idKampanye) {
         KampanyeDetailDTO detail = null;
 
-        String kampanyeQuery = "SELECT k.id_kampanye, k.judul_kampanye, k.deskripsi_kampanye, k.target_dana, k.batas_waktu, k.status_kampanye, o.nama_organisasi " +
+        String kampanyeQuery = "SELECT k.id_kampanye, k.judul_kampanye, k.deskripsi_kampanye, k.target_dana, k.batas_waktu, k.status_kampanye, o.nama_organisasi, k.dana_terkumpul " +
                                 "FROM Kampanye k " +
                                 "JOIN Akun a ON k.id_akun = a.id_akun " +
                                 "JOIN Organisasi o ON a.id_akun = o.id_akun " +
                                 "WHERE k.id_kampanye = ?";
 
-        String donasiQuery = "SELECT SUM(nominal_donasi) FROM Donasi WHERE id_kampanye = ? AND status_pembayaran = 'berhasil'";
         String gambarQuery = "SELECT url_gambar FROM Kampanye_Gambar WHERE id_kampanye = ?";
 
         String komentarQuery = "SELECT a.nama, kom.isi_komentar, kom.tanggal_komentar " +
@@ -106,6 +106,8 @@ public class KampanyeModel extends BaseModel {
                     detail.setBatas_waktu(rs.getDate("batas_waktu"));
                     detail.setStatus_kampanye(rs.getString("status_kampanye"));
                     detail.setNama_organisasi(rs.getString("nama_organisasi"));
+                    detail.setDana_terkumpul(rs.getBigDecimal("dana_terkumpul"));
+
 
                     Date batasWaktu = rs.getDate("batas_waktu");
                     if (batasWaktu != null) {
@@ -114,23 +116,15 @@ public class KampanyeModel extends BaseModel {
                     } else {
                         detail.setSisa_hari(0);
                     }
+                    
+                    if (detail.getTarget_dana().compareTo(BigDecimal.ZERO) > 0) {
+                        BigDecimal persentase = detail.getDana_terkumpul().multiply(new BigDecimal(100)).divide(detail.getTarget_dana(), 0, RoundingMode.HALF_UP);
+                        detail.setPersentase_terkumpul(persentase.intValue());
+                    } else {
+                        detail.setPersentase_terkumpul(0);
+                    }
                 } else {
                     return null;
-                }
-            }
-
-            // 2. Ambil total dana
-            try (PreparedStatement stmt = conn.prepareStatement(donasiQuery)) {
-                stmt.setInt(1, idKampanye);
-                ResultSet rs = stmt.executeQuery();
-                BigDecimal danaTerkumpul = rs.next() ? rs.getBigDecimal(1) : BigDecimal.ZERO;
-                detail.setDana_terkumpul(danaTerkumpul == null ? BigDecimal.ZERO : danaTerkumpul);
-
-                if (detail.getTarget_dana().compareTo(BigDecimal.ZERO) > 0) {
-                    BigDecimal persentase = detail.getDana_terkumpul().multiply(new BigDecimal(100)).divide(detail.getTarget_dana(), 0, RoundingMode.HALF_UP);
-                    detail.setPersentase_terkumpul(persentase.intValue());
-                } else {
-                    detail.setPersentase_terkumpul(0);
                 }
             }
 
@@ -186,11 +180,9 @@ public class KampanyeModel extends BaseModel {
         // Query dasar untuk mengambil data kampanye yang aktif
         StringBuilder queryBuilder = new StringBuilder(
             "SELECT " +
-            "k.id_kampanye, k.id_akun, k.judul_kampanye, o.nama_organisasi, k.target_dana, k.batas_waktu, " +
+            "k.id_kampanye, k.id_akun, k.judul_kampanye, o.nama_organisasi, k.target_dana, k.dana_terkumpul, k.batas_waktu, " +
             // Subquery untuk mengambil satu URL gambar pertama
-            "(SELECT url_gambar FROM Kampanye_Gambar WHERE id_kampanye = k.id_kampanye LIMIT 1) as url_gambar, " +
-            // Subquery untuk menghitung total donasi yang berhasil
-            "COALESCE((SELECT SUM(d.nominal_donasi) FROM Donasi d WHERE d.id_kampanye = k.id_kampanye AND d.status_pembayaran = 'berhasil'), 0) as dana_terkumpul " +
+            "(SELECT url_gambar FROM Kampanye_Gambar WHERE id_kampanye = k.id_kampanye LIMIT 1) as url_gambar " +
             "FROM Kampanye k " +
             "JOIN Akun a ON k.id_akun = a.id_akun " +
             "JOIN Organisasi o ON a.id_akun = o.id_akun " +
@@ -208,7 +200,7 @@ public class KampanyeModel extends BaseModel {
             orderByClause = " ORDER BY k.batas_waktu ASC";
         } else if ("paling_sedikit".equals(urutkan)) {
             // Urutkan berdasarkan persentase dana terkumpul yang paling sedikit
-            orderByClause = " ORDER BY (dana_terkumpul / k.target_dana) ASC";
+            orderByClause = " ORDER BY (k.dana_terkumpul / k.target_dana) ASC";
         }
         queryBuilder.append(orderByClause);
 
@@ -264,19 +256,35 @@ public class KampanyeModel extends BaseModel {
         return kampanyeList;
     }
 
-    public List<KampanyeAktifDTO> getKampanyeAktifByOrganisasi(int idAkunOrganisasi) {
+    public List<KampanyeAktifDTO> getKampanyeAktifByOrganisasi(int idAkunOrganisasi, String urutkan) {
         updateStatusKampanyeOtomatis();
         List<KampanyeAktifDTO> kampanyeList = new ArrayList<>();
-        String query = "SELECT k.id_kampanye, k.judul_kampanye, o.nama_organisasi, k.target_dana, k.batas_waktu, " +
-                   "(SELECT url_gambar FROM Kampanye_Gambar WHERE id_kampanye = k.id_kampanye LIMIT 1) as url_gambar, " +
-                   "COALESCE((SELECT SUM(d.nominal_donasi) FROM Donasi d WHERE d.id_kampanye = k.id_kampanye AND d.status_pembayaran = 'berhasil'), 0) as dana_terkumpul " +
-                   "FROM Kampanye k " +
-                   "JOIN Akun a ON k.id_akun = a.id_akun " +
-                   "JOIN Organisasi o ON a.id_akun = o.id_akun " +
-                   "WHERE k.status_kampanye = 'aktif' AND k.id_akun = ?";
+        StringBuilder queryBuilder = new StringBuilder(
+            "SELECT k.id_kampanye, k.judul_kampanye, o.nama_organisasi, k.target_dana, k.dana_terkumpul, k.batas_waktu, " +
+            "(SELECT url_gambar FROM Kampanye_Gambar WHERE id_kampanye = k.id_kampanye LIMIT 1) as url_gambar " +
+            "FROM Kampanye k " +
+            "JOIN Akun a ON k.id_akun = a.id_akun " +
+            "JOIN Organisasi o ON a.id_akun = o.id_akun " +
+            "WHERE k.status_kampanye = 'aktif' AND k.id_akun = ?");
+
+        String orderByClause = " ORDER BY k.id_kampanye DESC"; // Default
+        if ("dana_terkumpul_asc".equals(urutkan)) {
+            orderByClause = " ORDER BY k.dana_terkumpul ASC";
+        } else if ("dana_terkumpul_desc".equals(urutkan)) {
+            orderByClause = " ORDER BY k.dana_terkumpul DESC";
+        } else if ("sisa_hari_asc".equals(urutkan)) {
+            orderByClause = " ORDER BY k.batas_waktu ASC";
+        } else if ("sisa_hari_desc".equals(urutkan)) {
+            orderByClause = " ORDER BY k.batas_waktu DESC";
+        } else if ("target_asc".equals(urutkan)) {
+            orderByClause = " ORDER BY k.target_dana ASC";
+        } else if ("target_desc".equals(urutkan)) {
+            orderByClause = " ORDER BY k.target_dana DESC";
+        }
+        queryBuilder.append(orderByClause);
 
         try (Connection conn = getConnection();
-            PreparedStatement stmt = conn.prepareStatement(query)) {
+            PreparedStatement stmt = conn.prepareStatement(queryBuilder.toString())) {
             
             stmt.setInt(1, idAkunOrganisasi);
 
@@ -292,7 +300,6 @@ public class KampanyeModel extends BaseModel {
                 dto.setBatas_waktu(rs.getDate("batas_waktu"));
                 dto.setUrl_gambar(rs.getString("url_gambar"));
 
-                // Menghitung sisa hari
                 Date batasWaktu = rs.getDate("batas_waktu");
                 if (batasWaktu != null) {
                     long sisaHari = ChronoUnit.DAYS.between(LocalDate.now(), batasWaktu.toLocalDate());
@@ -301,7 +308,6 @@ public class KampanyeModel extends BaseModel {
                     dto.setSisa_hari(0);
                 }
 
-                // Menghitung persentase dana terkumpul
                 BigDecimal target = dto.getTarget_dana();
                 BigDecimal terkumpul = dto.getDana_terkumpul();
                 if (target != null && target.compareTo(BigDecimal.ZERO) > 0) {
@@ -315,7 +321,7 @@ public class KampanyeModel extends BaseModel {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace(); // Sebaiknya gunakan logger di aplikasi production
+            e.printStackTrace(); 
         }
 
         return kampanyeList;
@@ -520,13 +526,13 @@ public class KampanyeModel extends BaseModel {
     }
 
     public BigDecimal getDanaTerkumpul(int idKampanye) {
-        String query = "SELECT COALESCE(SUM(nominal_donasi), 0) AS total_donasi FROM Donasi WHERE id_kampanye = ? AND status_pembayaran = 'berhasil'";
+        String query = "SELECT dana_terkumpul FROM Kampanye WHERE id_kampanye = ?";
         try (Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, idKampanye);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return rs.getBigDecimal("total_donasi");
+                return rs.getBigDecimal("dana_terkumpul");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -682,4 +688,4 @@ public class KampanyeModel extends BaseModel {
         return kampanyeList;
     }
 
-}  
+}

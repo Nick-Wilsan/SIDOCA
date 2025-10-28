@@ -1,3 +1,4 @@
+// nick-wilsan/sidoca/SIDOCA-main/sidoca/src/main/java/com/sidoca/controllers/PencairanDanaController.java
 package com.sidoca.controllers;
 import com.sidoca.Models.KampanyeModel;
 import com.sidoca.Models.PencairanDanaModel;
@@ -17,12 +18,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.ArrayList;
 import org.springframework.util.StringUtils;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.io.IOException;
+import java.util.stream.Collectors;
+import java.util.Arrays;
 
 @Controller
 public class PencairanDanaController {
@@ -37,15 +41,18 @@ public class PencairanDanaController {
     private PencairanDanaModel pencairanDanaModel;
 
     @GetMapping("/pencairanDana")
-    public ModelAndView pilihKampanye() {
+    public ModelAndView pilihKampanye(@RequestParam(name = "urutkan", required = false) String urutkan) {
         Akun user = (Akun) session.getAttribute("user");
         if (user == null || !"organisasi".equals(user.getRole())) {
             return new ModelAndView("redirect:/");
         }
 
-        List<KampanyeAktifDTO> kampanyeOrganisasi = kampanyeModel.getKampanyeAktifByOrganisasi(user.getId_akun());
-    
-        return new ModelAndView("pencairanDana", "kampanyeList", kampanyeOrganisasi);
+        List<KampanyeAktifDTO> kampanyeOrganisasi = kampanyeModel.getKampanyeAktifByOrganisasi(user.getId_akun(), urutkan);
+        
+        ModelAndView mav = new ModelAndView("pencairanDana");
+        mav.addObject("kampanyeList", kampanyeOrganisasi);
+        mav.addObject("urutkan", urutkan);
+        return mav;
     }
 
     @GetMapping("/pencairan-dana/form/{id}")
@@ -86,7 +93,7 @@ public class PencairanDanaController {
             @RequestParam("namaBank") String namaBank,
             @RequestParam("nomorRekening") String nomorRekening,
             @RequestParam("namaPemilikRekening") String namaPemilikRekening,
-            @RequestParam("buktiPendukung") MultipartFile buktiPendukung,
+            @RequestParam("buktiPendukung") MultipartFile[] buktiPendukung,
             @RequestParam("alasanPencairan") String alasan,
             RedirectAttributes ra) {
         
@@ -96,23 +103,27 @@ public class PencairanDanaController {
         }
 
         // Handle file upload
-        String fileName = "";
-        if (!buktiPendukung.isEmpty()) {
-            try {
-                // Membuat nama file yang unik untuk menghindari konflik
-                fileName = StringUtils.cleanPath(System.currentTimeMillis() + "_" + buktiPendukung.getOriginalFilename());
-                Path uploadPath = Paths.get("src/main/resources/static/images/bukti_pencairan/");
+        List<String> fileNames = new ArrayList<>();
+        if (buktiPendukung != null && buktiPendukung.length > 0) {
+            for (MultipartFile file : buktiPendukung) {
+                if (!file.isEmpty()) {
+                    try {
+                        String fileName = StringUtils.cleanPath(System.currentTimeMillis() + "_" + file.getOriginalFilename());
+                        Path uploadPath = Paths.get("src/main/resources/static/images/bukti_pencairan/");
             
-                if (!Files.exists(uploadPath)) {
-                    Files.createDirectories(uploadPath);
+                        if (!Files.exists(uploadPath)) {
+                            Files.createDirectories(uploadPath);
+                        }
+            
+                        Path filePath = uploadPath.resolve(fileName);
+                        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+                        fileNames.add("/images/bukti_pencairan/" + fileName);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        ra.addFlashAttribute("error", "Gagal mengunggah file bukti.");
+                        return "redirect:/pencairan-dana/form/" + idKampanye;
+                    }
                 }
-            
-                Path filePath = uploadPath.resolve(fileName);
-                Files.copy(buktiPendukung.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
-                e.printStackTrace();
-                ra.addFlashAttribute("error", "Gagal mengunggah file bukti.");
-                return "redirect:/pencairan-dana/form/" + idKampanye;
             }
         }
 
@@ -123,8 +134,8 @@ public class PencairanDanaController {
         pencairan.setJumlah_dana(jumlahPencairan);
         pencairan.setNama_bank(namaBank);
         pencairan.setNomor_rekening(nomorRekening);
-        pencairan.setNama_pemilik_rekening(namaPemilikRekening);
-        pencairan.setBukti_pendukung("/images/bukti_pencairan/" + fileName); // Simpan path-nya
+        pencairan.setNama_pemilik_rekening(namaPemilikRekening.toUpperCase());
+        pencairan.setBukti_pendukung(String.join(",", fileNames));
         pencairan.setAlasan_pencairan(alasan);
 
         // Simpan ke database
