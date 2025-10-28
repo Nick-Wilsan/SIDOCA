@@ -462,13 +462,13 @@ public class KampanyeModel extends BaseModel {
     }
 
     public BigDecimal getDanaTerkumpul(int idKampanye) {
-        String query = "SELECT dana_terkumpul FROM Kampanye WHERE id_kampanye = ?";
+        String query = "SELECT COALESCE(SUM(nominal_donasi), 0) AS total_donasi FROM Donasi WHERE id_kampanye = ? AND status_pembayaran = 'berhasil'";
         try (Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, idKampanye);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return rs.getBigDecimal("dana_terkumpul");
+                return rs.getBigDecimal("total_donasi");
             }
         } catch (SQLException e) {
             e.printStackTrace();

@@ -7,11 +7,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-
+import java.sql.Connection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -50,6 +52,8 @@ public class KampanyeController extends BaseController{
 
     @Autowired
     private EmailService emailService;
+
+
 
     public KampanyeController(HttpSession session) {
         this.session = session;
@@ -257,12 +261,10 @@ public class KampanyeController extends BaseController{
 
         if (sessionCode.equals(code)) {
             BigDecimal danaTerkumpul = kampanyeModel.getDanaTerkumpul(idKampanye);
-            
-            // Simpan dana ke tabel nonaktif dan periksa keberhasilannya
+
             boolean isDanaSaved = kampanyeModel.saveDanaNonaktif(idKampanye, danaTerkumpul);
-            
+
             if (isDanaSaved) {
-                // Jika berhasil, baru hapus kampanye
                 boolean isDeleted = kampanyeModel.deleteKampanye(idKampanye);
                 if (isDeleted) {
                     ra.addFlashAttribute("success", "Kampanye Anda telah berhasil dihapus.");
@@ -272,7 +274,7 @@ public class KampanyeController extends BaseController{
             } else {
                 ra.addFlashAttribute("error", "Gagal mengarsipkan dana kampanye. Proses hapus dibatalkan.");
             }
-            
+
             session.removeAttribute("delete_campaign_code");
             session.removeAttribute("delete_campaign_id");
             return "redirect:/statusVerifikasi";
