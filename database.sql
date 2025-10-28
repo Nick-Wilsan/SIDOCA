@@ -141,9 +141,7 @@ CREATE TABLE Uang_Kampanye_Nonaktif (
     id_uang_nonaktif INT PRIMARY KEY AUTO_INCREMENT,
     id_kampanye_asal INT NOT NULL,
     jumlah_dana DECIMAL(15,2) NOT NULL,
-    tanggal_penghapusan DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_kampanye_asal) REFERENCES Kampanye(id_kampanye)
-        ON UPDATE CASCADE
+    tanggal_penghapusan DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 DELIMITER $$
