@@ -1,12 +1,10 @@
 package com.sidoca.controllers;
-
 import com.sidoca.Models.KampanyeModel;
 import com.sidoca.Models.PencairanDanaModel;
 import com.sidoca.Models.DTO.KampanyeAktifDTO;
 import com.sidoca.Models.DTO.KampanyeDetailDTO;
 import com.sidoca.Models.DataBaseClass.Akun;
 import com.sidoca.Models.DataBaseClass.PencairanDana;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,12 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import jakarta.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import org.springframework.util.StringUtils;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -48,12 +43,8 @@ public class PencairanDanaController {
             return new ModelAndView("redirect:/");
         }
 
-        List<KampanyeAktifDTO> semuaKampanyeAktif = kampanyeModel.getKampanyeAktif(null, null);
-        
-        List<KampanyeAktifDTO> kampanyeOrganisasi = semuaKampanyeAktif.stream()
-            .filter(k -> k.getId_kampanye() == user.getId_akun())
-            .collect(Collectors.toList());
-
+        List<KampanyeAktifDTO> kampanyeOrganisasi = kampanyeModel.getKampanyeAktifByOrganisasi(user.getId_akun());
+    
         return new ModelAndView("pencairanDana", "kampanyeList", kampanyeOrganisasi);
     }
 

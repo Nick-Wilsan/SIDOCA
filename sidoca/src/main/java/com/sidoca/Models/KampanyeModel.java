@@ -186,7 +186,7 @@ public class KampanyeModel extends BaseModel {
         // Query dasar untuk mengambil data kampanye yang aktif
         StringBuilder queryBuilder = new StringBuilder(
             "SELECT " +
-            "k.id_kampanye, k.judul_kampanye, o.nama_organisasi, k.target_dana, k.batas_waktu, " +
+            "k.id_kampanye, k.id_akun, k.judul_kampanye, o.nama_organisasi, k.target_dana, k.batas_waktu, " +
             // Subquery untuk mengambil satu URL gambar pertama
             "(SELECT url_gambar FROM Kampanye_Gambar WHERE id_kampanye = k.id_kampanye LIMIT 1) as url_gambar, " +
             // Subquery untuk menghitung total donasi yang berhasil
@@ -221,6 +221,64 @@ public class KampanyeModel extends BaseModel {
                 stmt.setString(1, keywordParam);
                 stmt.setString(2, keywordParam);
             }
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                KampanyeAktifDTO dto = new KampanyeAktifDTO();
+                dto.setId_kampanye(rs.getInt("id_kampanye"));
+                dto.setId_akun(rs.getInt("id_akun"));
+                dto.setJudul_kampanye(rs.getString("judul_kampanye"));
+                dto.setNama_organisasi(rs.getString("nama_organisasi"));
+                dto.setTarget_dana(rs.getBigDecimal("target_dana"));
+                dto.setDana_terkumpul(rs.getBigDecimal("dana_terkumpul"));
+                dto.setBatas_waktu(rs.getDate("batas_waktu"));
+                dto.setUrl_gambar(rs.getString("url_gambar"));
+
+                // Menghitung sisa hari
+                Date batasWaktu = rs.getDate("batas_waktu");
+                if (batasWaktu != null) {
+                    long sisaHari = ChronoUnit.DAYS.between(LocalDate.now(), batasWaktu.toLocalDate());
+                    dto.setSisa_hari(sisaHari > 0 ? sisaHari : 0);
+                } else {
+                    dto.setSisa_hari(0);
+                }
+
+                // Menghitung persentase dana terkumpul
+                BigDecimal target = dto.getTarget_dana();
+                BigDecimal terkumpul = dto.getDana_terkumpul();
+                if (target != null && target.compareTo(BigDecimal.ZERO) > 0) {
+                    BigDecimal persentase = terkumpul.multiply(new BigDecimal(100)).divide(target, 0, RoundingMode.HALF_UP);
+                    dto.setPersentase_terkumpul(persentase.intValue());
+                } else {
+                    dto.setPersentase_terkumpul(0);
+                }
+
+                kampanyeList.add(dto);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // Sebaiknya gunakan logger di aplikasi production
+        }
+
+        return kampanyeList;
+    }
+
+    public List<KampanyeAktifDTO> getKampanyeAktifByOrganisasi(int idAkunOrganisasi) {
+        updateStatusKampanyeOtomatis();
+        List<KampanyeAktifDTO> kampanyeList = new ArrayList<>();
+        String query = "SELECT k.id_kampanye, k.judul_kampanye, o.nama_organisasi, k.target_dana, k.batas_waktu, " +
+                   "(SELECT url_gambar FROM Kampanye_Gambar WHERE id_kampanye = k.id_kampanye LIMIT 1) as url_gambar, " +
+                   "COALESCE((SELECT SUM(d.nominal_donasi) FROM Donasi d WHERE d.id_kampanye = k.id_kampanye AND d.status_pembayaran = 'berhasil'), 0) as dana_terkumpul " +
+                   "FROM Kampanye k " +
+                   "JOIN Akun a ON k.id_akun = a.id_akun " +
+                   "JOIN Organisasi o ON a.id_akun = o.id_akun " +
+                   "WHERE k.status_kampanye = 'aktif' AND k.id_akun = ?";
+
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query)) {
+            
+            stmt.setInt(1, idAkunOrganisasi);
 
             ResultSet rs = stmt.executeQuery();
 
