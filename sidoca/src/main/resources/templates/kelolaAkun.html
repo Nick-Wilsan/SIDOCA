@@ -85,12 +85,28 @@
                                     <a href="#" th:if="${akun.status == 'nonaktif'}" data-bs-toggle="modal" data-bs-target="#confirmationModal" th:attr="data-akun-id=${akun.id_akun}, data-akun-nama=${akun.nama}, data-new-status='aktif'">
                                         <i class="bi bi-toggle-off text-danger fs-4"></i>
                                     </a>
-                                    <button th:if="${akun.role == 'donatur'}" type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#promoteAdminModal" th:attr="data-akun-id=${akun.id_akun}, data-akun-nama=${akun.nama}">
-                                        Jadikan Admin
-                                    </button>
-                                    <button th:if="${akun.role == 'admin'}" type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#revertAdminModal" th:attr="data-akun-id=${akun.id_akun}, data-akun-nama=${akun.nama}">
-                                        Jadikan Donatur
-                                    </button>
+                                    <th:block th:if="${adminLevel == 'Super Admin'}">
+                                        <button
+                                            th:if="${akun.role == 'donatur'}"
+                                            type="button"
+                                            class="btn btn-sm btn-outline-primary"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#promoteAdminModal"
+                                            th:attr="data-akun-id=${akun.id_akun}, data-akun-nama=${akun.nama}"
+                                        >
+                                            Jadikan Admin
+                                        </button>
+                                        <button
+                                            th:if="${akun.role == 'admin'}"
+                                            type="button"
+                                            class="btn btn-sm btn-outline-secondary"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#revertAdminModal"
+                                            th:attr="data-akun-id=${akun.id_akun}, data-akun-nama=${akun.nama}"
+                                        >
+                                            Jadikan Donatur
+                                        </button>
+                                    </th:block>
                                 </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(akunList)}">
@@ -210,10 +226,10 @@
                 var button = event.relatedTarget;
                 var akunId = button.getAttribute('data-akun-id');
                 var akunNama = button.getAttribute('data-akun-nama');
-            
+
                 var modalBodyNama = promoteAdminModal.querySelector('#promoteAkunNama');
                 var akunIdInput = promoteAdminModal.querySelector('#promoteAkunIdInput');
-            
+
                 modalBodyNama.textContent = akunNama;
                 akunIdInput.value = akunId;
             });
@@ -223,10 +239,10 @@
                 var button = event.relatedTarget;
                 var akunId = button.getAttribute('data-akun-id');
                 var akunNama = button.getAttribute('data-akun-nama');
-            
+
                 var modalBodyNama = revertAdminModal.querySelector('#revertAkunNama');
                 var akunIdInput = revertAdminModal.querySelector('#revertAkunIdInput');
-            
+
                 modalBodyNama.textContent = akunNama;
                 akunIdInput.value = akunId;
             });

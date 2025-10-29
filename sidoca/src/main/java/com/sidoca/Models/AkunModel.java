@@ -318,4 +318,19 @@ public class AkunModel extends BaseModel{
             return false;
         }
     }
+
+    public String getAdminLevel(int idAkun) {
+        String query = "SELECT level_akses FROM Admin WHERE id_akun = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, idAkun);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("level_akses");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
