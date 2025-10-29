@@ -75,12 +75,7 @@ public class LaporanDanaModel extends BaseModel{
 
             int rowsInserted = stmt.executeUpdate();
 
-            if (rowsInserted > 0) {
-                ResultSet generatedKeys = stmt.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    return generatedKeys.getInt(1);
-                }
-            }
+            return rowsInserted;
         } catch (SQLException e) {
             e.printStackTrace();
         }

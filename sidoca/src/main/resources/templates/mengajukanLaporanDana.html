@@ -18,6 +18,7 @@
       <div class="form-container mx-auto col-md-8">
         <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
         <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
         <div class="text-center mb-4">
           <h1 class="fw-bold" style="color: #3a5a40">Ajukan Laporan Penggunaan Dana</h1>
           <p class="text-muted" style="color: #c4c4c4">
@@ -25,7 +26,13 @@
           </p>
         </div>
 
-        <form th:action="@{/tambahLaporanDana}" method="post" enctype="multipart/form-data" th:object="${laporanDanaBaru}">
+        <!-- Jika kampanye kosong -->
+        <div th:if="${kampanyeKosong != null}">
+          <div class="alert alert-warning text-center" th:text="${kampanyeKosong}"></div>
+        </div>
+
+        <!-- Jika ada kampanye -->
+        <form th:if="${listKampanye != null}" th:action="@{/tambahLaporanDana}" method="post" enctype="multipart/form-data" th:object="${laporanDanaBaru}">
           <!-- Hidden -->
           <input type="hidden" th:field="*{id_organisasi}" />
 
@@ -33,9 +40,9 @@
           <div class="mb-3">
             <label for="id_kampanye" class="form-label">Pilih Kampanye</label>
             <select class="form-select" id="id_kampanye" th:field="*{id_kampanye}" required>
-              <option value="" disabled selected>-- Pilih Kampanye --</option>
-              <option th:each="k : ${listKampanye}" 
-                      th:value="${k.id_kampanye}" 
+              <option value="0" disabled selected>-- Pilih Kampanye --</option>
+              <option th:each="k : ${listKampanye}"
+                      th:value="${k.id_kampanye}"
                       th:text="${k.judul_kampanye}"></option>
             </select>
           </div>
@@ -52,7 +59,7 @@
           <!-- Bukti Dokumen -->
           <div class="mb-3">
             <label for="bukti_dokumen" class="form-label">Unggah Bukti Dokumen (PDF/Gambar)</label>
-            <input type="file" class="form-control" id="bukti_dokumen" name="bukti_dokumen" accept="application/pdf,image/*" required />
+            <input type="file" class="form-control" id="bukti_file" name="bukti_file" accept="application/pdf,image/*" required />
             <div class="form-text text-muted">Unggah file bukti dalam format PDF, JPG, PNG, atau JPEG (maks. 5MB)</div>
           </div>
 

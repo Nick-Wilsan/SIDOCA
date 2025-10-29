@@ -43,7 +43,7 @@ public class LaporanDanaController extends BaseController{
         this.session = session;
     }
 
-    @GetMapping("/laporanPenggunaanDana")
+    @GetMapping("/mengajukanLaporanDana")
     public ModelAndView LaporanPenggunaanDana() {
         Akun user = (Akun) session.getAttribute("user");
         if (user == null || !"organisasi".equals(user.getRole())) {
@@ -56,18 +56,31 @@ public class LaporanDanaController extends BaseController{
         // Buat objek kosong untuk form
         LaporanDana laporanDana = new LaporanDana();
 
+        int idOrganisasi = organisasiModel.GetIdOrganisasiByIdAkun(user.getId_akun());
+        laporanDana.setId_organisasi(idOrganisasi);
+        
+        laporanDana.setId_kampanye(-1);
         Map<String, Object> model = new HashMap<>();
+        
+        if(listKampanye.isEmpty()){
+            model.put("kampanyeKosong", "Tidak Ada Kampaye");
+        }
+        else{
+            model.put("listKampanye", listKampanye);
+        }
+        
+
         model.put("laporanDanaBaru", laporanDana);
         model.put("Judul", "Ajukan Laporan Dana");
         model.put("nama", user.getNama());
-        model.put("listKampanye", listKampanye);
+        
 
         return new ModelAndView("mengajukanLaporanDana", model);
     }
 
     @PostMapping("/tambahLaporanDana")
     public String TambahLaporanDana(
-            @RequestParam("bukti_dokumen") MultipartFile file,
+            @RequestParam("bukti_file") MultipartFile file,
             @ModelAttribute LaporanDana laporanDana,
             RedirectAttributes ra,
             HttpSession session) {
@@ -87,16 +100,16 @@ public class LaporanDanaController extends BaseController{
                 laporanDana.getTotal_Pengeluaran() <= 0) {
 
                 ra.addFlashAttribute("error", "Semua field wajib diisi.");
-                return "redirect:/laporanPenggunaanDana";
+                return "redirect:/mengajukanLaporanDana";
             }
 
             // Ambil ID organisasi dari akun
-            int idOrganisasi = organisasiModel.GetIdOrganisasiByIdAkun(user.getId_akun());
-            laporanDana.setId_organisasi(idOrganisasi);
+            // int idOrganisasi = organisasiModel.GetIdOrganisasiByIdAkun(user.getId_akun());
+            // laporanDana.setId_organisasi(idOrganisasi);
 
             // Simpan file bukti
             laporanDana.setBukti_dokumen(file.getBytes());
-            laporanDana.setStatus_verifikasi("Menunggu Verifikasi");
+            laporanDana.setStatus_verifikasi("menunggu");
             laporanDana.setTgl_pengajuan(LocalDateTime.now());
             laporanDana.setTgl_verifikasi(null);
 
@@ -105,15 +118,17 @@ public class LaporanDanaController extends BaseController{
             if (insertedId > 0) {
                 ra.addFlashAttribute("success", "Laporan dana berhasil diajukan!");
             } else {
-                ra.addFlashAttribute("error", "Terjadi kesalahan saat menyimpan laporan.");
+                String error = "id_org:" + insertedId;
+                ra.addFlashAttribute("error", error);
             }
+
 
         } catch (IOException e) {
             e.printStackTrace();
             ra.addFlashAttribute("error", "Gagal membaca file bukti dokumen.");
         }
 
-        return "redirect:/laporanPenggunaanDana";
+        return "redirect:/mengajukanLaporanDana";
     }
 
 
