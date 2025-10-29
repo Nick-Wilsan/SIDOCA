@@ -262,6 +262,8 @@ public class AdminController extends BaseController{
 
         // Dapatkan ID admin yang sedang login
         int loggedInAdminId = user.getId_akun();
+        String adminLevel = akunModel.getAdminLevel(loggedInAdminId);
+
 
         // Panggil model dengan parameter filter dan ID admin
         List<Akun> daftarAkun = akunModel.getAllAkun(keyword, role, status, loggedInAdminId);
@@ -269,6 +271,8 @@ public class AdminController extends BaseController{
         Map<String, Object> data = new HashMap<>();
         data.put("judul", "Kelola Akun");
         data.put("akunList", daftarAkun);
+        data.put("adminLevel", adminLevel);
+
 
         // Kirim kembali nilai filter untuk ditampilkan di form
         data.put("keyword", keyword);
