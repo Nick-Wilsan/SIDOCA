@@ -76,7 +76,7 @@
                             <h1 class="text-gradient-primary">SIDOCA</h1>
                             <h6 class="subtitle">Masuk ke Platform Donasi Terpercaya</h6>
                         </div>
-                        
+
                         <div th:if="${success}" class="alert alert-success-enhanced alert-dismissible fade show animate-fade-in-down" role="alert">
                             <i class="bi bi-check-circle-fill me-2"></i>
                             <span th:text="${success}"></span>
@@ -87,7 +87,7 @@
                             <span th:text="${error}"></span>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
-                        
+
                         <div class="box-form">
                             <form th:action="@{/login}" method="post" class="form-enhanced needs-validation" novalidate>
                                 <div class="input-group-enhanced mb-4">
@@ -95,28 +95,24 @@
                                     <input type="text" id="username" name="username" class="form-control-enhanced" placeholder="Username atau Email" required autofocus />
                                     <div class="invalid-feedback">Harap masukkan username atau email.</div>
                                 </div>
-                                
+
                                 <div class="input-group-enhanced mb-3">
                                     <i class="bi bi-lock-fill input-icon"></i>
                                     <input type="password" id="password" name="password" class="form-control-enhanced" placeholder="Password" required />
                                     <div class="invalid-feedback">Harap masukkan password.</div>
                                 </div>
-                                
+
                                 <div class="forgot-password-link mb-4">
                                     <a href="/forgot-password" class="link-primary">Lupa Password?</a>
                                 </div>
-                                
+
                                 <div class="d-grid gap-3">
-                                    <button type="submit" class="btn btn-primary-enhanced btn-animated" data-testid="signin-button">
-                                        <i class="bi bi-box-arrow-in-right me-2"></i>SIGN IN
-                                    </button>
-                                    <button type="button" class="btn btn-outline-enhanced" onclick="window.location.href='/register'" data-testid="register-button">
-                                        <i class="bi bi-person-plus me-2"></i>REGISTER
-                                    </button>
+                                    <button type="submit" class="btn btn-primary-enhanced btn-animated" data-testid="signin-button"><i class="bi bi-box-arrow-in-right me-2"></i>SIGN IN</button>
+                                    <button type="button" class="btn btn-outline-enhanced" onclick="window.location.href='/register'" data-testid="register-button"><i class="bi bi-person-plus me-2"></i>REGISTER</button>
                                 </div>
                             </form>
                         </div>
-                        
+
                         <div class="login-features mt-4">
                             <div class="feature-item">
                                 <i class="bi bi-shield-check"></i>
@@ -135,22 +131,26 @@
                 </div>
             </div>
         </div>
-        
+
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         <script th:src="@{js/global-interactive.js}"></script>
         <script>
             // Form validation
-            (function() {
+            (function () {
                 'use strict';
                 const forms = document.querySelectorAll('.needs-validation');
-                Array.from(forms).forEach(form => {
-                    form.addEventListener('submit', event => {
-                        if (!form.checkValidity()) {
-                            event.preventDefault();
-                            event.stopPropagation();
-                        }
-                        form.classList.add('was-validated');
-                    }, false);
+                Array.from(forms).forEach((form) => {
+                    form.addEventListener(
+                        'submit',
+                        (event) => {
+                            if (!form.checkValidity()) {
+                                event.preventDefault();
+                                event.stopPropagation();
+                            }
+                            form.classList.add('was-validated');
+                        },
+                        false
+                    );
                 });
             })();
         </script>
