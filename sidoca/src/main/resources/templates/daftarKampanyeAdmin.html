@@ -10,6 +10,9 @@
         <link rel="stylesheet" th:href="@{/css/headerStyleAdmin.css}" />
         <link rel="stylesheet" th:href="@{/css/footerStyle.css}" />
         <link rel="stylesheet" th:href="@{/css/kelolaAkunStyle.css}" />
+        <link rel="stylesheet" th:href="@{/css/global-animations.css}" />
+        <link rel="stylesheet" th:href="@{/css/enhanced-components.css}" />
+
     </head>
     <body>
         <header th:replace="~{headerAdmin :: navbarAdmin}"></header>
@@ -78,16 +81,20 @@
         </main>
 
         <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="logoutModalLabel" style="color: #2e5c4d">Konfirmasi Logout</h5>
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content modal-content-enhanced">
+                    <div class="modal-header modal-header-enhanced">
+                        <h5 class="modal-title" id="logoutModalLabel">
+                            <i class="bi bi-box-arrow-right me-2"></i>Konfirmasi Logout
+                        </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body" style="color: #a1a1a1">Anda akan keluar dari sesi saat ini. Apakah anda yakin ingin melanjutkannya?</div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">BATAL</button>
-                        <a th:href="@{/logout}" class="btn btn-danger">YA, LOGOUT</a>
+                    <div class="modal-body modal-body-enhanced">
+                        <p class="text-center">Anda akan keluar dari sesi saat ini. Apakah anda yakin ingin melanjutkannya?</p>
+                    </div>
+                    <div class="modal-footer modal-footer-enhanced">
+                        <button type="button" class="btn btn-outline-enhanced" data-bs-dismiss="modal">BATAL</button>
+                        <a th:href="@{/logout}" class="btn btn-secondary-enhanced" data-testid="confirm-logout-button">YA, LOGOUT</a>
                     </div>
                 </div>
             </div>
