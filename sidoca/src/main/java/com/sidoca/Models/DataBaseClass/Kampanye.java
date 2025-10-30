@@ -109,7 +109,7 @@ public class Kampanye {
         this.tgl_verifikasi = tgl_verifikasi;
     }
 
-    public int getSisa_hari(){
+    public int getSisaHari(){
         if (batas_waktu == null) {
             return 0;
         }
