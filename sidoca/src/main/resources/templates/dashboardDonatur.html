@@ -31,9 +31,7 @@
                 <div class="hero-text-enhanced">
                     <h1 class="fw-bold">Mari Berbagi Kebaikan</h1>
                     <p class="fs-5 mt-3">Donasi Anda Membawa Harapan Bagi Mereka yang Membutuhkan</p>
-                    <a th:href="@{/daftarKampanye}" class="btn btn-secondary-enhanced btn-lg mt-3" data-testid="browse-campaigns-button">
-                        <i class="bi bi-heart-fill me-2"></i>Jelajahi Kampanye
-                    </a>
+                    <a th:href="@{/daftarKampanye}" class="btn btn-secondary-enhanced btn-lg mt-3" data-testid="browse-campaigns-button"> <i class="bi bi-heart-fill me-2"></i>Jelajahi Kampanye </a>
                 </div>
             </div>
 
@@ -92,9 +90,7 @@
                     <div class="card-enhanced reveal">
                         <div class="card-body p-4">
                             <div class="d-flex justify-content-between align-items-center mb-4">
-                                <h5 class="card-title mb-0">
-                                    <i class="bi bi-clock-history me-2 text-primary"></i>Aktivitas Terbaru
-                                </h5>
+                                <h5 class="card-title mb-0"><i class="bi bi-clock-history me-2 text-primary"></i>Aktivitas Terbaru</h5>
                                 <a th:href="@{/riwayatDonasi}" class="btn btn-sm btn-outline-enhanced" data-testid="view-history-button">Lihat Semua</a>
                             </div>
                             <div class="activity-list">
@@ -131,10 +127,8 @@
                 <div class="col-lg-6">
                     <div class="card-enhanced reveal">
                         <div class="card-body p-4">
-                            <h5 class="card-title mb-4">
-                                <i class="bi bi-graph-up me-2 text-success"></i>Grafik Donasi Bulanan
-                            </h5>
-                            <canvas id="donationChart" style="max-height: 250px;"></canvas>
+                            <h5 class="card-title mb-4"><i class="bi bi-graph-up me-2 text-success"></i>Grafik Donasi Bulanan</h5>
+                            <canvas id="donationChart" style="max-height: 250px"></canvas>
                         </div>
                     </div>
                 </div>
@@ -144,12 +138,8 @@
             <div class="row mt-5 reveal">
                 <div class="col-12">
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h3>
-                            <i class="bi bi-fire me-2 text-danger"></i>Kampanye Trending
-                        </h3>
-                        <a th:href="@{/daftarKampanye}" class="btn btn-primary-enhanced" data-testid="view-all-campaigns-button">
-                            <i class="bi bi-arrow-right me-2"></i>Lihat Semua Kampanye
-                        </a>
+                        <h3><i class="bi bi-fire me-2 text-danger"></i>Kampanye Trending</h3>
+                        <a th:href="@{/daftarKampanye}" class="btn btn-primary-enhanced" data-testid="view-all-campaigns-button"> <i class="bi bi-arrow-right me-2"></i>Lihat Semua Kampanye </a>
                     </div>
                 </div>
             </div>
@@ -167,11 +157,11 @@
                             </div>
                             <h5 class="card-title">Bantuan Pendidikan Anak</h5>
                             <p class="card-text text-muted">Membantu anak-anak kurang mampu mendapatkan pendidikan yang layak.</p>
-                            
+
                             <div class="progress-enhanced mb-3">
                                 <div class="progress-bar-enhanced" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
-                            
+
                             <div class="d-flex justify-content-between mb-3">
                                 <div>
                                     <small class="text-muted">Terkumpul</small>
@@ -182,10 +172,8 @@
                                     <p class="mb-0 fw-bold">Rp 100.000.000</p>
                                 </div>
                             </div>
-                            
-                            <button class="btn btn-primary-enhanced w-100" data-testid="donate-button-1">
-                                <i class="bi bi-heart-fill me-2"></i>Donasi Sekarang
-                            </button>
+
+                            <button class="btn btn-primary-enhanced w-100" data-testid="donate-button-1"><i class="bi bi-heart-fill me-2"></i>Donasi Sekarang</button>
                         </div>
                     </div>
                 </div>
@@ -202,11 +190,11 @@
                             </div>
                             <h5 class="card-title">Bantuan Bencana Alam</h5>
                             <p class="card-text text-muted">Membantu korban bencana alam untuk mendapatkan tempat tinggal.</p>
-                            
+
                             <div class="progress-enhanced mb-3">
                                 <div class="progress-bar-enhanced" role="progressbar" style="width: 45%" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
-                            
+
                             <div class="d-flex justify-content-between mb-3">
                                 <div>
                                     <small class="text-muted">Terkumpul</small>
@@ -217,10 +205,8 @@
                                     <p class="mb-0 fw-bold">Rp 100.000.000</p>
                                 </div>
                             </div>
-                            
-                            <button class="btn btn-primary-enhanced w-100" data-testid="donate-button-2">
-                                <i class="bi bi-heart-fill me-2"></i>Donasi Sekarang
-                            </button>
+
+                            <button class="btn btn-primary-enhanced w-100" data-testid="donate-button-2"><i class="bi bi-heart-fill me-2"></i>Donasi Sekarang</button>
                         </div>
                     </div>
                 </div>
@@ -237,11 +223,11 @@
                             </div>
                             <h5 class="card-title">Program Kesehatan Gratis</h5>
                             <p class="card-text text-muted">Menyediakan layanan kesehatan gratis untuk masyarakat kurang mampu.</p>
-                            
+
                             <div class="progress-enhanced mb-3">
                                 <div class="progress-bar-enhanced" role="progressbar" style="width: 60%" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
-                            
+
                             <div class="d-flex justify-content-between mb-3">
                                 <div>
                                     <small class="text-muted">Terkumpul</small>
@@ -252,10 +238,8 @@
                                     <p class="mb-0 fw-bold">Rp 50.000.000</p>
                                 </div>
                             </div>
-                            
-                            <button class="btn btn-primary-enhanced w-100" data-testid="donate-button-3">
-                                <i class="bi bi-heart-fill me-2"></i>Donasi Sekarang
-                            </button>
+
+                            <button class="btn btn-primary-enhanced w-100" data-testid="donate-button-3"><i class="bi bi-heart-fill me-2"></i>Donasi Sekarang</button>
                         </div>
                     </div>
                 </div>
@@ -272,68 +256,70 @@
                     type: 'line',
                     data: {
                         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
-                        datasets: [{
-                            label: 'Jumlah Donasi (Rp)',
-                            data: [100000, 200000, 150000, 300000, 250000, 400000],
-                            borderColor: '#3a5a40',
-                            backgroundColor: 'rgba(58, 90, 64, 0.1)',
-                            borderWidth: 3,
-                            fill: true,
-                            tension: 0.4,
-                            pointRadius: 5,
-                            pointHoverRadius: 7,
-                            pointBackgroundColor: '#3a5a40',
-                            pointBorderColor: '#fff',
-                            pointBorderWidth: 2
-                        }]
+                        datasets: [
+                            {
+                                label: 'Jumlah Donasi (Rp)',
+                                data: [100000, 200000, 150000, 300000, 250000, 400000],
+                                borderColor: '#3a5a40',
+                                backgroundColor: 'rgba(58, 90, 64, 0.1)',
+                                borderWidth: 3,
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 5,
+                                pointHoverRadius: 7,
+                                pointBackgroundColor: '#3a5a40',
+                                pointBorderColor: '#fff',
+                                pointBorderWidth: 2,
+                            },
+                        ],
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
                             legend: {
-                                display: false
+                                display: false,
                             },
                             tooltip: {
                                 backgroundColor: 'rgba(0, 0, 0, 0.8)',
                                 padding: 12,
                                 cornerRadius: 8,
                                 callbacks: {
-                                    label: function(context) {
+                                    label: function (context) {
                                         return 'Rp ' + context.parsed.y.toLocaleString('id-ID');
-                                    }
-                                }
-                            }
+                                    },
+                                },
+                            },
                         },
                         scales: {
                             y: {
                                 beginAtZero: true,
                                 grid: {
-                                    color: 'rgba(0, 0, 0, 0.05)'
+                                    color: 'rgba(0, 0, 0, 0.05)',
                                 },
                                 ticks: {
-                                    callback: function(value) {
-                                        return 'Rp ' + (value / 1000) + 'k';
-                                    }
-                                }
+                                    callback: function (value) {
+                                        return 'Rp ' + value / 1000 + 'k';
+                                    },
+                                },
                             },
                             x: {
                                 grid: {
-                                    display: false
-                                }
-                            }
+                                    display: false,
+                                },
+                            },
                         },
                         animation: {
                             duration: 2000,
-                            easing: 'easeInOutQuart'
-                        }
-                    }
+                            easing: 'easeInOutQuart',
+                        },
+                    },
                 });
             }
 
             // Animate progress bars on load
             setTimeout(() => {
-                document.querySelectorAll('.progress-bar-enhanced').forEach(bar => {
+                document.querySelectorAll('.progress-bar-enhanced').forEach((bar) => {
                     const width = bar.style.width;
                     bar.style.width = '0';
                     setTimeout(() => {
@@ -348,9 +334,7 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content modal-content-enhanced">
                     <div class="modal-header modal-header-enhanced">
-                        <h5 class="modal-title" id="logoutModalLabel">
-                            <i class="bi bi-box-arrow-right me-2"></i>Konfirmasi Logout
-                        </h5>
+                        <h5 class="modal-title" id="logoutModalLabel"><i class="bi bi-box-arrow-right me-2"></i>Konfirmasi Logout</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body modal-body-enhanced">

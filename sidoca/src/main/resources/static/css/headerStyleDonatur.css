@@ -177,29 +177,29 @@
         margin-top: 15px;
         padding: 15px 0;
     }
-    
+
     .navbar-nav .nav-link {
         margin: 5px 0;
         padding: 12px 20px !important;
     }
-    
+
     .navbar-nav .nav-link::before {
         height: 2px;
         bottom: 5px;
     }
-    
+
     .btn-profil,
     .btn-logout {
         width: 100%;
         justify-content: center;
         margin-top: 10px;
     }
-    
+
     .navbar-custom .d-flex {
         flex-direction: column;
         width: 100%;
     }
-    
+
     .navbar-custom .d-flex .btn {
         margin: 5px 0 !important;
     }
@@ -209,11 +209,11 @@
     .navbar-brand img {
         width: 120px !important;
     }
-    
+
     .navbar-custom {
         padding: 10px 0;
     }
-    
+
     .btn-profil,
     .btn-logout {
         padding: 10px 15px;
@@ -247,7 +247,8 @@
 }
 
 @keyframes pulse {
-    0%, 100% {
+    0%,
+    100% {
         opacity: 1;
         transform: translateX(-50%) scale(1);
     }
