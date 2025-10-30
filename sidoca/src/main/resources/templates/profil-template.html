@@ -1,40 +1,37 @@
 <!DOCTYPE html>
 <html lang="id" xmlns:th="http://www.thymeleaf.org">
     <body>
-        <main class="container my-5" th:fragment="profilContent">
-            <main class="container my-5" th:fragment="profilContent">
-                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <span th:text="${error}"></span>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-
-                <div class="row"></div>
-            </main>
+        <main class="container my-5 animate-fade-in-up" th:fragment="profilContent">
+            <div th:if="${error}" class="alert alert-danger-enhanced alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
 
             <div class="row">
                 <div class="col-lg-4">
-                    <div class="card p-4 text-center">
+                    <div class="card p-4 text-center hover-lift">
                         <img th:src="${profil.photoProfile != null ? '/images/profiles/' + profil.photoProfile : '/images/default.png'}" class="rounded-circle mx-auto mb-3" width="150" height="150" alt="Foto Profil" />
                         <h4 th:text="${profil.nama}">Nama Lengkap</h4>
                         <p class="text-muted" th:text="${profil.username}">username</p>
 
                         <form th:if="${editMode}" th:action="@{/profil/update-photo}" method="post" enctype="multipart/form-data" class="mt-3">
                             <input type="file" name="photo" class="form-control" />
-                            <button type="submit" class="btn btn-dark-green mt-2">Simpan Foto</button>
+                            <button type="submit" class="btn btn-primary-enhanced mt-2">Simpan Foto</button>
                         </form>
 
                         <div class="d-grid gap-2 mt-3">
-                            <a th:if="${!editMode}" th:href="@{?edit=true}" class="btn btn-dark-green">EDIT PROFILE</a>
-                            <button th:if="${editMode}" type="button" class="btn btn-dark-green">UBAH FOTO PROFIL</button>
-                            <a th:href="@{/ganti-kata-sandi}" class="btn btn-orange">GANTI KATA SANDI</a>
-                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">HAPUS AKUN SAYA</button>
+                            <a th:if="${!editMode}" th:href="@{?edit=true}" class="btn btn-primary-enhanced">EDIT PROFILE</a>
+                            <button th:if="${editMode}" type="button" class="btn btn-primary-enhanced">UBAH FOTO PROFIL</button>
+                            <a th:href="@{/ganti-kata-sandi}" class="btn btn-secondary-enhanced">GANTI KATA SANDI</a>
+                            <button type="button" class="btn btn-outline-enhanced" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">HAPUS AKUN SAYA</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-lg-8">
-                    <div class="card p-4">
-                        <h3 class="mb-4">Informasi pribadi</h3>
+                    <div class="card p-4 hover-lift">
+                        <h3 class="mb-4 reveal">Informasi pribadi</h3>
                         <form th:action="@{/profil/update}" method="post">
                             <div class="row g-3">
                                 <div class="col-md-6">
@@ -63,7 +60,7 @@
                                     <textarea name="deskripsiOrganisasi" class="form-control" rows="4" th:text="${profil.deskripsiOrganisasi}" th:readonly="${!editMode}"></textarea>
                                 </div>
                                 <div class="col-12 text-end" th:if="${editMode}">
-                                    <button type="submit" class="btn btn-dark-green">SIMPAN PERUBAHAN</button>
+                                    <button type="submit" class="btn btn-primary-enhanced">SIMPAN PERUBAHAN</button>
                                 </div>
                             </div>
                         </form>

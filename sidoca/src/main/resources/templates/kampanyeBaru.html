@@ -6,12 +6,12 @@
         <title>Kampanye Baru - SIDOCA</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+        <link rel="stylesheet" th:href="@{/css/global-animations.css}" />
+        <link rel="stylesheet" th:href="@{/css/enhanced-components.css}" />
         <link rel="stylesheet" th:href="@{/css/headerStyleOrganisasi.css}" />
         <link rel="stylesheet" th:href="@{/css/footerStyle.css}" />
         <link rel="stylesheet" th:href="@{/css/kampanyeBaruStyle.css}" />
         <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}" />
-        <link rel="stylesheet" th:href="@{/css/global-animations.css}" />
-        <link rel="stylesheet" th:href="@{/css/enhanced-components.css}" />
         <style>
             /* CSS TAMBAHAN UNTUK PREVIEW FILE */
             .file-preview-container {
@@ -55,35 +55,35 @@
     <body>
         <header th:replace="~{headerOrganisasi :: navbarOrganisasi}"></header>
 
-        <main class="container my-5">
+        <main class="container my-5 animate-fade-in-up">
             <div class="form-container mx-auto">
                 <div class="text-center mb-4">
-                    <h1 class="fw-bold" style="color: #3a5a40">Kampanye Baru</h1>
+                    <h1 class="fw-bold reveal" style="color: #3a5a40">Kampanye Baru</h1>
                     <p class="text-muted" style="color: #c4c4c4">Lengkapi formulir di bawah ini untuk memulai penggalangan dana Anda. Kampanye akan ditinjau oleh tim kami sebelum dipublikasikan.</p>
                 </div>
 
                 <form action="#" th:action="@{/buat-kampanye}" method="post" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label for="judulKampanye" class="form-label">Judul Kampanye</label>
-                        <input type="text" class="form-control" id="judulKampanye" name="judulKampanye" placeholder="Misalnya, 'Bantu Anak-Anak di Desa Terpencil'  " style="background-color: #f0f2f5" required />
+                        <input type="text" class="form-control form-control-enhanced" id="judulKampanye" name="judulKampanye" placeholder="Misalnya, 'Bantu Anak-Anak di Desa Terpencil'  " style="background-color: #f0f2f5" required />
                     </div>
 
                     <div class="mb-3">
                         <label for="deskripsiKampanye" class="form-label">Deskripsi Kampanye</label>
-                        <textarea class="form-control" id="deskripsiKampanye" name="deskripsiKampanye" rows="5" style="background-color: #f0f2f5" required></textarea>
+                        <textarea class="form-control form-control-enhanced" id="deskripsiKampanye" name="deskripsiKampanye" rows="5" style="background-color: #f0f2f5" required></textarea>
                     </div>
 
                     <div class="mb-3">
                         <label for="targetDana" class="form-label">Target Dana</label>
                         <div class="input-group">
                             <span class="input-group-text">Rp</span>
-                            <input type="number" class="form-control" id="targetDana" name="targetDana" placeholder="10000000" style="background-color: #f0f2f5" required />
+                            <input type="number" class="form-control form-control-enhanced" id="targetDana" name="targetDana" placeholder="10000000" style="background-color: #f0f2f5" required />
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label for="batasWaktu" class="form-label">Batas Waktu</label>
-                        <input type="date" class="form-control" id="batasWaktu" name="batasWaktu" style="background-color: #f0f2f5" required />
+                        <input type="date" class="form-control form-control-enhanced" id="batasWaktu" name="batasWaktu" style="background-color: #f0f2f5" required />
                     </div>
 
                     <div class="mb-4">
@@ -99,7 +99,7 @@
                     </div>
 
                     <div class="d-grid">
-                        <button type="submit" class="btn btn-buat-kampanye">Buat Kampanye</button>
+                        <button type="submit" class="btn btn-buat-kampanye btn-primary-enhanced">Buat Kampanye</button>
                     </div>
                 </form>
             </div>
@@ -130,6 +130,7 @@
         </footer>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script th:src="@{/js/global-interactive.js}"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const fileInput = document.getElementById('fileUpload');
