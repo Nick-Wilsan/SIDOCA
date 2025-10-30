@@ -3,44 +3,164 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title th:text="${judul}">Dashboard SIDOCA</title>
+        <title th:text="${judul}">Dashboard Organisasi - SIDOCA</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
         <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}" />
+        <link rel="stylesheet" th:href="@{/css/global-animations.css}" />
+        <link rel="stylesheet" th:href="@{/css/enhanced-components.css}" />
         <link rel="stylesheet" th:href="@{/css/dashboardStyleOrganisasi.css}" />
         <link rel="stylesheet" th:href="@{/css/headerStyleOrganisasi.css}" />
         <link rel="stylesheet" th:href="@{/css/footerStyle.css}" />
-        <link rel="stylesheet" th:href="@{/css/global-animations.css}" />
-        <link rel="stylesheet" th:href="@{/css/enhanced-components.css}" />
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
     </head>
 
     <body>
         <header th:replace="~{headerOrganisasi :: navbarOrganisasi}"></header>
 
         <div class="container main-content">
-            <div th:if="${success}" class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+            <div th:if="${success}" class="alert alert-success-enhanced alert-dismissible fade show mt-3 animate-fade-in-down" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>
                 <span th:text="${success}">Pesan sukses dari login.</span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
 
-            <div class="hero-banner shadow-sm">
-                <img th:src="@{/images/All_About_Charity.png}" alt="Banner Donasi" class="hero-image" />
-
-                <div class="hero-text">
-                    <h1 class="display-5 fw-bold">P</h1>
-                    <p class="fs-5 mt-3">yang donasi masuk surga</p>
+            <!-- Hero Banner Enhanced -->
+            <div class="hero-banner-enhanced animate-fade-in-up">
+                <img th:src="@{/images/All_About_Charity.png}" alt="Banner Organisasi" class="hero-image" />
+                <div class="hero-text-enhanced">
+                    <h1 class="fw-bold">Kelola Kampanye Anda</h1>
+                    <p class="fs-5 mt-3">Buat dampak positif dan kelola donasi dengan transparan</p>
+                    <a th:href="@{/kampanyeBaru}" class="btn btn-secondary-enhanced btn-lg mt-3">
+                        <i class="bi bi-plus-circle-fill me-2"></i>Buat Kampanye Baru
+                    </a>
                 </div>
             </div>
 
-            <div class="row mt-4">
+            <!-- Welcome Section -->
+            <div class="row mt-5 animate-fade-in-up" style="animation-delay: 0.2s">
                 <div class="col">
-                    <h3>Selamat Datang, <span th:text="${session.user.nama}">[Nama]</span>!</h3>
+                    <h2 class="dashboard-title">Selamat Datang, <span class="text-primary" th:text="${session.user.nama}">[Nama]</span>! 👋</h2>
+                    <p class="text-muted">Kelola kampanye dan pantau perkembangan donasi Anda</p>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row g-4 mt-3 animate-stagger">
+                <div class="col-md-3">
+                    <div class="stat-card hover-lift">
+                        <div class="stat-icon primary">
+                            <i class="bi bi-megaphone-fill"></i>
+                        </div>
+                        <div class="stat-value counter" data-target="0">0</div>
+                        <div class="stat-label">Total Kampanye</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card hover-lift">
+                        <div class="stat-icon success">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </div>
+                        <div class="stat-value counter" data-target="0">0</div>
+                        <div class="stat-label">Kampanye Aktif</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card hover-lift">
+                        <div class="stat-icon secondary">
+                            <i class="bi bi-cash-stack"></i>
+                        </div>
+                        <div class="stat-value">Rp <span class="counter" data-target="0">0</span></div>
+                        <div class="stat-label">Total Dana Terkumpul</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card hover-lift">
+                        <div class="stat-icon primary">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        <div class="stat-value counter" data-target="0">0</div>
+                        <div class="stat-label">Total Donatur</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Campaigns Section -->
+            <div class="row mt-5">
+                <div class="col">
+                    <h3 class="mb-4 reveal">
+                        <i class="bi bi-megaphone-fill me-2 text-primary"></i>Kampanye Anda
+                    </h3>
                 </div>
             </div>
         </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Campaign Cards Grid -->
+        <div class="row g-4 mb-5">
+            <div th:each="k, iterStat : ${kampanyeList}" 
+                 th:if="${iterStat.index < 6}" 
+                 class="col-md-6 col-lg-4 reveal">
+                <div class="card-campaign card-enhanced">
+                    <div class="position-relative overflow-hidden">
+                        <img th:src="@{/images/All_About_Charity.png}" alt="Kampanye" class="w-100">
+                        <span class="badge badge-warning-enhanced position-absolute top-0 end-0 m-3">
+                            <i class="bi bi-clock-fill me-1"></i>
+                            <span th:text="'Sisa ' + ${k.sisaHari} + ' hari'">Sisa hari</span>
+                        </span>
+                    </div>
+                    <div class="card-body p-4">
+                        <h5 class="card-title fw-bold mb-3" th:text="${k.judul_kampanye}">Judul Kampanye</h5>
+                        <p class="text-muted small mb-3">
+                            <i class="bi bi-building me-1"></i>
+                            <span th:text="${namaOrganisasi}">Nama Organisasi</span>
+                        </p>
+                        
+                        <!-- Progress Bar Enhanced -->
+                        <div class="progress-enhanced mb-2">
+                            <div class="progress-bar-enhanced" 
+                                 th:style="'width:' + (${k.dana_terkumpul} / ${k.target_dana} * 100) + '%'"
+                                 role="progressbar">
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mb-3">
+                            <div>
+                                <div class="fw-bold text-primary" th:text="'Rp ' + ${#numbers.formatDecimal(k.dana_terkumpul, 0, 'COMMA', 0, 'POINT')}">Rp 0</div>
+                                <small class="text-muted">Terkumpul</small>
+                            </div>
+                            <div class="text-end">
+                                <div class="fw-bold" th:text="'Rp ' + ${#numbers.formatDecimal(k.target_dana, 0, 'COMMA', 0, 'POINT')}">Rp 0</div>
+                                <small class="text-muted">Target</small>
+                            </div>
+                        </div>
+                        
+                        <a th:href="@{/detailKampanye(id_kampanye=${k.id_kampanye})}" 
+                           class="btn btn-primary-enhanced w-100">
+                            <i class="bi bi-eye-fill me-2"></i>Lihat Detail
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Empty State -->
+            <div th:if="${#lists.isEmpty(kampanyeList)}" class="col-12 text-center py-5 reveal">
+                <i class="bi bi-inbox display-1 text-muted"></i>
+                <h4 class="mt-3 text-muted">Belum Ada Kampanye</h4>
+                <p class="text-muted">Mulai buat kampanye pertama Anda untuk mengumpulkan donasi</p>
+                <a th:href="@{/kampanyeBaru}" class="btn btn-primary-enhanced mt-3">
+                    <i class="bi bi-plus-circle-fill me-2"></i>Buat Kampanye Baru
+                </a>
+            </div>
+        </div>
 
+        <footer>
+            <div th:replace="~{footer :: footer}"></div>
+        </footer>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script th:src="@{/js/global-interactive.js}"></script>
+
+        <!-- Logout Modal -->
         <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content modal-content-enhanced">
@@ -60,45 +180,5 @@
                 </div>
             </div>
         </div>
-
-        <div class="kampanye-container">
-            <div th:each="k, iterStat : ${kampanyeList}"
-                th:if="${iterStat.index < 3}" 
-                class="kampanye-card">
-                
-                <!-- Gambar -->
-                <img th:src="@{/image/All_About_Charity.png}" alt="Kampanye" class="kampanye-image">
-
-                <!-- Info Kampanye -->
-                <div class="kampanye-info">
-                    <p class="sisa-hari" th:text="'Sisa ' + ${k.sisaHari} + ' hari'"></p>
-                    <h3 th:text="${k.judul_kampanye}" class="judul-kampanye"></h3>
-                    <p th:text="'oleh ' + ${namaOrganisasi}" class="nama-organisasi"></p>
-                </div>
-
-                <!-- Progress Bar -->
-                <div class="progress-container">
-                    <div class="progress-bg">
-                        <div class="progress-fill"
-                            th:style="'width:' + (${k.dana_terkumpul} / ${k.target_dana} * 100) + '%'">
-                        </div>
-                    </div>
-                    <div class="progress-text">
-                        <span th:text="'Rp ' + ${#numbers.formatDecimal(k.dana_terkumpul, 0, 'COMMA', 0, 'POINT')}"></span>
-                        <span th:text="'dari Rp ' + ${#numbers.formatDecimal(k.target_dana, 0, 'COMMA', 0, 'POINT')}"></span>
-                    </div>
-                </div>
-
-                <!-- Tombol -->
-                <a th:href="@{/detailKampanye(id_kampanye=${k.id_kampanye})}" class="detail-btn">
-                    Lihat Detail
-                </a>
-            </div>
-        </div>
-
-
-        <footer>
-            <div th:replace="~{footer :: footer}"></div>
-        </footer>
     </body>
 </html>

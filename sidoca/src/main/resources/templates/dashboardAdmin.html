@@ -3,44 +3,153 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title th:text="${judul}">Dashboard SIDOCA</title>
+        <title th:text="${judul}">Dashboard Admin - SIDOCA</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
         <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}" />
+        <link rel="stylesheet" th:href="@{/css/global-animations.css}" />
+        <link rel="stylesheet" th:href="@{/css/enhanced-components.css}" />
         <link rel="stylesheet" th:href="@{/css/dashboardStyleAdmin.css}" />
         <link rel="stylesheet" th:href="@{/css/headerStyleAdmin.css}" />
         <link rel="stylesheet" th:href="@{/css/footerStyle.css}" />
-        <link rel="stylesheet" th:href="@{/css/global-animations.css}" />
-        <link rel="stylesheet" th:href="@{/css/enhanced-components.css}" />
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
     </head>
 
     <body>
         <header th:replace="~{headerAdmin :: navbarAdmin}"></header>
 
         <div class="container main-content">
-            <div th:if="${success}" class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+            <div th:if="${success}" class="alert alert-success-enhanced alert-dismissible fade show mt-3 animate-fade-in-down" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>
                 <span th:text="${success}">Pesan sukses dari login.</span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
 
-            <div class="hero-banner shadow-sm">
-                <img th:src="@{/images/All_About_Charity.png}" alt="Banner Donasi" class="hero-image" />
-
-                <div class="hero-text">
-                    <h1 class="display-5 fw-bold">P</h1>
-                    <p class="fs-5 mt-3">yang donasi masuk surga</p>
+            <!-- Hero Banner Enhanced -->
+            <div class="hero-banner-enhanced animate-fade-in-up">
+                <img th:src="@{/images/All_About_Charity.png}" alt="Banner Admin" class="hero-image" />
+                <div class="hero-text-enhanced">
+                    <h1 class="fw-bold">Panel Administrasi SIDOCA</h1>
+                    <p class="fs-5 mt-3">Kelola platform, verifikasi kampanye, dan pantau aktivitas sistem</p>
                 </div>
             </div>
 
-            <div class="row mt-4">
+            <!-- Welcome Section -->
+            <div class="row mt-5 animate-fade-in-up" style="animation-delay: 0.2s">
                 <div class="col">
-                    <h3>Selamat Datang, <span th:text="${session.user.nama}">[Nama]</span>!</h3>
+                    <h2 class="dashboard-title">Selamat Datang, <span class="text-primary" th:text="${session.user.nama}">[Nama Admin]</span>! 🛡️</h2>
+                    <p class="text-muted">Pantau dan kelola seluruh aktivitas platform SIDOCA</p>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row g-4 mt-3 animate-stagger">
+                <div class="col-md-3">
+                    <div class="stat-card hover-lift">
+                        <div class="stat-icon primary">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        <div class="stat-value counter" data-target="0">0</div>
+                        <div class="stat-label">Total Pengguna</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card hover-lift">
+                        <div class="stat-icon success">
+                            <i class="bi bi-megaphone-fill"></i>
+                        </div>
+                        <div class="stat-value counter" data-target="0">0</div>
+                        <div class="stat-label">Total Kampanye</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card hover-lift">
+                        <div class="stat-icon secondary">
+                            <i class="bi bi-cash-stack"></i>
+                        </div>
+                        <div class="stat-value">Rp <span class="counter" data-target="0">0</span></div>
+                        <div class="stat-label">Total Donasi</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card hover-lift">
+                        <div class="stat-icon primary">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+                        <div class="stat-value counter" data-target="0">0</div>
+                        <div class="stat-label">Menunggu Verifikasi</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="row mt-5">
+                <div class="col">
+                    <h3 class="mb-4 reveal">
+                        <i class="bi bi-lightning-charge-fill me-2 text-warning"></i>Aksi Cepat
+                    </h3>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-5 animate-stagger">
+                <div class="col-md-4">
+                    <a th:href="@{/verifikasiKampanye}" class="text-decoration-none">
+                        <div class="card-enhanced text-center p-4 hover-lift">
+                            <i class="bi bi-check-circle display-4 text-success mb-3"></i>
+                            <h5 class="fw-bold">Verifikasi Kampanye</h5>
+                            <p class="text-muted small">Tinjau dan verifikasi kampanye baru</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a th:href="@{/verifikasiPencairanDana}" class="text-decoration-none">
+                        <div class="card-enhanced text-center p-4 hover-lift">
+                            <i class="bi bi-wallet2 display-4 text-primary mb-3"></i>
+                            <h5 class="fw-bold">Pencairan Dana</h5>
+                            <p class="text-muted small">Kelola permintaan pencairan dana</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a th:href="@{/daftarKampanyeAdmin}" class="text-decoration-none">
+                        <div class="card-enhanced text-center p-4 hover-lift">
+                            <i class="bi bi-list-ul display-4 text-secondary mb-3"></i>
+                            <h5 class="fw-bold">Kelola Kampanye</h5>
+                            <p class="text-muted small">Lihat dan kelola semua kampanye</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="row mt-5">
+                <div class="col">
+                    <h3 class="mb-4 reveal">
+                        <i class="bi bi-activity me-2 text-info"></i>Aktivitas Terbaru
+                    </h3>
+                </div>
+            </div>
+
+            <div class="row mb-5">
+                <div class="col-12 reveal">
+                    <div class="card-enhanced p-4">
+                        <div class="text-center text-muted py-5">
+                            <i class="bi bi-clock-history display-1"></i>
+                            <p class="mt-3">Belum ada aktivitas terbaru</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <footer>
+            <div th:replace="~{footer :: footer}"></div>
+        </footer>
 
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script th:src="@{/js/global-interactive.js}"></script>
+
+        <!-- Logout Modal -->
         <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content modal-content-enhanced">
@@ -60,9 +169,5 @@
                 </div>
             </div>
         </div>
-
-        <footer>
-            <div th:replace="~{footer :: footer}"></div>
-        </footer>
     </body>
 </html>

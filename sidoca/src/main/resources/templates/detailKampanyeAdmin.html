@@ -7,16 +7,16 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
         <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}" />
+        <link rel="stylesheet" th:href="@{/css/global-animations.css}" />
+        <link rel="stylesheet" th:href="@{/css/enhanced-components.css}" />
         <link rel="stylesheet" th:href="@{/css/headerStyleAdmin.css}" />
         <link rel="stylesheet" th:href="@{/css/footerStyle.css}" />
         <link rel="stylesheet" th:href="@{/css/lihatDetailKampanyeStyle.css}" />
-        <link rel="stylesheet" th:href="@{/css/global-animations.css}" />
-        <link rel="stylesheet" th:href="@{/css/enhanced-components.css}" />
     </head>
     <body>
         <header th:replace="~{headerAdmin :: navbarAdmin}"></header>
 
-        <main class="container my-5">
+        <main class="container my-5 animate-fade-in-up">
             <div th:if="${kampanye != null}">
                 <div class="row">
                     <div class="col-12 col-lg-8">
@@ -27,7 +27,7 @@
                                 alt="Gambar Kampanye Utama"
                             />
                         </div>
-                        <h1 class="campaign-title mb-2" th:text="${kampanye.judul_kampanye}">Judul Kampanye</h1>
+                        <h1 class="campaign-title mb-2 reveal" th:text="${kampanye.judul_kampanye}">Judul Kampanye</h1>
                         <p class="organizer-info mb-4">
                             <i class="bi bi-person-check-fill"></i>
                             <span th:text="${kampanye.nama_organisasi}">Organisasi Harapan Bangsa</span>
@@ -40,7 +40,7 @@
 
                     <div class="col-12 col-lg-4">
                         <div class="sidebar sticky-top pt-lg-0">
-                            <div class="card p-4 mb-4 shadow-sm donation-summary-card">
+                            <div class="card p-4 mb-4 shadow-sm donation-summary-card hover-lift">
                                 <div class="d-flex justify-content-between">
                                     <span>Terkumpul</span>
                                     <span>Target</span>
@@ -58,7 +58,7 @@
                                     <button
                                         th:if="${kampanye.status_kampanye == 'aktif'}"
                                         type="button"
-                                        class="btn btn-danger"
+                                        class="btn btn-danger btn-secondary-enhanced"
                                         data-bs-toggle="modal"
                                         data-bs-target="#confirmationModal"
                                         th:attr="data-kampanye-id=${kampanye.id_kampanye}, data-kampanye-judul=${kampanye.judul_kampanye}, data-new-status='nonaktif'"
@@ -70,14 +70,14 @@
                                         <button
                                             th:if="${!isExpired}"
                                             type="button"
-                                            class="btn btn-success"
+                                            class="btn btn-success btn-primary-enhanced"
                                             data-bs-toggle="modal"
                                             data-bs-target="#confirmationModal"
                                             th:attr="data-kampanye-id=${kampanye.id_kampanye}, data-kampanye-judul=${kampanye.judul_kampanye}, data-new-status='aktif'"
                                         >
                                             <i class="bi bi-toggle-on"></i> Aktifkan Kampanye
                                         </button>
-                                        <button th:if="${isExpired}" type="button" class="btn btn-secondary" disabled><i class="bi bi-calendar-x"></i> Kampanye Telah Berakhir</button>
+                                        <button th:if="${isExpired}" type="button" class="btn btn-secondary btn-outline-enhanced" disabled><i class="bi bi-calendar-x"></i> Kampanye Telah Berakhir</button>
                                     </th:block>
                                 </div>
                             </div>
@@ -85,25 +85,27 @@
                     </div>
                 </div>
             </div>
-            <div th:if="${kampanye == null}" class="alert alert-warning text-center">Kampanye tidak ditemukan.</div>
+            <div th:if="${kampanye == null}" class="alert alert-danger-enhanced text-center">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>Kampanye tidak ditemukan.
+            </div>
         </main>
 
         <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
             <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
+                <div class="modal-content modal-content-enhanced">
+                    <div class="modal-header modal-header-enhanced">
                         <h5 class="modal-title" id="confirmationModalLabel">Konfirmasi Perubahan Status</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body modal-body-enhanced">
                         <p>Anda yakin ingin mengubah status kampanye <strong id="kampanyeJudul"></strong> menjadi <strong id="kampanyeStatus"></strong>?</p>
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer modal-footer-enhanced">
                         <form th:action="@{/daftarKampanyeAdmin/ubahStatus}" method="post" id="statusChangeForm">
                             <input type="hidden" name="id_kampanye" id="kampanyeIdInput" />
                             <input type="hidden" name="status" id="kampanyeStatusInput" />
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-danger">Ya, Ubah Status</button>
+                            <button type="button" class="btn btn-secondary btn-outline-enhanced" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-danger btn-secondary-enhanced">Ya, Ubah Status</button>
                         </form>
                     </div>
                 </div>
@@ -132,6 +134,7 @@
 
         <footer th:replace="~{footer :: footer}"></footer>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script th:src="@{/js/global-interactive.js}"></script>
         <script>
             var confirmationModal = document.getElementById('confirmationModal');
             confirmationModal.addEventListener('show.bs.modal', function (event) {
