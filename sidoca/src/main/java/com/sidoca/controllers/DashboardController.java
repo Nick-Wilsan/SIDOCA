@@ -73,7 +73,7 @@ public class DashboardController extends BaseController{
         }
 
         int id_organisasi = organisasiModel.GetIdOrganisasiByIdAkun(user.getId_akun());
-        List<Kampanye> kampanyelList = kampanyeModel.GetAllKampanyeByOrganisasi(id_organisasi);
+        List<Kampanye> kampanyelList = kampanyeModel.GetAllKampanyeByOrganisasi(user.getId_akun());
         String namaOrganisasi = organisasiModel.GetNamaOrganisasiById(id_organisasi);
 
         return loadView("dashboardOrganisasi", java.util.Map.of("Judul", "Dashboard Organisasi", "nama", user.getNama(), "kampanyeList", kampanyelList, "namaOrganisasi", namaOrganisasi));
