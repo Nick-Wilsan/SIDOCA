@@ -3,10 +3,12 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title th:text="${judul}">Daftar Kampanye</title>
+        <title th:text="${judul}">Daftar Kampanye - SIDOCA</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
         <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}" />
+        <link rel="stylesheet" th:href="@{/css/global-animations.css}" />
+        <link rel="stylesheet" th:href="@{/css/enhanced-components.css}" />
         <link rel="stylesheet" th:href="@{/css/headerStyleDonatur.css}" />
         <link rel="stylesheet" th:href="@{/css/footerStyle.css}" />
         <link rel="stylesheet" th:href="@{/css/daftarKampanyeStyle.css}" />
@@ -15,88 +17,180 @@
         <header th:replace="~{headerDonatur :: navbarDonatur}"></header>
 
         <main class="container my-5">
-            <div class="hero-section text-center p-5 mb-5 rounded-3">
-                <h1 class="hero-title">Bantu Mereka yang Membutuhkan. <br />Mulai Berdonasi Hari Ini.</h1>
-                <p class="hero-subtitle">Setiap donasi Anda membawa harapan baru bagi mereka. Mari bersama-sama menciptakan perubahan positif.</p>
-            </div>
-
-            <form th:action="@{/daftarKampanye}" method="get" class="row g-3 mb-4 align-items-center">
-                <div class="col-md-8">
-                    <div class="input-group">
-                        <input type="search" name="keyword" class="form-control form-control-lg" placeholder="Cari judul atau nama organisasi..." th:value="${keyword}" />
-                        <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
+            <!-- Hero Section -->
+            <div class="hero-section-enhanced text-center mb-5 animate-fade-in-up">
+                <div class="hero-overlay"></div>
+                <div class="hero-content">
+                    <h1 class="hero-title-enhanced">
+                        <i class="bi bi-heart-pulse me-3"></i>
+                        Bantu Mereka yang Membutuhkan
+                    </h1>
+                    <p class="hero-subtitle-enhanced">Setiap donasi Anda membawa harapan baru. Mari bersama menciptakan perubahan positif!</p>
+                    <div class="stats-row mt-4">
+                        <div class="stat-item">
+                            <div class="stat-number counter" data-target="150">0</div>
+                            <div class="stat-text">Kampanye Aktif</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">Rp <span class="counter" data-target="500">0</span>M+</div>
+                            <div class="stat-text">Dana Terkumpul</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number counter" data-target="10000">0</div>
+                            <div class="stat-text">Donatur Aktif</div>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <select name="urutkan" class="form-select form-select-lg" onchange="this.form.submit()">
-                        <option value="terbaru" th:selected="${urutkan == 'terbaru'}">Urutkan: Terbaru</option>
-                        <option value="mendesak" th:selected="${urutkan == 'mendesak'}">Urutkan: Mendesak</option>
-                        <option value="paling_sedikit" th:selected="${urutkan == 'paling_sedikit'}">Urutkan: Paling Sedikit Terkumpul</option>
-                    </select>
-                </div>
-            </form>
+            </div>
 
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            <!-- Search & Filter Section -->
+            <div class="search-filter-section animate-fade-in-up" style="animation-delay: 0.2s">
+                <form th:action="@{/daftarKampanye}" method="get" class="row g-3 align-items-center">
+                    <div class="col-md-8">
+                        <div class="search-box">
+                            <i class="bi bi-search search-icon"></i>
+                            <input type="search" name="keyword" class="form-control-search" placeholder="Cari judul kampanye atau nama organisasi..." th:value="${keyword}" data-testid="search-input" />
+                            <button class="btn-search" type="submit" data-testid="search-button">
+                                <i class="bi bi-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="filter-box">
+                            <i class="bi bi-funnel filter-icon"></i>
+                            <select name="urutkan" class="form-select-filter" onchange="this.form.submit()" data-testid="sort-select">
+                                <option value="terbaru" th:selected="${urutkan == 'terbaru'}">🕐 Terbaru</option>
+                                <option value="mendesak" th:selected="${urutkan == 'mendesak'}">🚨 Mendesak</option>
+                                <option value="paling_sedikit" th:selected="${urutkan == 'paling_sedikit'}">📊 Dana Terkecil</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Campaign Cards Grid -->
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mt-4">
                 <div th:if="${#lists.isEmpty(kampanyeList)}" class="col-12">
-                    <div class="alert alert-warning text-center" role="alert">
-                        Tidak ada kampanye aktif yang ditemukan.
+                    <div class="empty-state animate-fade-in">
+                        <i class="bi bi-inbox"></i>
+                        <h4>Tidak Ada Kampanye Ditemukan</h4>
+                        <p>Maaf, tidak ada kampanye yang sesuai dengan pencarian Anda.</p>
+                        <a th:href="@{/daftarKampanye}" class="btn btn-primary-enhanced mt-3">
+                            <i class="bi bi-arrow-clockwise me-2"></i>Lihat Semua Kampanye
+                        </a>
                     </div>
                 </div>
 
-                <div class="col" th:each="kampanye : ${kampanyeList}">
-                    <div class="card h-100 campaign-card shadow-sm">
-                        <div class="position-relative">
-                            <img th:src="${kampanye.url_gambar != null ? kampanye.url_gambar : '/images/image.png'}" class="card-img-top" alt="Gambar Kampanye" />
-                            <span class="sisa-hari-badge" th:text="'Sisa ' + ${kampanye.sisa_hari} + ' hari'"></span>
+                <div class="col reveal" th:each="kampanye, iterStat : ${kampanyeList}" th:attr="data-testid='campaign-card-' + ${iterStat.count}">
+                    <div class="campaign-card-enhanced hover-lift">
+                        <div class="campaign-image-container">
+                            <img th:src="${kampanye.url_gambar != null ? kampanye.url_gambar : '/images/image.png'}" class="campaign-image" alt="Gambar Kampanye" />
+                            <div class="campaign-overlay">
+                                <button class="btn-quick-view" th:onclick="'window.location.href=\'/kampanye/' + ${kampanye.id_kampanye} + '\''">
+                                    <i class="bi bi-eye"></i> Lihat Detail
+                                </button>
+                            </div>
+                            <span class="badge-days" th:classappend="${kampanye.sisa_hari < 7 ? 'badge-urgent' : ''}">
+                                <i class="bi bi-clock"></i> <span th:text="${kampanye.sisa_hari} + ' hari'"></span>
+                            </span>
                         </div>
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title" th:text="${kampanye.judul_kampanye}">Judul Kampanye</h5>
-                            <p class="organizer mb-3">
-                                <i class="bi bi-person-check-fill"></i>
+                        
+                        <div class="campaign-body">
+                            <h5 class="campaign-title" th:text="${kampanye.judul_kampanye}">Judul Kampanye</h5>
+                            
+                            <div class="organizer-info">
+                                <i class="bi bi-building"></i>
                                 <span th:text="${kampanye.nama_organisasi}">Nama Organisasi</span>
-                            </p>
-
-                            <div class="progress mb-2" style="height: 10px">
-                                <div class="progress-bar" role="progressbar" th:style="'width:' + ${kampanye.persentase_terkumpul} + '%'" th:aria-valuenow="${kampanye.persentase_terkumpul}" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
 
-                            <div class="d-flex justify-content-between dana-info">
-                                <span>Terkumpul</span>
-                                <span>Target</span>
-                            </div>
-                            <div class="d-flex justify-content-between dana-angka">
-                                <span class="fw-bold" th:text="'Rp ' + ${#numbers.formatDecimal(kampanye.dana_terkumpul, 0, 'POINT', 0, 'COMMA')}"></span>
-                                <span th:text="'Rp ' + ${#numbers.formatDecimal(kampanye.target_dana, 0, 'POINT', 0, 'COMMA')}"></span>
+                            <div class="progress-section">
+                                <div class="progress-enhanced">
+                                    <div class="progress-bar-enhanced" role="progressbar" 
+                                         th:style="'width:' + ${kampanye.persentase_terkumpul} + '%'" 
+                                         th:attr="data-progress=${kampanye.persentase_terkumpul}"
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100">
+                                    </div>
+                                </div>
+                                <div class="progress-percentage">
+                                    <span class="percentage-value" th:text="${kampanye.persentase_terkumpul} + '%'">0%</span>
+                                    <span class="percentage-label">tercapai</span>
+                                </div>
                             </div>
 
-                            <a th:href="@{/kampanye/{id}(id=${kampanye.id_kampanye})}" class="btn btn-donasi w-100 mt-auto">Lihat Detail</a>
+                            <div class="campaign-stats">
+                                <div class="stat-col">
+                                    <div class="stat-label">Terkumpul</div>
+                                    <div class="stat-value-primary" th:text="'Rp ' + ${#numbers.formatDecimal(kampanye.dana_terkumpul, 0, 'POINT', 0, 'COMMA')}">Rp 0</div>
+                                </div>
+                                <div class="stat-col text-end">
+                                    <div class="stat-label">Target</div>
+                                    <div class="stat-value-secondary" th:text="'Rp ' + ${#numbers.formatDecimal(kampanye.target_dana, 0, 'POINT', 0, 'COMMA')}">Rp 0</div>
+                                </div>
+                            </div>
+
+                            <a th:href="@{/kampanye/{id}(id=${kampanye.id_kampanye})}" class="btn btn-donate" th:attr="data-testid='donate-button-' + ${iterStat.count}">
+                                <i class="bi bi-heart-fill me-2"></i>Donasi Sekarang
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="text-center mt-5">
-                <a href="#" class="btn btn-lihat-semua">Lihat Semua Kampanye</a>
+            <!-- Load More Button -->
+            <div class="text-center mt-5 animate-fade-in-up">
+                <button class="btn btn-load-more" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" data-testid="back-to-top-button">
+                    <i class="bi bi-arrow-up-circle me-2"></i>Kembali ke Atas
+                </button>
             </div>
         </main>
 
+        <!-- Logout Modal -->
         <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="logoutModalLabel" style="color: #2E5C4D">Konfirmasi Logout</h5>
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content modal-content-enhanced">
+                    <div class="modal-header modal-header-enhanced">
+                        <h5 class="modal-title" id="logoutModalLabel">
+                            <i class="bi bi-box-arrow-right me-2"></i>Konfirmasi Logout
+                        </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body" style="color: #A1A1A1">Anda akan keluar dari sesi saat ini. Apakah anda yakin ingin melanjutkannya?</div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">BATAL</button>
-                        <a th:href="@{/logout}" class="btn btn-danger">YA, LOGOUT</a>
+                    <div class="modal-body modal-body-enhanced">
+                        <p class="text-center">Anda akan keluar dari sesi saat ini. Apakah anda yakin ingin melanjutkannya?</p>
+                    </div>
+                    <div class="modal-footer modal-footer-enhanced">
+                        <button type="button" class="btn btn-outline-enhanced" data-bs-dismiss="modal">BATAL</button>
+                        <a th:href="@{/logout}" class="btn btn-secondary-enhanced">YA, LOGOUT</a>
                     </div>
                 </div>
             </div>
         </div>
 
         <footer th:replace="~{footer :: footer}"></footer>
+        
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script th:src="@{js/global-interactive.js}"></script>
+        <script>
+            // Animate progress bars when they come into view
+            document.addEventListener('DOMContentLoaded', function() {
+                const progressBars = document.querySelectorAll('.progress-bar-enhanced');
+                
+                const progressObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const bar = entry.target;
+                            const targetWidth = bar.getAttribute('data-progress') || bar.style.width;
+                            bar.style.width = '0';
+                            setTimeout(() => {
+                                bar.style.width = targetWidth + '%';
+                            }, 200);
+                            progressObserver.unobserve(bar);
+                        }
+                    });
+                }, { threshold: 0.5 });
+                
+                progressBars.forEach(bar => progressObserver.observe(bar));
+            });
+        </script>
     </body>
 </html>

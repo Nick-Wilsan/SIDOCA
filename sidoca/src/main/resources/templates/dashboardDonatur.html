@@ -3,53 +3,362 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title th:text="${judul}">Dashboard SIDOCA</title>
+        <title th:text="${judul}">Dashboard Donatur - SIDOCA</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
         <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+        <link rel="stylesheet" th:href="@{/css/global-animations.css}" />
+        <link rel="stylesheet" th:href="@{/css/enhanced-components.css}" />
         <link rel="stylesheet" th:href="@{/css/dashboardStyleDonatur.css}" />
         <link rel="stylesheet" th:href="@{/css/headerStyleDonatur.css}" />
         <link rel="stylesheet" th:href="@{/css/footerStyle.css}" />
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
     </head>
 
     <body>
         <header th:replace="~{headerDonatur :: navbarDonatur}"></header>
 
         <div class="container main-content">
-            <div th:if="${success}" class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+            <div th:if="${success}" class="alert alert-success-enhanced alert-dismissible fade show mt-3 animate-fade-in-down" role="alert" data-testid="success-alert">
+                <i class="bi bi-check-circle-fill me-2"></i>
                 <span th:text="${success}">Pesan sukses dari login.</span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
 
-            <div class="hero-banner shadow-sm">
+            <!-- Hero Banner -->
+            <div class="hero-banner-enhanced animate-fade-in-up">
                 <img th:src="@{/images/All_About_Charity.png}" alt="Banner Donasi" class="hero-image" />
-
-                <div class="hero-text">
-                    <h1 class="display-5 fw-bold">P</h1>
-                    <p class="fs-5 mt-3">yang donasi masuk surga</p>
+                <div class="hero-text-enhanced">
+                    <h1 class="fw-bold">Mari Berbagi Kebaikan</h1>
+                    <p class="fs-5 mt-3">Donasi Anda Membawa Harapan Bagi Mereka yang Membutuhkan</p>
+                    <a th:href="@{/daftarKampanye}" class="btn btn-secondary-enhanced btn-lg mt-3" data-testid="browse-campaigns-button">
+                        <i class="bi bi-heart-fill me-2"></i>Jelajahi Kampanye
+                    </a>
                 </div>
             </div>
 
-            <div class="row mt-4">
+            <!-- Welcome Section -->
+            <div class="row mt-5 animate-fade-in-up" style="animation-delay: 0.2s">
                 <div class="col">
-                    <h3>Selamat Datang, <span th:text="${session.user.nama}">[Nama]</span>!</h3>
+                    <h2 class="dashboard-title">Selamat Datang, <span class="text-primary" th:text="${session.user.nama}">[Nama]</span>! 👋</h2>
+                    <p class="text-muted">Terimakasih atas kontribusi Anda dalam membantu sesama</p>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row g-4 mt-3 animate-stagger">
+                <div class="col-md-3">
+                    <div class="stat-card hover-lift" data-testid="total-donations-card">
+                        <div class="stat-icon primary">
+                            <i class="bi bi-heart-fill"></i>
+                        </div>
+                        <div class="stat-value counter" data-target="0">0</div>
+                        <div class="stat-label">Total Donasi</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card hover-lift" data-testid="total-amount-card">
+                        <div class="stat-icon success">
+                            <i class="bi bi-cash-stack"></i>
+                        </div>
+                        <div class="stat-value">Rp <span class="counter" data-target="0">0</span></div>
+                        <div class="stat-label">Total Kontribusi</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card hover-lift" data-testid="campaigns-supported-card">
+                        <div class="stat-icon secondary">
+                            <i class="bi bi-flag-fill"></i>
+                        </div>
+                        <div class="stat-value counter" data-target="0">0</div>
+                        <div class="stat-label">Kampanye Didukung</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card hover-lift" data-testid="ranking-card">
+                        <div class="stat-icon primary">
+                            <i class="bi bi-trophy-fill"></i>
+                        </div>
+                        <div class="stat-value">#<span class="counter" data-target="0">0</span></div>
+                        <div class="stat-label">Peringkat Donatur</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Donations & Trending Campaigns -->
+            <div class="row g-4 mt-4">
+                <!-- Recent Activity -->
+                <div class="col-lg-6">
+                    <div class="card-enhanced reveal">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h5 class="card-title mb-0">
+                                    <i class="bi bi-clock-history me-2 text-primary"></i>Aktivitas Terbaru
+                                </h5>
+                                <a th:href="@{/riwayatDonasi}" class="btn btn-sm btn-outline-enhanced" data-testid="view-history-button">Lihat Semua</a>
+                            </div>
+                            <div class="activity-list">
+                                <div class="activity-item">
+                                    <div class="activity-icon">
+                                        <i class="bi bi-check-circle-fill text-success"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <p class="mb-0"><strong>Donasi Berhasil</strong></p>
+                                        <small class="text-muted">Kampanye Pendidikan Anak - Rp 100.000</small>
+                                    </div>
+                                    <div class="activity-time">
+                                        <small class="text-muted">2 jam lalu</small>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon">
+                                        <i class="bi bi-heart-fill text-danger"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <p class="mb-0"><strong>Kampanye Baru Tersedia</strong></p>
+                                        <small class="text-muted">Bantuan Bencana Alam</small>
+                                    </div>
+                                    <div class="activity-time">
+                                        <small class="text-muted">1 hari lalu</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Donation Chart -->
+                <div class="col-lg-6">
+                    <div class="card-enhanced reveal">
+                        <div class="card-body p-4">
+                            <h5 class="card-title mb-4">
+                                <i class="bi bi-graph-up me-2 text-success"></i>Grafik Donasi Bulanan
+                            </h5>
+                            <canvas id="donationChart" style="max-height: 250px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trending Campaigns -->
+            <div class="row mt-5 reveal">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3>
+                            <i class="bi bi-fire me-2 text-danger"></i>Kampanye Trending
+                        </h3>
+                        <a th:href="@{/daftarKampanye}" class="btn btn-primary-enhanced" data-testid="view-all-campaigns-button">
+                            <i class="bi bi-arrow-right me-2"></i>Lihat Semua Kampanye
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-5">
+                <!-- Sample Campaign Card 1 -->
+                <div class="col-md-4 reveal">
+                    <div class="card-campaign" data-testid="campaign-card-1">
+                        <div class="img-hover-zoom">
+                            <img src="https://via.placeholder.com/400x200?text=Kampanye+1" class="card-img-top" alt="Campaign" />
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="mb-2">
+                                <span class="badge badge-success-enhanced">Aktif</span>
+                            </div>
+                            <h5 class="card-title">Bantuan Pendidikan Anak</h5>
+                            <p class="card-text text-muted">Membantu anak-anak kurang mampu mendapatkan pendidikan yang layak.</p>
+                            
+                            <div class="progress-enhanced mb-3">
+                                <div class="progress-bar-enhanced" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mb-3">
+                                <div>
+                                    <small class="text-muted">Terkumpul</small>
+                                    <p class="mb-0 fw-bold text-primary">Rp 75.000.000</p>
+                                </div>
+                                <div class="text-end">
+                                    <small class="text-muted">Target</small>
+                                    <p class="mb-0 fw-bold">Rp 100.000.000</p>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-primary-enhanced w-100" data-testid="donate-button-1">
+                                <i class="bi bi-heart-fill me-2"></i>Donasi Sekarang
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sample Campaign Card 2 -->
+                <div class="col-md-4 reveal">
+                    <div class="card-campaign" data-testid="campaign-card-2">
+                        <div class="img-hover-zoom">
+                            <img src="https://via.placeholder.com/400x200?text=Kampanye+2" class="card-img-top" alt="Campaign" />
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="mb-2">
+                                <span class="badge badge-warning-enhanced">Mendesak</span>
+                            </div>
+                            <h5 class="card-title">Bantuan Bencana Alam</h5>
+                            <p class="card-text text-muted">Membantu korban bencana alam untuk mendapatkan tempat tinggal.</p>
+                            
+                            <div class="progress-enhanced mb-3">
+                                <div class="progress-bar-enhanced" role="progressbar" style="width: 45%" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mb-3">
+                                <div>
+                                    <small class="text-muted">Terkumpul</small>
+                                    <p class="mb-0 fw-bold text-primary">Rp 45.000.000</p>
+                                </div>
+                                <div class="text-end">
+                                    <small class="text-muted">Target</small>
+                                    <p class="mb-0 fw-bold">Rp 100.000.000</p>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-primary-enhanced w-100" data-testid="donate-button-2">
+                                <i class="bi bi-heart-fill me-2"></i>Donasi Sekarang
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sample Campaign Card 3 -->
+                <div class="col-md-4 reveal">
+                    <div class="card-campaign" data-testid="campaign-card-3">
+                        <div class="img-hover-zoom">
+                            <img src="https://via.placeholder.com/400x200?text=Kampanye+3" class="card-img-top" alt="Campaign" />
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="mb-2">
+                                <span class="badge badge-success-enhanced">Aktif</span>
+                            </div>
+                            <h5 class="card-title">Program Kesehatan Gratis</h5>
+                            <p class="card-text text-muted">Menyediakan layanan kesehatan gratis untuk masyarakat kurang mampu.</p>
+                            
+                            <div class="progress-enhanced mb-3">
+                                <div class="progress-bar-enhanced" role="progressbar" style="width: 60%" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mb-3">
+                                <div>
+                                    <small class="text-muted">Terkumpul</small>
+                                    <p class="mb-0 fw-bold text-primary">Rp 30.000.000</p>
+                                </div>
+                                <div class="text-end">
+                                    <small class="text-muted">Target</small>
+                                    <p class="mb-0 fw-bold">Rp 50.000.000</p>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-primary-enhanced w-100" data-testid="donate-button-3">
+                                <i class="bi bi-heart-fill me-2"></i>Donasi Sekarang
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script th:src="@{js/global-interactive.js}"></script>
+        <script>
+            // Initialize donation chart
+            const ctx = document.getElementById('donationChart');
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
+                        datasets: [{
+                            label: 'Jumlah Donasi (Rp)',
+                            data: [100000, 200000, 150000, 300000, 250000, 400000],
+                            borderColor: '#3a5a40',
+                            backgroundColor: 'rgba(58, 90, 64, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                            pointBackgroundColor: '#3a5a40',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                padding: 12,
+                                cornerRadius: 8,
+                                callbacks: {
+                                    label: function(context) {
+                                        return 'Rp ' + context.parsed.y.toLocaleString('id-ID');
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)'
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return 'Rp ' + (value / 1000) + 'k';
+                                    }
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        },
+                        animation: {
+                            duration: 2000,
+                            easing: 'easeInOutQuart'
+                        }
+                    }
+                });
+            }
 
+            // Animate progress bars on load
+            setTimeout(() => {
+                document.querySelectorAll('.progress-bar-enhanced').forEach(bar => {
+                    const width = bar.style.width;
+                    bar.style.width = '0';
+                    setTimeout(() => {
+                        bar.style.width = width;
+                    }, 100);
+                });
+            }, 500);
+        </script>
+
+        <!-- Logout Modal -->
         <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="logoutModalLabel" style="color: #2e5c4d">Konfirmasi Logout</h5>
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content modal-content-enhanced">
+                    <div class="modal-header modal-header-enhanced">
+                        <h5 class="modal-title" id="logoutModalLabel">
+                            <i class="bi bi-box-arrow-right me-2"></i>Konfirmasi Logout
+                        </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body" style="color: #a1a1a1">Anda akan keluar dari sesi saat ini. Apakah anda yakin ingin melanjutkannya?</div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">BATAL</button>
-                        <a th:href="@{/logout}" class="btn btn-danger">YA, LOGOUT</a>
+                    <div class="modal-body modal-body-enhanced">
+                        <p class="text-center">Anda akan keluar dari sesi saat ini. Apakah anda yakin ingin melanjutkannya?</p>
+                    </div>
+                    <div class="modal-footer modal-footer-enhanced">
+                        <button type="button" class="btn btn-outline-enhanced" data-bs-dismiss="modal">BATAL</button>
+                        <a th:href="@{/logout}" class="btn btn-secondary-enhanced" data-testid="confirm-logout-button">YA, LOGOUT</a>
                     </div>
                 </div>
             </div>
