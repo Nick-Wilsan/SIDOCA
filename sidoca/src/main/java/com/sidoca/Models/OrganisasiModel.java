@@ -51,4 +51,23 @@ public class OrganisasiModel extends BaseModel {
 
         return -1; // Mengembalikan -1 jika tidak ditemukan atau gagal
     }
+
+    public String GetNamaOrganisasiById(int id_organisasi){
+        String query = "SELECT nama_organisasi FROM organisasi WHERE id_organisasi = ?";
+
+        try(Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query)
+        ){
+            stmt.setInt(1, id_organisasi);
+            var result = stmt.executeQuery();
+
+            if (result.next()) {
+                return result.getString("nama_organisasi");
+            }
+        } catch(SQLException e){
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }

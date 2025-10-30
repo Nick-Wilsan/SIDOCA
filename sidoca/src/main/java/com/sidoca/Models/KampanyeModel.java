@@ -658,11 +658,11 @@ public class KampanyeModel extends BaseModel {
         List<Kampanye> kampanyeList = new ArrayList<>();
 
         String query = "SELECT k.id_kampanye, k.id_akun, k.judul_kampanye, k.deskripsi_kampanye, " +
-                    "k.target_dana, k.batas_waktu, k.status_kampanye " +
+                    "k.target_dana, k.batas_waktu, k.status_kampanye, k.alasan_penolakan, k.tgl_pengajuan, k.tgl_verifikasi, k.dana_terkumpul " +
                     "FROM Kampanye k " +
                     "JOIN Akun a ON k.id_akun = a.id_akun " +
                     "JOIN Organisasi o ON a.id_akun = o.id_akun " +
-                    "WHERE o.id_akun = ?";
+                    "WHERE o.id_akun = ? ORDER BY k.tgl_verifikasi DESC NULLS LAST";
 
         try (Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -679,6 +679,10 @@ public class KampanyeModel extends BaseModel {
                 kampanye.setTarget_dana(rs.getBigDecimal("target_dana"));
                 kampanye.setBatas_waktu(rs.getDate("batas_waktu"));
                 kampanye.setStatus_kampanye(rs.getString("status_kampanye"));
+                kampanye.setAlasan_penolakan(rs.getString("alasan_penolakan"));
+                kampanye.setTgl_pengajuan(rs.getTimestamp("tgl_pengajuan"));
+                kampanye.setTgl_verifikasi(rs.getTimestamp("tgl_verifikasi"));
+                kampanye.setDana_terkumpul(rs.getBigDecimal("dana_terkumpul"));
                 kampanyeList.add(kampanye);
             }
         } catch (SQLException e) {

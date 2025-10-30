@@ -2,6 +2,9 @@ package com.sidoca.Models.DataBaseClass;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 public class Kampanye {
     private int id_kampanye;
@@ -9,9 +12,13 @@ public class Kampanye {
     private String judul_kampanye;
     private String deskripsi_kampanye;
     private BigDecimal target_dana;
+    private BigDecimal dana_terkumpul;
     private Date batas_waktu;
     private String status_kampanye;
-    private String gambar_kampanye;
+    private String alasan_penolakan;
+    private Timestamp tgl_pengajuan;
+    private Timestamp tgl_verifikasi;
+
 
     // Getters and Setters
     public int getId_kampanye() {
@@ -54,6 +61,14 @@ public class Kampanye {
         this.target_dana = target_dana;
     }
 
+    public BigDecimal getDana_terkumpul() {
+        return dana_terkumpul;
+    }
+
+    public void setDana_terkumpul(BigDecimal dana_terkumpul) {
+        this.dana_terkumpul = dana_terkumpul;
+    }
+
     public Date getBatas_waktu() {
         return batas_waktu;
     }
@@ -70,11 +85,40 @@ public class Kampanye {
         this.status_kampanye = status_kampanye;
     }
 
-    public String getGambar_kampanye() {
-        return gambar_kampanye;
+    public String getAlasan_penolakan() {
+        return alasan_penolakan;
     }
 
-    public void setGambar_kampanye(String gambar_kampanye) {
-        this.gambar_kampanye = gambar_kampanye;
+    public void setAlasan_penolakan(String alasan_penolakan) {
+        this.alasan_penolakan = alasan_penolakan;
+    }
+
+    public Timestamp getTgl_pengajuan() {
+        return tgl_pengajuan;
+    }
+
+    public void setTgl_pengajuan(Timestamp tgl_pengajuan) {
+        this.tgl_pengajuan = tgl_pengajuan;
+    }
+
+    public Timestamp getTgl_verifikasi() {
+        return tgl_verifikasi;
+    }
+
+    public void setTgl_verifikasi(Timestamp tgl_verifikasi) {
+        this.tgl_verifikasi = tgl_verifikasi;
+    }
+
+    public int getSisa_hari(){
+        if (batas_waktu == null) {
+            return 0;
+        }
+
+        // Konversi batas_waktu ke LocalDate
+        LocalDate batas = batas_waktu.toLocalDate();
+        LocalDate sekarang = LocalDate.now();
+
+        // Hitung selisih hari
+        return (int) ChronoUnit.DAYS.between(sekarang, batas);
     }
 }

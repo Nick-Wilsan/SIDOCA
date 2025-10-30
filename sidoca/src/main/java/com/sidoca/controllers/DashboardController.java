@@ -1,16 +1,29 @@
 package com.sidoca.controllers;
 
+import java.math.BigDecimal;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sidoca.Models.DataBaseClass.Akun;
+import com.sidoca.Models.DataBaseClass.Kampanye;
+import com.sidoca.Models.KampanyeModel;
+import com.sidoca.Models.OrganisasiModel;
 
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class DashboardController extends BaseController{
     private final HttpSession session;
+
+    @Autowired
+    private KampanyeModel kampanyeModel;
+
+    @Autowired
+    private OrganisasiModel organisasiModel;
 
     public DashboardController(HttpSession session) {
         this.session = session;
@@ -58,7 +71,12 @@ public class DashboardController extends BaseController{
         if (!"organisasi".equals(user.getRole())) {
             return new ModelAndView("redirect:/dashboard");
         }
-        return loadView("dashboardOrganisasi", java.util.Map.of("Judul", "Dashboard Organisasi", "nama", user.getNama()));
+
+        int id_organisasi = organisasiModel.GetIdOrganisasiByIdAkun(user.getId_akun());
+        List<Kampanye> kampanyelList = kampanyeModel.GetAllKampanyeByOrganisasi(id_organisasi);
+        String namaOrganisasi = organisasiModel.GetNamaOrganisasiById(id_organisasi);
+
+        return loadView("dashboardOrganisasi", java.util.Map.of("Judul", "Dashboard Organisasi", "nama", user.getNama(), "kampanyeList", kampanyelList, "namaOrganisasi", namaOrganisasi));
     }
 
     @GetMapping("/dashboardAdmin")

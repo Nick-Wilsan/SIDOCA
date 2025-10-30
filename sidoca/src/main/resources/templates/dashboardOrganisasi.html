@@ -55,6 +55,42 @@
             </div>
         </div>
 
+        <div class="kampanye-container">
+            <div th:each="k, iterStat : ${kampanyeList}"
+                th:if="${iterStat.index < 3}" 
+                class="kampanye-card">
+                
+                <!-- Gambar -->
+                <img th:src="@{/image/All_About_Charity.png}" alt="Kampanye" class="kampanye-image">
+
+                <!-- Info Kampanye -->
+                <div class="kampanye-info">
+                    <p class="sisa-hari" th:text="'Sisa ' + ${k.sisaHari} + ' hari'"></p>
+                    <h3 th:text="${k.judul_kampanye}" class="judul-kampanye"></h3>
+                    <p th:text="'oleh ' + ${namaOrganisasi}" class="nama-organisasi"></p>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="progress-container">
+                    <div class="progress-bg">
+                        <div class="progress-fill"
+                            th:style="'width:' + (${k.dana_terkumpul} / ${k.target_dana} * 100) + '%'">
+                        </div>
+                    </div>
+                    <div class="progress-text">
+                        <span th:text="'Rp ' + ${#numbers.formatDecimal(k.dana_terkumpul, 0, 'COMMA', 0, 'POINT')}"></span>
+                        <span th:text="'dari Rp ' + ${#numbers.formatDecimal(k.target_dana, 0, 'COMMA', 0, 'POINT')}"></span>
+                    </div>
+                </div>
+
+                <!-- Tombol -->
+                <a th:href="@{/detailKampanye(id_kampanye=${k.id_kampanye})}" class="detail-btn">
+                    Lihat Detail
+                </a>
+            </div>
+        </div>
+
+
         <footer>
             <div th:replace="~{footer :: footer}"></div>
         </footer>

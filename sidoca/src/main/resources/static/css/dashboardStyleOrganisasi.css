@@ -39,3 +39,94 @@
             bottom: 0;
             margin-top: 5rem;
         }
+.kampanye-container {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.kampanye-card {
+    display: flex;
+    flex-direction: column;
+    width: 30%;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    padding: 15px;
+    transition: transform 0.2s ease;
+}
+
+.kampanye-card:hover {
+    transform: translateY(-5px);
+}
+
+.kampanye-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.kampanye-info {
+    margin-top: 10px;
+}
+
+.sisa-hari {
+    color: #28a745;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.judul-kampanye {
+    margin: 5px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.nama-organisasi {
+    color: #666;
+    font-size: 14px;
+}
+
+.progress-container {
+    margin-top: 10px;
+}
+
+.progress-bg {
+    background: #ddd;
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    background: #28a745;
+    height: 100%;
+    width: 0;
+    transition: width 0.5s ease-in-out;
+}
+
+.progress-text {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.detail-btn {
+    display: inline-block;
+    text-align: center;
+    margin-top: 15px;
+    padding: 10px 0;
+    background: #ff9800;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.detail-btn:hover {
+    background: #e68900;
+}
