@@ -41,15 +41,17 @@
         }
 .kampanye-container {
     display: flex;
+    justify-content: center; /* center horizontal */
     gap: 20px;
-    justify-content: space-between;
     flex-wrap: wrap;
+    margin-top: 30px;
 }
 
 .kampanye-card {
     display: flex;
     flex-direction: column;
-    width: 30%;
+    width: 30%; 
+    /* width: 300px */
     background: #fff;
     border-radius: 12px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
