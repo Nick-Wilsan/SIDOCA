@@ -687,6 +687,25 @@ public class KampanyeModel extends BaseModel {
         return kampanyeList;
     }
 
+    public String GetNamaKampanyeById(int idKampanye){
+        String query = "SELECT judul_kampanye FROM kampanye WHERE id_kampanye = ?";
+
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, idKampanye);
+            ResultSet rs = stmt.executeQuery();
+
+            if(rs.next()){
+                return rs.getString("judul_kampanye");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     public boolean kurangiDanaTerkumpul(int idKampanye, BigDecimal jumlah) {
         String query = "UPDATE Kampanye SET dana_terkumpul = dana_terkumpul - ? WHERE id_kampanye = ?";
         try (Connection conn = getConnection();

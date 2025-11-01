@@ -2,6 +2,7 @@ package com.sidoca.controllers;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,6 +77,32 @@ public class LaporanDanaController extends BaseController{
         
 
         return new ModelAndView("mengajukanLaporanDana", model);
+    }
+
+    @GetMapping("/verifikasiPenggunaanDana1")
+    public ModelAndView verifikasiPenggunaanDana() {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null || !"organisasi".equals(user.getRole())) {
+            return new ModelAndView("redirect:/");
+        }
+        // Buat objek kosong untuk form
+        List<LaporanDana> listLaporanDana = laporanDanaModel.GetAllLaporanDanaVerifikasi();
+        System.out.println(listLaporanDana.size());
+        List<String> listNamaOrganisasi = new ArrayList<>();
+        List<String> listNamaKampanye = new ArrayList<>();
+
+        for (LaporanDana laporan : listLaporanDana) {
+            listNamaKampanye.add(kampanyeModel.GetNamaKampanyeById(laporan.getId_kampanye()));
+            listNamaOrganisasi.add(organisasiModel.GetNamaOrganisasiById(laporan.getId_organisasi()));
+        }
+
+        Map<String, Object> model = new HashMap<>();
+
+        model.put("listLaporan", listLaporanDana);
+        model.put("listNamaOrganisasi", listNamaOrganisasi);
+        model.put("listNamaKampanye", listNamaKampanye);
+
+        return new ModelAndView("verifikasiPenggunaanDana", model);
     }
 
     @PostMapping("/tambahLaporanDana")

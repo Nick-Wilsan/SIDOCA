@@ -43,32 +43,6 @@
                 </div>
             </div>
 
-            <!-- Search & Filter Section -->
-            <!-- <div class="search-filter-section animate-fade-in-up" style="animation-delay: 0.2s">
-                <form th:action="@{/daftarKampanye}" method="get" class="row g-3 align-items-center">
-                    <div class="col-md-8">
-                        <div class="search-box">
-                            <i class="bi bi-search search-icon"></i>
-                            <input type="search" name="keyword" class="form-control-search" placeholder="Cari judul kampanye atau nama organisasi..." th:value="${keyword}" data-testid="search-input" />
-                            <button class="btn-search" type="submit" data-testid="search-button">
-                                <i class="bi bi-arrow-right"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="filter-box">
-                            <i class="bi bi-funnel filter-icon"></i>
-                            <select name="urutkan" class="form-select-filter" onchange="this.form.submit()" data-testid="sort-select">
-                                <option value="terbaru" th:selected="${urutkan == 'terbaru'}">🕐 Terbaru</option>
-                                <option value="mendesak" th:selected="${urutkan == 'mendesak'}">🚨 Mendesak</option>
-                                <option value="paling_sedikit" th:selected="${urutkan == 'paling_sedikit'}">📊 Dana Terkecil</option>
-                            </select>
-                        </div>
-                    </div>
-                </form>
-            </div> -->
-
-            <!-- Campaign Cards Grid -->
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mt-4">
                 <div th:if="${#lists.isEmpty(kampanyeList)}" class="col-12">
                     <div class="empty-state animate-fade-in">

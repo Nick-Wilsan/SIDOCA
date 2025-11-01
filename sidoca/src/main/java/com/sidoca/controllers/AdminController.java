@@ -1,5 +1,6 @@
 package com.sidoca.controllers;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,9 +13,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.sidoca.Models.KampanyeModel;
+import com.sidoca.Models.LaporanDanaModel;
+import com.sidoca.Models.OrganisasiModel;
 import com.sidoca.Models.DTO.KampanyeDetailDTO;
 import com.sidoca.Models.DTO.KampanyeVerifikasiDTO;
 import com.sidoca.Models.DataBaseClass.Akun;
+import com.sidoca.Models.DataBaseClass.LaporanDana;
+
 import jakarta.servlet.http.HttpSession;
 import com.sidoca.Models.AkunModel;
 import com.sidoca.Models.DTO.KampanyeAdminDTO;
@@ -36,6 +41,12 @@ public class AdminController extends BaseController{
 
     @Autowired
     private PencairanDanaModel pencairanDanaModel;
+
+    @Autowired
+    private LaporanDanaModel laporanDanaModel;
+
+    @Autowired
+    private OrganisasiModel organisasiModel;
 
     public AdminController(HttpSession session) {
         this.session = session;
@@ -105,13 +116,27 @@ public class AdminController extends BaseController{
     @GetMapping("/verifikasiPenggunaanDana")
     public ModelAndView VerifikasiPenggunaanDana() {
         Akun user = (Akun) session.getAttribute("user");
-        if (user == null) {
+        if (user == null || !"admin".equals(user.getRole())) {
             return new ModelAndView("redirect:/");
         }
-        if (!"admin".equals(user.getRole())) {
-            return new ModelAndView("redirect:/dashboard");
+
+        List<LaporanDana> listLaporanDana = laporanDanaModel.GetAllLaporanDanaVerifikasi();
+        System.out.println(listLaporanDana.size());
+        List<String> listNamaOrganisasi = new ArrayList<>();
+        List<String> listNamaKampanye = new ArrayList<>();
+
+        for (LaporanDana laporan : listLaporanDana) {
+            listNamaKampanye.add(kampanyeModel.GetNamaKampanyeById(laporan.getId_kampanye()));
+            listNamaOrganisasi.add(organisasiModel.GetNamaOrganisasiById(laporan.getId_organisasi()));
         }
-        return loadView("verifikasiPenggunaanDana", java.util.Map.of("Judul", "Dashboard Admin", "nama", user.getNama()));
+
+        Map<String, Object> model = new HashMap<>();
+
+        model.put("listLaporan", listLaporanDana);
+        model.put("listNamaOrganisasi", listNamaOrganisasi);
+        model.put("listNamaKampanye", listNamaKampanye);
+
+        return new ModelAndView("verifikasiPenggunaanDana", model);
     }
 
     @GetMapping("/verifikasiPencairanDana")
