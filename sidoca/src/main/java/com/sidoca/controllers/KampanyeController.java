@@ -26,6 +26,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.sidoca.Models.KampanyeGambarModel;
 import com.sidoca.Models.KampanyeModel;
+import com.sidoca.Models.OrganisasiModel;
 import com.sidoca.Models.DTO.KampanyeAktifDTO;
 import com.sidoca.Models.DTO.KampanyeDetailDTO;
 import com.sidoca.Models.DataBaseClass.Akun;
@@ -52,6 +53,9 @@ public class KampanyeController extends BaseController{
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private OrganisasiModel organisasiModel;
 
 
 
@@ -174,11 +178,11 @@ public class KampanyeController extends BaseController{
                                         @RequestParam(name = "urutkan", required = false) String urutkan) {
         Akun user = (Akun) session.getAttribute("user");
         if (user == null) {
-            return new ModelAndView("redirect:/");
+            return new ModelAndView("redirect:/");        
         }
         if (!"donatur".equals(user.getRole())) {
             return new ModelAndView("redirect:/dashboard");
-        }
+        };
         List<KampanyeAktifDTO> daftarKampanye = kampanyeModel.getKampanyeAktif(keyword, urutkan);
         Map<String, Object> data = new HashMap<>();
         data.put("judul", "Daftar Kampanye");
@@ -187,6 +191,26 @@ public class KampanyeController extends BaseController{
         data.put("urutkan", urutkan);
 
         return loadView("daftarKampanye", data);
+    }
+
+    @GetMapping("/daftarKampanyeOrganisasi")
+    public ModelAndView daftarKampanyeOrganisasi() {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null) {
+            return new ModelAndView("redirect:/");        
+        }
+        if (!"organisasi".equals(user.getRole())) {
+            return new ModelAndView("redirect:/dashboard");
+        };
+        List<Kampanye> daftarKampanye = kampanyeModel.GetAllKampanyeByOrganisasi(user.getId_akun());
+        int id_organisasi = organisasiModel.GetIdOrganisasiByIdAkun(user.getId_akun());
+        String namaOrganisasi = organisasiModel.GetNamaOrganisasiById(id_organisasi);
+        Map<String, Object> data = new HashMap<>();
+        data.put("judul", "Daftar Kampanye");
+        data.put("kampanyeList", daftarKampanye);
+        data.put("namaOrganisasi", namaOrganisasi);
+
+        return loadView("daftarKampanyeOrganisasi", data);
     }
 
     @GetMapping("/kampanye/{id}")

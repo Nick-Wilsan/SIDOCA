@@ -39,6 +39,14 @@
             bottom: 0;
             margin-top: 5rem;
         }
+.daftar-container {
+    display: flex;
+    justify-content: flex-start; /* Align left */
+    align-items: center;
+    padding: 20px 0;
+    margin-bottom: 20px;
+    gap: 10px;
+}
 .kampanye-container {
     display: flex;
     justify-content: center; /* center horizontal */
@@ -131,4 +139,26 @@
 
 .detail-btn:hover {
     background: #e68900;
+}
+
+.daftar-btn {
+    background: #4CAF50;
+    border: none;
+    padding: 12px 22px;
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    border-radius: 12px;
+    transition: all 0.25s ease-in-out;
+    box-shadow: 0px 6px 15px rgba(76, 175, 80, 0.25);
+}
+
+.daftar-btn:hover {
+    background: #43a047;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(67, 160, 71, 0.35);
+}
+
+.daftar-btn:active {
+    transform: scale(0.97);
 }
