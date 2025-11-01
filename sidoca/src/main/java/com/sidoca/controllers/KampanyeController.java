@@ -158,7 +158,7 @@ public class KampanyeController extends BaseController{
             return new ModelAndView("redirect:/");
         }
 
-        List<StatusVerifikasiDTO> daftarStatus = kampanyeModel.getStatusVerifikasiForOrganisasi(user.getId_akun(), keyword, jenis, status);
+        List<StatusVerifikasiDTO> daftarStatus = kampanyeModel.getStatusVerifikasi(user.getId_akun(), keyword, jenis, status);
 
         Map<String, Object> data = new HashMap<>();
         data.put("judul", "Status Verifikasi");

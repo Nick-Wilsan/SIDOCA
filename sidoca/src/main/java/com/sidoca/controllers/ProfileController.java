@@ -197,7 +197,7 @@ public class ProfileController extends BaseController {
     @GetMapping("/profil/hapus-akun")
     public String requestDeleteAccount(RedirectAttributes ra) {
         Akun user = (Akun) session.getAttribute("user");
-        if (user == null || !"donatur".equals(user.getRole())) {
+        if (user == null || (!"donatur".equals(user.getRole()) && !"organisasi".equals(user.getRole()))) {
             return "redirect:/";
         }
 
