@@ -36,6 +36,7 @@ public class LaporanDanaModel extends BaseModel{
                 laporanDana.setBukti_dokumen(rs.getBytes("bukti_dokumen"));
                 laporanDana.setDeskripsi_penggunaan(rs.getString("deskripsi_penggunaan"));
                 laporanDana.setStatus_verifikasi(rs.getString("status_verifikasi"));
+                laporanDana.setTotal_Pengeluaran(rs.getBigDecimal("total_pengeluaran").intValue());
                 Timestamp tglPengajuan = rs.getTimestamp("tgl_pengajuan");
                 Timestamp tglVerifikasi = rs.getTimestamp("tgl_verifikasi");
 
@@ -47,6 +48,27 @@ public class LaporanDanaModel extends BaseModel{
                 }
 
                 return laporanDana;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public byte[] GetBuktiById(int id_laporan){
+        String query = "SELECT bukti_dokumen FROM laporan_dana WHERE id_laporan = ?";
+
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, id_laporan);
+
+            ResultSet rs = stmt.executeQuery();
+
+            // Jika data ditemukan, buat objek User
+            if (rs.next()){
+                return rs.getBytes("bukti_dokumen");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -121,4 +143,35 @@ public class LaporanDanaModel extends BaseModel{
         }
         return -1;
     }
+
+    public int VerifikasiTerima(int id_laporan) {
+        String query = "UPDATE laporan_dana SET status_verifikasi = 'disetujui', tgl_verifikasi = NOW() WHERE id_laporan = ?";
+
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, id_laporan);
+            return stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    public int VerifikasiTolak(int id_laporan) {
+        String query = "UPDATE laporan_dana SET status_verifikasi = 'ditolak', tgl_verifikasi = NOW() WHERE id_laporan = ?";
+
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, id_laporan);
+            return stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
 }

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +29,7 @@ import com.sidoca.Models.PencairanDanaModel;
 import com.sidoca.Models.DTO.PencairanDanaDetailDTO;
 import com.sidoca.Models.DTO.PencairanDanaVerifikasiDTO;
 import java.math.BigDecimal;
+import org.springframework.http.HttpHeaders;
 
 @Controller
 public class AdminController extends BaseController{
@@ -137,6 +139,51 @@ public class AdminController extends BaseController{
         model.put("listNamaKampanye", listNamaKampanye);
 
         return new ModelAndView("verifikasiPenggunaanDana", model);
+    }
+
+    @GetMapping("/verifikasiPenggunaanDana/detail/{id}")
+    public ModelAndView VerifikasiDetailPenggunaanDana(@PathVariable("id") int id) {
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null || !"admin".equals(user.getRole())) {
+            return new ModelAndView("redirect:/");
+        }
+
+        LaporanDana laporan = laporanDanaModel.GetLaporanDanaById(id);
+        if (laporan == null) {
+            return new ModelAndView("redirect:/verifikasiPenggunaanDana?error=notfound");
+        }
+        String namaOrganisasi = organisasiModel.GetNamaOrganisasiById(laporan.getId_organisasi());
+        String namaKampanye = kampanyeModel.GetNamaKampanyeById(laporan.getId_kampanye());
+
+        Map<String, Object> model = new HashMap<>();
+
+        model.put("laporanDetail", laporan);
+        model.put("namaOrganisasi", namaOrganisasi);
+        model.put("namaKampanye", namaKampanye);
+
+
+        return new ModelAndView("verifikasiLaporanDana", model);
+    }
+
+    @PostMapping("/verifikasi/terima")
+    public String TerimaLaporan(@RequestParam int id) {
+        laporanDanaModel.VerifikasiTerima(id);
+        return "redirect:/verifikasiPenggunaanDana";
+    }
+
+    @PostMapping("/verifikasi/tolak")
+    public String TolakLaporan(@RequestParam int id) {
+        laporanDanaModel.VerifikasiTolak(id);
+        return "redirect:/verifikasiPenggunaanDana";
+    }
+
+
+    @GetMapping("/download-buktiPembayaran")
+    public ResponseEntity<byte[]> downloadBukti(@RequestParam int id) {
+        byte[] file = laporanDanaModel.GetBuktiById(id);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=bukti_pengeluaran.pdf")
+                .body(file);
     }
 
     @GetMapping("/verifikasiPencairanDana")

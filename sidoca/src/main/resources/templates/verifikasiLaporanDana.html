@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Detail Verifikasi Penggunaan Dana</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+
+    <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}" />
+    <link rel="stylesheet" th:href="@{/css/global-animations.css}" />
+    <link rel="stylesheet" th:href="@{/css/enhanced-components.css}" />
+    <link rel="stylesheet" th:href="@{/css/headerStyleAdmin.css}" />
+    <link rel="stylesheet" th:href="@{/css/footerStyle.css}" />
+    <link rel="stylesheet" th:href="@{/css/verifikasiDetailKampanyeStyle.css}" />
+</head>
+
+<body>
+<header th:replace="~{headerAdmin :: navbarAdmin}"></header>
+
+<main class="container my-5 animate-fade-in-up">
+    <div th:if="${laporanDetail != null}">
+        <div class="page-header">
+            <h1 class="main-title reveal">Verifikasi Penggunaan Dana</h1>
+            <p class="subtitle">Periksa detail laporan penggunaan dana dan lakukan verifikasi</p>
+        </div>
+
+        <div class="verification-layout">
+            <!-- LEFT CARD -->
+            <div class="campaign-details-card hover-lift">
+                <div class="campaign-content">
+
+                    <div class="title-section">
+                        <h2 th:text="${namaKampanye}">Nama Kampanye</h2>
+                        <span class="status-badge">Menunggu Verifikasi</span>
+                    </div>
+
+                    <p class="organizer">
+                        Dilaporkan oleh
+                        <strong th:text="${namaOrganisasi}">Nama Organisasi</strong>
+                    </p>
+
+                    <hr />
+
+                    <section class="campaign-section">
+                        <h3>Deskripsi Penggunaan Dana</h3>
+                        <p th:text="${laporanDetail.deskripsi_penggunaan}">
+                            Dana digunakan untuk kebutuhan operasional...
+                        </p>
+                    </section>
+
+                    <section class="campaign-section mt-3">
+                        <h3>Detail Dana</h3>
+
+                        <p>
+                            <strong>Total Pengeluaran:</strong>
+                            <span th:text="'Rp ' + ${#numbers.formatDecimal(laporanDetail.total_Pengeluaran, 0, 'POINT', 0, 'COMMA')}">
+                                Rp 0
+                            </span>
+                        </p>
+
+                        <p>
+                            <strong>Tanggal Pengajuan:</strong>
+                            <span th:text="${#temporals.format(laporanDetail.tgl_pengajuan, 'dd MMM yyyy HH:mm')}">-</span>
+                        </p>
+                    </section>
+
+                    <section class="campaign-section mt-3">
+                        <h3>Bukti Pengeluaran</h3>
+                        <div th:if="${laporanDetail.bukti_dokumen != null}">
+                            <a th:href="@{/download-buktiPembayaran(id=${laporanDetail.id_laporan})}" class="btn btn-outline-primary mt-2">
+                                <i class="bi bi-file-earmark-arrow-down"></i> Download Bukti
+                            </a>
+                        </div>
+                        <p th:if="${laporanDetail.bukti_dokumen == null}">Tidak ada dokumen bukti.</p>
+                    </section>
+
+                </div>
+            </div>
+
+            <!-- RIGHT ACTION CARD -->
+            <div class="verification-action-card hover-lift">
+                <h4>Tindakan Verifikasi</h4>
+                <p class="action-subtitle">Periksa dengan teliti sebelum memberikan keputusan</p>
+
+                <form action="/verifikasi/terima" method="post" class="mb-3">
+                    <input type="hidden" name="id" th:value="${laporanDetail.id_laporan}">
+                    <button type="submit" class="btn btn-success w-100 py-2">
+                        <i class="bi bi-check-circle-fill me-2"></i> Terima Laporan
+                    </button>
+                </form>
+
+                <form action="/verifikasi/tolak" method="post">
+                    <input type="hidden" name="id" th:value="${laporanDetail.id_laporan}">
+                    <button type="submit" class="btn btn-danger w-100 py-2">
+                        <i class="bi bi-x-circle-fill me-2"></i> Tolak Laporan
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <div th:if="${laporanDetail == null}" class="alert alert-danger-enhanced text-center">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        Laporan yang Anda cari tidak ditemukan atau tidak dalam proses verifikasi.
+    </div>
+</main>
+
+<footer th:replace="~{footer :: footer}"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/global-interactive.js}"></script>
+
+</body>
+</html>
