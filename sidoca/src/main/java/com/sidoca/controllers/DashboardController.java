@@ -12,6 +12,9 @@ import com.sidoca.Models.DataBaseClass.Akun;
 import com.sidoca.Models.DataBaseClass.Kampanye;
 import com.sidoca.Models.KampanyeModel;
 import com.sidoca.Models.OrganisasiModel;
+import com.sidoca.Models.DonasiModel;
+import com.sidoca.Models.DonaturModel;
+import com.sidoca.Models.DTO.RiwayatDonasiSummaryDTO;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -24,6 +27,12 @@ public class DashboardController extends BaseController{
 
     @Autowired
     private OrganisasiModel organisasiModel;
+
+    @Autowired
+    private DonasiModel donasiModel;
+
+    @Autowired
+    private DonaturModel donaturModel;
 
     public DashboardController(HttpSession session) {
         this.session = session;
@@ -59,7 +68,14 @@ public class DashboardController extends BaseController{
         if (!"donatur".equals(user.getRole())) {
         return new ModelAndView("redirect:/dashboard");
         }
-        return loadView("dashboardDonatur", java.util.Map.of("Judul", "Dashboard Donatur", "nama", user.getNama()));
+
+        Integer idDonatur = donaturModel.getDonaturIdByAkunId(user.getId_akun());
+        RiwayatDonasiSummaryDTO riwayat = null;
+        if (idDonatur != null) {
+            riwayat = donasiModel.getRiwayatDonasi(idDonatur);
+        }
+
+        return loadView("dashboardDonatur", java.util.Map.of("Judul", "Dashboard Donatur", "nama", user.getNama(), "riwayat", riwayat));
     }
 
     @GetMapping("/dashboardOrganisasi")

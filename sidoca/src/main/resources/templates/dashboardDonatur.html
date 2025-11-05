@@ -31,8 +31,7 @@
                 <div class="hero-text-enhanced">
                     <h1 class="fw-bold">Mari Berbagi Kebaikan</h1>
                     <p class="fs-5 mt-3">Donasi Anda Membawa Harapan Bagi Mereka yang Membutuhkan</p>
-                    <a th:href="@{/daftarKampanye}" class="btn btn-secondary-enhanced btn-lg mt-3" data-testid="browse-campaigns-button"> 
-                        <i class="bi bi-heart-fill me-2"></i>Jelajahi Kampanye </a>
+                    <a th:href="@{/daftarKampanye}" class="btn btn-secondary-enhanced btn-lg mt-3" data-testid="browse-campaigns-button"> <i class="bi bi-heart-fill me-2"></i>Jelajahi Kampanye </a>
                 </div>
             </div>
 
@@ -51,7 +50,9 @@
                         <div class="stat-icon primary">
                             <i class="bi bi-heart-fill"></i>
                         </div>
-                        <div class="stat-value counter" data-target="0">0</div>
+                        <div class="stat-value counter" data-target="0">
+                            <h2 class="fw-bold text-success" th:text="'Rp ' + ${riwayat != null && riwayat.totalDonasi != null ? #numbers.formatDecimal(riwayat.totalDonasi, 0, 'POINT', 2, 'COMMA') : '0,00'}">Rp 0,00</h2>
+                        </div>
                         <div class="stat-label">Total Donasi</div>
                     </div>
                 </div>
