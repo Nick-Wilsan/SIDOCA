@@ -85,10 +85,9 @@ public class DonasiModel extends BaseModel {
         RiwayatDonasiSummaryDTO summary = new RiwayatDonasiSummaryDTO();
         List<RiwayatDonasiItemDTO> rincianList = new ArrayList<>();
 
-        // Query untuk summary (Total Donasi dari tabel Donatur dan Total Kampanye)
-        String summaryQuery = "SELECT d.total_donasi, COUNT(DISTINCT don.id_kampanye) as total_kampanye " +
-                              "FROM Donatur d LEFT JOIN Donasi don ON d.id_donatur = don.id_donatur AND don.status_pembayaran = 'berhasil' " +
-                              "WHERE d.id_donatur = ? GROUP BY d.id_donatur, d.total_donasi";
+        // Query untuk summary (Total Donasi dan Total Kampanye)
+        String summaryQuery = "SELECT SUM(nominal_donasi) as total_donasi, COUNT(DISTINCT id_kampanye) as total_kampanye " +
+                              "FROM Donasi WHERE id_donatur = ? AND status_pembayaran = 'berhasil'";
 
         // Query untuk rincian donasi
         String rincianQuery = "SELECT " +
