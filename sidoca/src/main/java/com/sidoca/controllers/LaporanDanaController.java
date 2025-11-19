@@ -52,7 +52,7 @@ public class LaporanDanaController extends BaseController{
         }
 
         // Ambil semua kampanye milik organisasi ini
-        List<Kampanye> listKampanye = kampanyeModel.GetAllKampanyeByOrganisasi(user.getId_akun());
+        List<Kampanye> listKampanye = kampanyeModel.GetAllKampanyeAktifByOrganisasi(user.getId_akun());
 
         // Buat objek kosong untuk form
         LaporanDana laporanDana = new LaporanDana();
@@ -157,6 +157,31 @@ public class LaporanDanaController extends BaseController{
 
         return "redirect:/mengajukanLaporanDana";
     }
+
+
+    @GetMapping("/laporanPenggunaanDana")
+    public ModelAndView laporanPenggunaanDana(
+            @RequestParam(value="keyword", required=false) String keyword) {
+
+        Akun user = (Akun) session.getAttribute("user");
+        if (user == null) {
+            return new ModelAndView("redirect:/");
+        }
+        if (!"donatur".equals(user.getRole())) {
+            return new ModelAndView("redirect:/dashboard");
+        }
+
+        List<LaporanDana> listLaporan = laporanDanaModel.GetAllLaporanDanaAktif(keyword);
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("judul", "Laporan Penggunaan Dana");
+        data.put("listLaporanDana", listLaporan);
+        data.put("keyword", keyword);
+
+        return loadView("laporanPenggunaanDana", data);
+    }
+
+
 
 
 }
