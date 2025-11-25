@@ -1,3 +1,7 @@
+/* ============================================
+   SIDOCA - Detail Kampanye Styles
+   ============================================ */
+
 :root {
     --sidoca-green: #3a5a40;
     --sidoca-orange: #fcac4b;
@@ -10,118 +14,416 @@ body {
     color: var(--sidoca-dark-gray);
 }
 
-.main-image-wrapper {
+/* --- MAIN IMAGE (GAMBAR UTAMA) --- */
+/* Perbaikan: Support kedua nama class (lama & baru) */
+.main-image-wrapper, 
+.campaign-main-image {
+    width: 100%;
     max-height: 450px;
     overflow: hidden;
     margin-bottom: 2rem;
+    border-radius: 16px; /* Membuat sudut gambar melengkung */
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.main-image-wrapper img {
+.main-image-wrapper img, 
+.campaign-main-image img {
     width: 100%;
-    height: auto;
-    object-fit: cover;
+    height: 100%;
+    object-fit: cover; /* Agar gambar full tanpa gepeng */
     object-position: center;
+    display: block;
 }
 
-.campaign-title {
-    font-weight: 700;
+/* Overlay tombol "Lihat Galeri" */
+.image-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.campaign-main-image:hover .image-overlay {
+    opacity: 1;
+}
+
+.btn-view-gallery {
+    background: white;
+    color: var(--sidoca-green);
+    border: none;
+    padding: 10px 24px;
+    border-radius: 30px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn-view-gallery:hover {
+    transform: scale(1.05);
+}
+
+/* --- HEADER KAMPANYE --- */
+.campaign-header {
+    margin-bottom: 1.5rem;
+}
+
+.campaign-title, 
+.campaign-title-main {
+    font-weight: 800;
     color: var(--sidoca-dark-gray);
     margin-bottom: 0.5rem;
+    font-size: 2rem;
+    line-height: 1.3;
 }
 
-.organizer-info {
-    font-size: 1.1rem;
-    color: #6c757d;
-}
-
-.organizer-info i {
-    color: var(--sidoca-green);
-    margin-right: 5px;
-}
-
-.campaign-description h4 {
-    color: var(--sidoca-dark-gray);
+/* Badge Organisasi */
+.organizer-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: white;
+    padding: 8px 16px;
+    border-radius: 50px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     font-weight: 600;
+    color: #6c757d;
+    font-size: 0.95rem;
 }
 
-.campaign-description p,
-.campaign-description li {
+.organizer-badge i {
+    color: #0d6efd; /* Warna centang biru */
+}
+
+/* --- STATS BAR (Kotak Statistik Kecil) --- */
+.stats-bar {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    flex: 1;
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    min-width: 150px;
+}
+
+.stat-item i {
+    font-size: 24px;
+    color: var(--sidoca-green);
+    background: #e8f5e9;
+    padding: 10px;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-value {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--sidoca-dark-gray);
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: #6c757d;
+    text-transform: uppercase;
+}
+
+/* --- DESKRIPSI KAMPANYE --- */
+/* Mengatur jarak di dalam kartu deskripsi */
+.campaign-description {
+    padding: 25px; /* Padding internal agar teks tidak mepet */
+    margin-bottom: 30px;
+    background: white; /* Memastikan background putih */
+}
+
+.section-title {
+    color: var(--sidoca-dark-gray);
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 10px;
+}
+
+.description-content {
     line-height: 1.8;
     color: #495057;
+    font-size: 1rem;
+    text-align: justify;
 }
 
-.campaign-description ul {
-    list-style: none;
-    padding-left: 0;
+/* --- GALERI FOTO --- */
+.campaign-gallery {
+    padding: 25px;
+    margin-bottom: 30px;
+    background: white;
 }
 
-.campaign-description ul li {
-    margin-bottom: 10px;
+.gallery-grid {
+    display: grid;
+    /* Membuat grid responsif otomatis */
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); 
+    gap: 15px;
 }
 
-.campaign-gallery h4 {
-    color: var(--sidoca-dark-gray);
-    font-weight: 600;
-}
-
-.gallery-img {
-    height: 120px;
-    object-fit: cover;
-    object-position: center;
+.gallery-item {
+    height: 120px; /* Tinggi tetap agar rapi */
+    border-radius: 8px;
+    overflow: hidden;
     border: 1px solid #dee2e6;
-    padding: 3px;
+    cursor: pointer;
 }
 
-.sidebar {
-    top: 20px; /* Jarak dari atas */
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Gambar menyesuaikan kotak */
+    transition: transform 0.3s ease;
 }
 
-.donation-summary-card {
-    border: none;
-    background-color: white;
-    border-radius: 0.5rem;
+.gallery-item img:hover {
+    transform: scale(1.1);
 }
 
-.donation-summary-card h4 {
-    color: var(--sidoca-green);
+/* --- KOMENTAR --- */
+.comment-section {
+    padding: 25px;
+    background: white;
 }
 
-.progress {
-    background-color: #e9ecef;
-}
-
-.progress-bar {
-    background-color: var(--sidoca-green);
-}
-
-.btn-primary-custom {
-    background-color: var(--sidoca-orange);
-    border-color: var(--sidoca-orange);
-    color: white;
-    font-weight: bold;
-}
-
-.btn-primary-custom:hover {
-    background-color: #e89c3a;
-    border-color: #e89c3a;
-    color: white;
-}
-
-/* Komentar */
-.comment-section h4 {
-    color: var(--sidoca-dark-gray);
-    font-weight: 600;
+.comment-count {
+    font-size: 1rem;
+    color: #6c757d;
+    margin-left: 5px;
+    font-weight: normal;
 }
 
 .comment-card {
-    border: none;
-    border-left: 5px solid var(--sidoca-green);
-    border-radius: 0.5rem;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-left: 4px solid var(--sidoca-green); /* Aksen hijau di kiri */
 }
 
-.comment-form-card {
+.comment-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.comment-avatar i {
+    font-size: 32px;
+    color: #adb5bd;
+}
+
+.comment-author {
+    font-weight: 700;
+    color: var(--sidoca-dark-gray);
+    font-size: 0.95rem;
+}
+
+.comment-date {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.comment-body {
+    color: #495057;
+    font-size: 0.95rem;
+    padding-left: 44px; /* Sejajar dengan teks author */
+}
+
+.comment-form-container {
+    margin-top: 2rem;
+    background: #f1f3f5;
+    padding: 20px;
+    border-radius: 16px;
+}
+
+.form-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    font-weight: 600;
+    color: var(--sidoca-green);
+}
+
+/* --- SIDEBAR (Donation Card) --- */
+.sidebar-sticky {
+    position: sticky;
+    top: 100px; /* Agar sidebar menempel saat discroll */
+}
+
+.donation-card, .organization-card {
+    background: white;
+    padding: 25px;
+    margin-bottom: 20px;
+    /* Style card-enhanced manual jika class enhanced tidak termuat */
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     border: none;
-    border-radius: 0.5rem;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.countdown-section {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Progress Bar di Sidebar */
+.donation-progress .progress-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: 600;
+}
+
+.donation-progress .progress-enhanced {
+    height: 12px;
+    background-color: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.donation-progress .progress-bar-enhanced {
+    height: 100%;
+    background: linear-gradient(90deg, #3a5a40 0%, #588157 100%);
+    border-radius: 10px;
+}
+
+.amount-info {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e9ecef;
+}
+
+.amount-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #6c757d;
+    letter-spacing: 0.5px;
+}
+
+.amount-value {
+    font-weight: 700;
+    color: var(--sidoca-dark-gray);
+    font-size: 1.1rem;
+}
+
+/* Tombol Donasi */
+.btn-donate-now {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    background: linear-gradient(135deg, #3a5a40 0%, #588157 100%);
+    color: white;
+    font-weight: 700;
+    padding: 14px;
+    border-radius: 12px;
+    text-decoration: none;
+    margin-top: 20px;
+    box-shadow: 0 4px 15px rgba(58, 90, 64, 0.3);
+    transition: transform 0.2s;
+}
+
+.btn-donate-now:hover {
+    transform: translateY(-2px);
+    color: white;
+    box-shadow: 0 6px 20px rgba(58, 90, 64, 0.4);
+}
+
+.days-remaining {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+/* --- SHARE BUTTONS --- */
+.share-section {
+    margin-top: 25px;
+    text-align: center;
+}
+
+.share-label {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-bottom: 10px;
+}
+
+.share-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-share {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid #dee2e6;
+    background: white;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.btn-share:hover {
+    background: var(--sidoca-green);
+    color: white;
+    border-color: var(--sidoca-green);
+    transform: translateY(-2px);
+}
+
+/* --- ORGANIZATION INFO --- */
+.org-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.org-name {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--sidoca-dark-gray);
+}
+
+.org-stats {
+    display: flex;
+    gap: 15px;
+    margin-top: 5px;
+}
+
+.org-stat {
+    font-size: 0.85rem;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }

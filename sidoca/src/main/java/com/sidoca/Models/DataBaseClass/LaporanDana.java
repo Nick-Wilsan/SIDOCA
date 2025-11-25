@@ -13,6 +13,9 @@ public class LaporanDana {
     private LocalDateTime tgl_pengajuan;
     private LocalDateTime tgl_verifikasi;
 
+    private String nama_kampanye;
+    private String nama_organisasi;
+
     public int getId_laporan() {
         return id_laporan;
     }
@@ -83,5 +86,21 @@ public class LaporanDana {
 
     public void setTgl_verifikasi(LocalDateTime tgl_verifikasi) {
         this.tgl_verifikasi = tgl_verifikasi;
+    }
+
+    public String getNama_kampanye() {
+        return nama_kampanye;
+    }
+
+    public void setNama_kampanye(String nama_kampanye) {
+        this.nama_kampanye = nama_kampanye;
+    }
+
+    public String getNama_organisasi() {
+        return nama_organisasi;
+    }
+
+    public void setNama_organisasi(String nama_organisasi) {
+        this.nama_organisasi = nama_organisasi;
     }
 }

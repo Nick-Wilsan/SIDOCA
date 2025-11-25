@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${judul}">Laporan Penggunaan Dana - SIDOCA</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" th:href="@{/css/headerStyleDonatur.css}" />
+    <link rel="stylesheet" th:href="@{/css/footerStyle.css}" />
+
+    <link rel="stylesheet" th:href="@{/css/laporanPenggunaanDanaStyle.css}">
+
+    <!-- Custom Style -->
+    <style>
+        body {
+            background-color: #f7f9fc;
+        }
+
+        .hero-section {
+            background: linear-gradient(to right, #3a5a40, #2e4a33);
+            padding: 40px 20px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 45px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section h1 {
+            font-weight: 700;
+            font-size: 2rem;
+        }
+
+        /* Search Box */
+        .search-box {
+            display: flex;
+            background: white;
+            border-radius: 30px;
+            padding: 4px 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            overflow: hidden;
+            align-items: center;
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            flex: 1;
+            padding: 12px 15px;
+            font-size: 0.95rem;
+        }
+
+        .search-box .search-icon {
+            margin-left: 10px;
+            color: #666;
+            font-size: 1.2rem;
+        }
+
+        .btn-search {
+            background: #3a5a40;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            color: white;
+            display: flex;
+            align-items: center;
+            transition: 0.2s;
+        }
+
+        .btn-search:hover {
+            background: #2e4a33;
+        }
+
+        /* Card Styling */
+        .report-card {
+            border: none;
+            border-radius: 18px;
+            padding-bottom: 5px;
+            overflow: hidden;
+            background: white;
+            transition: 0.25s ease;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+        }
+
+        .report-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+        }
+
+        .report-card-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+        }
+
+        .badge-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .btn-detail {
+            border-radius: 25px;
+            padding: 7px 18px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            padding: 40px 20px;
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+        }
+
+        .empty-state i {
+            font-size: 3.5rem;
+            color: #6c757d;
+        }
+    </style>
+
+</head>
+
+<body>
+<header th:replace="~{headerDonatur :: navbarDonatur}"></header>
+
+<main class="container my-5">
+
+    <!-- Hero -->
+    <div class="hero-section shadow-sm">
+        <h1><i class="bi bi-receipt"></i> Laporan Penggunaan Dana</h1>
+        <p class="mb-0">Pantau penggunaan dana yang telah dilaporkan oleh organisasi</p>
+    </div>
+
+    <!-- Search -->
+    <div class="mb-4">
+        <form th:action="@{/laporanPenggunaanDana}" method="get" class="row g-3">
+            <div class="col-md-9">
+                <div class="search-box">
+                    <i class="bi bi-search search-icon"></i>
+                    <input type="text" name="keyword" placeholder="Cari berdasarkan nama kampanye..." th:value="${keyword}">
+                </div>
+            </div>
+            <div class="col-md-3 d-grid">
+                <button class="btn-search" type="submit">
+                    Cari <i class="bi bi-arrow-right ms-2"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Empty State -->
+    <div th:if="${#lists.isEmpty(listLaporanDana)}" class="empty-state text-center mt-5">
+        <i class="bi bi-folder2-open"></i>
+        <h4 class="mt-3">Tidak Ada Laporan</h4>
+        <p>Data laporan dana tidak ditemukan. Coba ulangi pencarian.</p>
+        <a th:href="@{/laporanPenggunaanDana}" class="btn btn-secondary mt-2">
+            <i class="bi bi-arrow-clockwise"></i> Reset
+        </a>
+    </div>
+
+    <!-- Report Cards Grid -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mt-4"
+        th:if="${!#lists.isEmpty(listLaporanDana)}">
+
+        <div class="col reveal" th:each="laporan : ${listLaporanDana}">
+            <div class="campaign-card-enhanced hover-lift">
+
+                <!-- Image Container -->
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden h-100"
+                    style="transition: .25s; cursor:pointer;"
+                    onmouseover="this.style.transform='translateY(-6px)'; this.style.boxShadow='0 6px 20px rgba(0,0,0,0.12)'"
+                    onmouseout="this.style.transform='none'; this.style.boxShadow='0 3px 10px rgba(0,0,0,0.06)'">
+                    
+                    <!-- Banner Image -->
+                    <div class="position-relative">
+                        <img th:src="@{/images/image.png}"
+                            class="card-img-top" 
+                            style="height:180px; object-fit:cover;">
+
+                        <!-- Date Badge -->
+                        <span class="badge bg-dark position-absolute top-0 end-0 m-3 shadow"
+                            style="backdrop-filter:blur(3px); opacity:.9;">
+                            <i class="bi bi-clock"></i>
+                            <span th:text="${#temporals.format(laporan.tgl_pengajuan, 'dd MMM yyyy')}"></span>
+                        </span>
+
+                        <!-- Quickview Floating Button -->
+                        <!-- <button class="btn btn-light shadow position-absolute bottom-0 end-0 m-3 rounded-pill px-3 py-1"
+                                th:onclick="'window.location.href=\'/laporanPenggunaanDana/detail/' + ${laporan.id_laporan} + '\''"
+                                style="font-size:.85rem;">
+                            <i class="bi bi-eye"></i> Detail
+                        </button> -->
+                    </div>
+
+                    <!-- Body -->
+                    <div class="card-body">
+
+                        <!-- Title -->
+                        <h5 class="fw-bold" th:text="${laporan.nama_kampanye}"></h5>
+
+                        <!-- Organization -->
+                        <p class="text-muted mb-2">
+                            <i class="bi bi-building"></i>
+                            <span th:text="${laporan.nama_organisasi}"></span>
+                        </p>
+
+                        <!-- Short Description -->
+                        <p class="text-secondary" style="font-size: .9rem;"
+                            th:text="${laporan.deskripsi_penggunaan}">
+                        </p>
+
+                        <!-- Total -->
+                        <div class="mt-3">
+                            <span class="text-muted d-block">Total Pengeluaran</span>
+                            <span class="fw-bold fs-5 text-success"
+                                th:text="'Rp ' + ${#numbers.formatDecimal(laporan.total_Pengeluaran, 0, 'POINT', 0, 'COMMA')}"></span>
+                        </div>
+
+                        <!-- Status Badge -->
+                        <span class="badge mt-3 px-3 py-2"
+                            th:classappend="${laporan.status_verifikasi == 'menunggu' ? ' bg-warning text-dark' :
+                                            laporan.status_verifikasi == 'diterima' ? ' bg-success' :
+                                            ' bg-danger'}"
+                            style="border-radius:20px; font-size:.85rem;"
+                            th:text="${laporan.status_verifikasi}">
+                        </span>
+
+                        <!-- Detail Button -->
+                         
+                        <a th:href="@{/download-buktiPembayaran(id=${laporan.id_laporan})}"
+                        class="btn btn-success w-100 mt-4 py-2 rounded-pill">
+                            <i class="bi bi-eye me-2"></i> Lihat Detail
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+</main>
+
+<footer th:replace="~{footer :: footer}"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

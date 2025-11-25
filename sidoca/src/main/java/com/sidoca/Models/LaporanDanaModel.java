@@ -174,4 +174,62 @@ public class LaporanDanaModel extends BaseModel{
         return -1;
     }
 
+    public List<LaporanDana> GetAllLaporanDanaAktif(String keyword) {
+
+        String baseQuery =
+            "SELECT ld.*, k.judul_kampanye AS nama_kampanye, o.nama_organisasi AS nama_organisasi " +
+            "FROM laporan_dana ld " +
+            "JOIN kampanye k ON ld.id_kampanye = k.id_kampanye " +
+            "JOIN organisasi o ON ld.id_organisasi = o.id_organisasi " +
+            "WHERE ld.status_verifikasi = 'menunggu' OR ld.status_verifikasi = 'aktif'";
+
+        // Tambahkan filter jika keyword ada
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            baseQuery += " AND LOWER(k.judul_kampanye) LIKE ?";
+        }
+
+        baseQuery += " ORDER BY ld.tgl_pengajuan ASC";
+
+        List<LaporanDana> list = new ArrayList<>();
+
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(baseQuery)) {
+
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                stmt.setString(1, "%" + keyword.toLowerCase() + "%");
+            }
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                LaporanDana ld = new LaporanDana();
+
+                ld.setId_laporan(rs.getInt("id_laporan"));
+                ld.setId_kampanye(rs.getInt("id_kampanye"));
+                ld.setId_organisasi(rs.getInt("id_organisasi"));
+                ld.setDeskripsi_penggunaan(rs.getString("deskripsi_penggunaan"));
+                ld.setStatus_verifikasi(rs.getString("status_verifikasi"));
+                ld.setTotal_Pengeluaran(rs.getBigDecimal("total_pengeluaran").intValue());
+
+                Timestamp tglP = rs.getTimestamp("tgl_pengajuan");
+                Timestamp tglV = rs.getTimestamp("tgl_verifikasi");
+
+                if (tglP != null) ld.setTgl_pengajuan(tglP.toLocalDateTime());
+                if (tglV != null) ld.setTgl_verifikasi(tglV.toLocalDateTime());
+
+                ld.setNama_kampanye(rs.getString("nama_kampanye"));
+                ld.setNama_organisasi(rs.getString("nama_organisasi"));
+
+                list.add(ld);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+
+
 }

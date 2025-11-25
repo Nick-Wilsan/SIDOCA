@@ -687,6 +687,50 @@ public class KampanyeModel extends BaseModel {
         return kampanyeList;
     }
 
+    public List<Kampanye> GetAllKampanyeAktifByOrganisasi(int id_akun) {
+        List<Kampanye> kampanyeList = new ArrayList<>();
+
+        String query = "SELECT \r\n" + //
+                        "    k.*\r\n" + //
+                        "FROM \r\n" + //
+                        "    Kampanye k\r\n" + //
+                        "JOIN \r\n" + //
+                        "    Organisasi o ON k.id_akun = o.id_akun\r\n" + //
+                        "WHERE \r\n" + //
+                        "    o.id_akun = ?\r\n" + //
+                        "    AND k.status_kampanye = 'aktif'\r\n" + //
+                        "ORDER BY \r\n" + //
+                        "    k.tgl_verifikasi ASC;\r\n" + //
+                        "";
+
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, id_akun);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Kampanye kampanye = new Kampanye();
+                kampanye.setId_kampanye(rs.getInt("id_kampanye"));
+                kampanye.setId_akun(rs.getInt("id_akun"));
+                kampanye.setJudul_kampanye(rs.getString("judul_kampanye"));
+                kampanye.setDeskripsi_kampanye(rs.getString("deskripsi_kampanye"));
+                kampanye.setTarget_dana(rs.getBigDecimal("target_dana"));
+                kampanye.setBatas_waktu(rs.getDate("batas_waktu"));
+                kampanye.setStatus_kampanye(rs.getString("status_kampanye"));
+                kampanye.setAlasan_penolakan(rs.getString("alasan_penolakan"));
+                kampanye.setTgl_pengajuan(rs.getTimestamp("tgl_pengajuan"));
+                kampanye.setTgl_verifikasi(rs.getTimestamp("tgl_verifikasi"));
+                kampanye.setDana_terkumpul(rs.getBigDecimal("dana_terkumpul"));
+                kampanyeList.add(kampanye);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return kampanyeList;
+    }
+
     public String GetNamaKampanyeById(int idKampanye){
         String query = "SELECT judul_kampanye FROM kampanye WHERE id_kampanye = ?";
 
