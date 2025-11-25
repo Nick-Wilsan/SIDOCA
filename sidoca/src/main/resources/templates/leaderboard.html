@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title th:text="${Judul}">Leaderboard Donatur - SIDOCA</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+        <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}" />
+        <link rel="stylesheet" th:href="@{/css/global-animations.css}" />
+        <link rel="stylesheet" th:href="@{/css/enhanced-components.css}" />
+        <link rel="stylesheet" th:href="@{/css/headerStyleDonatur.css}" />
+        <link rel="stylesheet" th:href="@{/css/footerStyle.css}" />
+        <link rel="stylesheet" th:href="@{/css/leaderboardStyle.css}" />
+    </head>
+    <body>
+        <header th:replace="~{headerDonatur :: navbarDonatur}"></header>
+
+        <main class="container my-5 animate-fade-in-up">
+            <h1 class="text-center leaderboard-title mb-5 reveal">Leaderboard Donatur</h1>
+
+            <div class="top-3-container animate-stagger" th:with="top1=${topDonaturs[0]}, top2=${topDonaturs[1]}, top3=${topDonaturs[2]}">
+                
+                <div th:if="${#lists.size(topDonaturs) >= 2}" class="top-card rank-2" style="animation-delay: 0.2s;">
+                    <span class="top-rank-badge"><i class="bi bi-2-square-fill"></i></span>
+                    <img th:src="@{'/images/profiles/' + ${top2.photoProfile}}" alt="Foto Donatur" class="top-photo" />
+                    <p class="top-name" th:text="${top2.isAnonim() ? 'Donatur Anonim' : top2.namaDonatur}"></p>
+                    <p class="top-donation" th:text="'Rp ' + ${#numbers.formatDecimal(top2.totalDonasi, 0, 'POINT', 0, 'COMMA')}"></p>
+                    <small class="text-muted">#2 Peringkat</small>
+                </div>
+                <div th:unless="${#lists.size(topDonaturs) >= 2}" class="top-card" style="width: 280px; height: 210px; opacity: 0.5;"></div>
+
+
+                <div th:if="${#lists.size(topDonaturs) >= 1}" class="top-card-1 rank-1" style="animation-delay: 0s;">
+                    <span class="top-rank-badge"><i class="bi bi-1-square-fill"></i></span>
+                    <img th:src="@{'/images/profiles/' + ${top1.photoProfile}}" alt="Foto Donatur" class="top-photo" />
+                    <p class="top-name" th:text="${top1.isAnonim() ? 'Donatur Anonim' : top1.namaDonatur}"></p>
+                    <p class="top-donation" th:text="'Rp ' + ${#numbers.formatDecimal(top1.totalDonasi, 0, 'POINT', 0, 'COMMA')}"></p>
+                    <small class="text-muted">#1 Peringkat</small>
+                </div>
+                <div th:unless="${#lists.size(topDonaturs) >= 1}" class="top-card" style="width: 280px; height: 210px; opacity: 0.5;"></div>
+                
+
+                <div th:if="${#lists.size(topDonaturs) >= 3}" class="top-card rank-3" style="animation-delay: 0.4s;">
+                    <span class="top-rank-badge"><i class="bi bi-3-square-fill"></i></span>
+                    <img th:src="@{'/images/profiles/' + ${top3.photoProfile}}" alt="Foto Donatur" class="top-photo" />
+                    <p class="top-name" th:text="${top3.isAnonim() ? 'Donatur Anonim' : top3.namaDonatur}"></p>
+                    <p class="top-donation" th:text="'Rp ' + ${#numbers.formatDecimal(top3.totalDonasi, 0, 'POINT', 0, 'COMMA')}"></p>
+                    <small class="text-muted">#3 Peringkat</small>
+                </div>
+                <div th:unless="${#lists.size(topDonaturs) >= 3}" class="top-card" style="width: 280px; height: 210px; opacity: 0.5;"></div>
+            </div>
+
+            <div th:if="${myRanking != null and myRanking.totalDonasi.intValue() > 0}" class="my-ranking-card reveal">
+                <div class="my-ranking-info">
+                    <img th:src="@{'/images/profiles/' + ${session.user.photoProfile}}" alt="Foto Saya" class="my-ranking-photo" />
+                    <div>
+                        <p class="my-ranking-text mb-0">Peringkat Saya: #<span th:text="${myRanking.peringkat}">25</span></p>
+                        <p class="my-ranking-subtext mb-0" th:text="'Rp ' + ${#numbers.formatDecimal(myRanking.totalDonasi, 0, 'POINT', 0, 'COMMA')}">Rp 500.000</p>
+                    </div>
+                </div>
+                <a th:href="@{/daftarKampanye}" class="btn btn-secondary-enhanced">Donasi Lagi</a>
+            </div>
+            
+             <div th:if="${myRanking == null or myRanking.totalDonasi.intValue() == 0}" class="my-ranking-card reveal" style="background-color: #fceceb; border-color: #f7d5d5;">
+                <div class="my-ranking-info">
+                    <i class="bi bi-info-circle-fill text-danger fs-3"></i>
+                    <div>
+                        <p class="my-ranking-text mb-0" style="color: #dc3545;">Anda belum masuk peringkat.</p>
+                        <p class="my-ranking-subtext mb-0" style="color: #842029;">Mulai donasi untuk bergabung di leaderboard!</p>
+                    </div>
+                </div>
+                <a th:href="@{/daftarKampanye}" class="btn btn-secondary-enhanced">Donasi Sekarang</a>
+            </div>
+
+            <div class="table-responsive bg-white rounded shadow-sm reveal">
+                <table class="table table-hover align-middle mb-0 table-ranking">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Peringkat</th>
+                            <th scope="col">Donatur</th>
+                            <th scope="col" class="text-end">Total Donasi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="donatur, iterStat : ${topDonaturs}" th:if="${iterStat.index >= 3}">
+                            <td th:text="${donatur.peringkat}"></td>
+                            <td>
+                                <img th:src="@{'/images/profiles/' + ${donatur.photoProfile}}" alt="Foto" class="rounded-circle me-2" width="30" height="30" style="object-fit: cover;" />
+                                <strong th:text="${donatur.isAnonim() ? 'Donatur Anonim' : donatur.namaDonatur}">Donatur Nama</strong>
+                                <i th:if="${donatur.peringkat == 4}" class="bi bi-trophy-fill ms-2"></i>
+                            </td>
+                            <td class="text-end text-success" th:text="'Rp ' + ${#numbers.formatDecimal(donatur.totalDonasi, 0, 'POINT', 0, 'COMMA')}">Rp 9.800.000</td>
+                        </tr>
+                        
+                        <tr th:if="${#lists.size(topDonaturs) < 4}">
+                            <td colspan="3" class="text-center text-muted py-4">Tidak ada donatur lain di peringkat saat ini.</td>
+                        </tr>
+                        
+                        <tr>
+                            <td colspan="3" class="text-center">
+                                <button class="btn btn-load-more mt-3">Tampilkan Lebih Banyak</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+        <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content modal-content-enhanced">
+                    <div class="modal-header modal-header-enhanced">
+                        <h5 class="modal-title" id="logoutModalLabel">
+                            <i class="bi bi-box-arrow-right me-2"></i>Konfirmasi Logout
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body modal-body-enhanced">
+                        <p class="text-center">Anda akan keluar dari sesi saat ini. Apakah anda yakin ingin melanjutkannya?</p>
+                    </div>
+                    <div class="modal-footer modal-footer-enhanced">
+                        <button type="button" class="btn btn-outline-enhanced" data-bs-dismiss="modal">BATAL</button>
+                        <a th:href="@{/logout}" class="btn btn-secondary-enhanced" data-testid="confirm-logout-button">YA, LOGOUT</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer th:replace="~{footer :: footer}"></footer>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script th:src="@{/js/global-interactive.js}"></script>
+    </body>
+</html>
