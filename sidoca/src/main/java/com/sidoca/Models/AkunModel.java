@@ -42,20 +42,16 @@ public class AkunModel extends BaseModel{
     }
 
     public Akun findUserForLogin(String identifier, String password) {
-        // UBAH QUERY: Tambahkan JOIN ke tabel Profil untuk ambil photo_profile
-        String query = "SELECT a.*, p.photo_profile " + 
-                       "FROM Akun a " +
-                       "LEFT JOIN Profil p ON a.id_akun = p.id_akun " +
-                       "WHERE (a.username = ? OR a.email = ?) " +
-                       "AND a.password = PASSWORD(?) " +
-                       "AND a.status = 'aktif'";
-                       
+        // Query untuk mencari berdasarkan username ATAU email, dan membandingkan password
+        // dengan hash yang disimpan di DB
+        String query = "SELECT * FROM akun WHERE (username = ? OR email = ?) AND password = PASSWORD(?) AND status = 'aktif'";
         try (Connection conn = getConnection();
                 PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setString(1, identifier); 
-            stmt.setString(2, identifier); 
-            stmt.setString(3, password);   
+            // Bind parameter
+            stmt.setString(1, identifier); // untuk username
+            stmt.setString(2, identifier); // untuk email
+            stmt.setString(3, password);   // untuk password mentah
 
             ResultSet rs = stmt.executeQuery();
 
@@ -67,13 +63,7 @@ public class AkunModel extends BaseModel{
                 akun.setEmail(rs.getString("email"));
                 akun.setPassword(rs.getString("password"));
                 akun.setRole(rs.getString("role"));
-                akun.setNo_HP(rs.getString("no_hp"));
-                
-                // --- TAMBAHKAN INI ---
-                // Ambil kolom photo_profile dari hasil join
-                akun.setPhotoProfile(rs.getString("photo_profile")); 
-                // ---------------------
-                
+                akun.setNo_HP(rs.getString("no_hp")); 
                 return akun;
             }
 

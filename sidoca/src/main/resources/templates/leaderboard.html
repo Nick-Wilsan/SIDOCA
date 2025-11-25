@@ -53,7 +53,9 @@
 
             <div th:if="${myRanking != null and myRanking.totalDonasi.intValue() > 0}" class="my-ranking-card reveal">
                 <div class="my-ranking-info">
-                    <img th:src="@{'/images/profiles/' + ${session.user.photoProfile}}" alt="Foto Saya" class="my-ranking-photo" />
+                    <img th:src="${session.user.photoProfile == 'default.png' || session.user.photoProfile == null ? '/images/default.png' : '/images/profiles/' + session.user.photoProfile}"
+     alt="Foto Saya" 
+     class="my-ranking-photo" />
                     <div>
                         <p class="my-ranking-text mb-0">Peringkat Saya: #<span th:text="${myRanking.peringkat}">25</span></p>
                         <p class="my-ranking-subtext mb-0" th:text="'Rp ' + ${#numbers.formatDecimal(myRanking.totalDonasi, 0, 'POINT', 0, 'COMMA')}">Rp 500.000</p>

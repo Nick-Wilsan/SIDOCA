@@ -52,11 +52,9 @@ public class LeaderboardController extends BaseController{
             placeholder.setNamaDonatur("-"); // Atau "Belum Terisi"
             placeholder.setTotalDonasi(java.math.BigDecimal.ZERO);
             
-            // UBAH INI: Menggunakan template profil kosongan (1_default.png)
             placeholder.setPhotoProfile("1_default.png"); 
             
             placeholder.setPeringkat(topDonaturs.size() + 1);
-            placeholder.setAnonim(true); // Anggap sebagai anonim/placeholder
             topDonaturs.add(placeholder);
         }
 
