@@ -72,4 +72,19 @@ public class Akun {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    private String photoProfile; 
+
+    // Getter & Setter photoProfile
+    public String getPhotoProfile() {
+        // Jika null/kosong, kembalikan default agar tidak error tampilan
+        if (photoProfile == null || photoProfile.isEmpty()) {
+            return "default.png";
+        }
+        return photoProfile;
+    }
+
+    public void setPhotoProfile(String photoProfile) {
+        this.photoProfile = photoProfile;
+    }
 }

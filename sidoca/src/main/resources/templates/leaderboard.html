@@ -86,21 +86,13 @@
                         <tr th:each="donatur, iterStat : ${topDonaturs}" th:if="${iterStat.index >= 3}">
                             <td th:text="${donatur.peringkat}"></td>
                             <td>
-                                <img th:src="@{'/images/profiles/' + ${donatur.photoProfile}}" alt="Foto" class="rounded-circle me-2" width="30" height="30" style="object-fit: cover;" />
+                                <img th:src="${donatur.photoProfile != null ? '/images/profiles/' + donatur.photoProfile : '/images/profiles/1_default.png'}" 
+                                     alt="Foto" class="rounded-circle me-2" width="30" height="30" style="object-fit: cover;" />
+                                     
                                 <strong th:text="${donatur.isAnonim() ? 'Donatur Anonim' : donatur.namaDonatur}">Donatur Nama</strong>
                                 <i th:if="${donatur.peringkat == 4}" class="bi bi-trophy-fill ms-2"></i>
                             </td>
-                            <td class="text-end text-success" th:text="'Rp ' + ${#numbers.formatDecimal(donatur.totalDonasi, 0, 'POINT', 0, 'COMMA')}">Rp 9.800.000</td>
-                        </tr>
-                        
-                        <tr th:if="${#lists.size(topDonaturs) < 4}">
-                            <td colspan="3" class="text-center text-muted py-4">Tidak ada donatur lain di peringkat saat ini.</td>
-                        </tr>
-                        
-                        <tr>
-                            <td colspan="3" class="text-center">
-                                <button class="btn btn-load-more mt-3">Tampilkan Lebih Banyak</button>
-                            </td>
+                            <td class="text-end text-success" th:text="'Rp ' + ${#numbers.formatDecimal(donatur.totalDonasi, 0, 'POINT', 0, 'COMMA')}">Rp 0</td>
                         </tr>
                     </tbody>
                 </table>
